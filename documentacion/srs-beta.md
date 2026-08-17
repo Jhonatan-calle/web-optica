@@ -5,11 +5,11 @@
 ## 1. Visión General
 
 ### 1.1 Propósito
-Plataforma de e-commerce web para **La Óptica** (hoy vende por Instagram: `@_laoptica`). Digitalizar el catálogo, automatizar la toma de pedidos a nivel nacional y ofrecer compra directa sin depender de la mensajería privada.
+Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, automatizar la toma de pedidos a nivel nacional y ofrecer compra directa sin depender de la mensajería privada.
 
 ### 1.2 Alcance
 - **Geográfico:** venta y envíos a nivel nacional.
-- **Catálogo:** anteojos organizados por líneas/colecciones y modelos; accesorios (clip-ons, estuches, líquidos de limpieza).
+- **Catálogo:** anteojos organizados por líneas/colecciones y modelos; accesorios (clip-ons, estuches, etc).
 - **Canales:** vinculación con el Instagram actual para canalizar tráfico hacia la web.
 
 ## 2. Preguntas a Definir con el Cliente
