@@ -1,3 +1,3 @@
-# Óptica Calle
+# Tienda en línea de óptica
 
-Tienda en línea de Óptica Calle: lentes de contacto, monturas, accesorios y servicios ópticos.
+Proyecto de tienda en línea para una óptica: catálogo de productos, carrito de compras, pagos y panel de administración.
