@@ -24,6 +24,10 @@ Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, auto
 
 ## 3. Tipos de Usuario y Roles
 
-1. **Cliente anónimo (visitante):** navega el catálogo, filtra por líneas y arma el carrito sin registrarse.
-2. **Cliente registrado:** completa el checkout, guarda datos de envío y ve el historial/estado de sus pedidos.
-3. **Administrador (personal de la óptica):** accede al panel privado para gestionar inventario, precios, ventas y estados de envío.
+| Rol | Qué puede hacer |
+|---|---|
+| **Visitante (anónimo)** | Navegar el catálogo, filtrar por líneas, armar carrito y comprar sin cuenta (guest checkout). |
+| **Cliente registrado** | Todo lo del visitante + historial de pedidos, datos de envío guardados y estado de sus compras. |
+| **Administrador** | Panel privado: inventario, precios, ventas y estados de envío. |
+
+**Decisión:** se permite compra sin registro (guest checkout) para evitar fricción. El checkout pide el email (requerido igual por MercadoPago) y se ofrece crear la cuenta al finalizar, asociando la orden a ese email para que el historial aparezca si se registra después.
