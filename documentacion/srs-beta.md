@@ -17,7 +17,10 @@ Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, auto
 1. **[PENDIENTE] Graduación:** ¿se venden anteojos recetados (el cliente adjunta su receta) o solo lentes de sol, clip-ons y armazones neutros?
 2. **[PENDIENTE] Variantes:** ¿un modelo viene en varios colores/materiales o cada color es un producto único?
 3. **[PENDIENTE] Envíos:** ¿con qué empresa de correo trabajan (Correo Argentino, Andreani, OCA, Shipnow) para integrar cálculo automático de costo?
-4. **[PENDIENTE] Retiro local:** ¿los clientes podrán comprar online y retirar gratis en el local?
+4. **Retiro local:** los clientes podrán comprar online y retirar gratis en el local (hay tienda física).
+5. **[PENDIENTE] Pago en retiro:** ¿el pago se hace siempre online o el cliente puede pagar en el local al retirar?
+6. **[PENDIENTE] Stock compartido:** ¿el stock que se muestra online es el mismo del local (inventario compartido)?
+7. **[PENDIENTE] Devoluciones/cambios:** ¿qué política aplica para compras online que se devuelven en el local?
 
 ## 3. Tipos de Usuario y Roles
 
