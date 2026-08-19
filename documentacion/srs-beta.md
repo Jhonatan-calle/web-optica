@@ -21,7 +21,7 @@ Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, auto
 5. **Pago en retiro:** ambos: el cliente puede pagar online o pagar en el local al retirar.
 6. **[PENDIENTE] Stock compartido:** ¿el stock que se muestra online es el mismo del local (inventario compartido)?
 7. **[PENDIENTE] Devoluciones/cambios:** ¿qué política aplica para compras online que se devuelven en el local?
-8. **[PENDIENTE] Cuenta de cobro:** ¿el local tiene (o va a crear) una cuenta de MercadoPago para recibir los pagos? Es requisito para habilitar la venta online.
+8. **Cuenta de cobro:** el local ya tiene cuenta de MercadoPago para recibir los pagos.
 
 ## 3. Tipos de Usuario y Roles
 
