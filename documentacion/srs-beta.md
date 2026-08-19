@@ -16,9 +16,9 @@ Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, auto
 
 1. **[PENDIENTE] Graduación:** ¿se venden anteojos recetados (el cliente adjunta su receta) o solo lentes de sol, clip-ons y armazones neutros?
 2. **[PENDIENTE] Variantes:** ¿un modelo viene en varios colores/materiales o cada color es un producto único?
-3. **[PENDIENTE] Envíos:** ¿con qué empresa de correo trabajan (Correo Argentino, Andreani, OCA, Shipnow) para integrar cálculo automático de costo?
+3. **Envíos:** se integran todas las empresas de correo disponibles en la ciudad (Correo Argentino, Andreani, OCA, Shipnow, etc.) para cálculo automático de costo; los pedidos dentro de la ciudad se entregan con envío propio del local.
 4. **Retiro local:** los clientes podrán comprar online y retirar gratis en el local (hay tienda física).
-5. **[PENDIENTE] Pago en retiro:** ¿el pago se hace siempre online o el cliente puede pagar en el local al retirar?
+5. **Pago en retiro:** ambos: el cliente puede pagar online o pagar en el local al retirar.
 6. **[PENDIENTE] Stock compartido:** ¿el stock que se muestra online es el mismo del local (inventario compartido)?
 7. **[PENDIENTE] Devoluciones/cambios:** ¿qué política aplica para compras online que se devuelven en el local?
 8. **[PENDIENTE] Cuenta de cobro:** ¿el local tiene (o va a crear) una cuenta de MercadoPago para recibir los pagos? Es requisito para habilitar la venta online.
@@ -32,3 +32,8 @@ Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, auto
 | **Administrador** | Panel privado: inventario, precios, ventas y estados de envío. |
 
 **Decisión:** se permite compra sin registro (guest checkout) para evitar fricción. El checkout pide el email (requerido igual por MercadoPago) y se ofrece crear la cuenta al finalizar, asociando la orden a ese email para que el historial aparezca si se registra después.
+
+## 4. Requisitos Legales (obligatorios)
+
+- Footer con Data Fiscal, Términos y Condiciones y Políticas de Privacidad.
+- Botón de arrepentimiento (plazo de revocación de compra previsto por la ley).
