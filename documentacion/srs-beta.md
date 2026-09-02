@@ -14,13 +14,13 @@ Plataforma de e-commerce web para **La Óptica**. Digitalizar el catálogo, auto
 
 ## 2. Preguntas a Definir con el Cliente
 
-1. **[PENDIENTE] Graduación:** ¿se venden anteojos recetados (el cliente adjunta su receta) o solo lentes de sol, clip-ons y armazones neutros?
-2. **[PENDIENTE] Variantes:** ¿un modelo viene en varios colores/materiales o cada color es un producto único?
+1. **Graduación:** por ahora no se vende con receta, es funcionalidad para más adelante.
+2. **Variantes:** cada modelo puede venir en varios colores/materiales.
 3. **Envíos:** se integran todas las empresas de correo disponibles en la ciudad (Correo Argentino, Andreani, OCA, Shipnow, etc.) para cálculo automático de costo; los pedidos dentro de la ciudad se entregan con envío propio del local.
 4. **Retiro local:** los clientes podrán comprar online y retirar gratis en el local (hay tienda física).
 5. **Pago en retiro:** ambos: el cliente puede pagar online o pagar en el local al retirar.
-6. **[PENDIENTE] Stock compartido:** ¿el stock que se muestra online es el mismo del local (inventario compartido)?
-7. **[PENDIENTE] Devoluciones/cambios:** ¿qué política aplica para compras online que se devuelven en el local?
+6. **Stock:** por ahora solo stock del e-commerce. Más adelante se evalúa integración con el local.
+7. **Devoluciones/cambios:** por ahora no está definido; se seguirán las leyes argentinas para e-commerce.
 
 ## 3. Tipos de Usuario y Roles
 
