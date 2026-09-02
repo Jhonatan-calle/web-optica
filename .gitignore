@@ -1,3 +1,5 @@
 .obsidian/
 remove/
 opencode.sh
+util-remove/
+.obsidian.vimrc
