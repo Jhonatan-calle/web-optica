@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- ENUMS ----------
+enum Rol {
+  CLIENT
+  ADMIN
+}
+
+enum EstadoOrden {
+  PENDIENTE
+  PAGADO
+  EN_PREPARACION
+  DESPACHADO
+  LISTO_PARA_RETIRAR
+  ENTREGADO
+  CANCELADO
+}
+
+enum MetodoEnvio {
+  CORREO_ARGENTINO
+  ANDREANI
+  OCA
+  SHIPNOW
+  ENVIO_PROPIO
+  RETIRO_LOCAL
+}
+
+enum MetodoPago {
+  MERCADO_PAGO
+  PAGO_EN_LOCAL
+}
+
+// ---------- USUARIOS ----------
+model Usuario {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  password    String?
+  nombre      String?
+  telefono    String?
+  rol         Rol          @default(CLIENT)
+  direcciones Direccion[]
+  ordenes     Orden[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Direccion {
+  id          String   @id @default(cuid())
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String
+  calle       String
+  numero      String?
+  departamento String?
+  ciudad      String
+  provincia   String
+  codigoPostal String
+}
+
+// ---------- CATÁLOGO ----------
+model Linea {
+  id          String    @id @default(cuid())
+  nombre      String
+  descripcion String?
+  orden       Int?
+  productos   Producto[]
+}
+
+model Producto {
+  id          String    @id @default(cuid())
+  linea       Linea     @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  lineaId     String
+  nombre      String
+  slug        String    @unique
+  descripcion String?
+  destacado   Boolean   @default(false)
+  activo      Boolean   @default(true)
+  variantes   Variante[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Variante {
+  id                 String     @id @default(cuid())
+  producto           Producto   @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  productoId         String
+  sku                String?    @unique
+  color              String?
+  material           String?
+  precio             Decimal    @db.Decimal(10, 2)
+  precioTransferencia Decimal?  @db.Decimal(10, 2)
+  stock              Int        @default(0)
+  imagenes           Imagen[]
+  items              ItemOrden[]
+}
+
+model Imagen {
+  id         String   @id @default(cuid())
+  variante   Variante @relation(fields: [varianteId], references: [id], onDelete: Cascade)
+  varianteId String
+  url        String
+  alt        String?
+  orden      Int?
+}
+
+// ---------- ÓRDENES ----------
+model Orden {
+  id         String       @id @default(cuid())
+  numero     Int          @unique @default(autoincrement())
+  usuario    Usuario?     @relation(fields: [usuarioId], references: [id])
+  usuarioId  String?
+  emailContacto  String
+  estado     EstadoOrden  @default(PENDIENTE)
+  metodoPago MetodoPago
+  metodoEnvio MetodoEnvio
+
+  dirCalle      String?
+  dirNumero     String?
+  dirDepartamento String?
+  dirCiudad     String?
+  dirProvincia  String?
+  dirCodigoPostal String?
+
+  costoEnvio Decimal? @db.Decimal(10, 2)
+  subtotal   Decimal  @db.Decimal(10, 2)
+  total      Decimal  @db.Decimal(10, 2)
+  mpPaymentId String?
+
+  items      ItemOrden[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model ItemOrden {
+  id             String    @id @default(cuid())
+  orden          Orden     @relation(fields: [ordenId], references: [id], onDelete: Cascade)
+  ordenId        String
+  variante       Variante? @relation(fields: [varianteId], references: [id])
+  varianteId     String?
+
+  nombreSnapshot String    @db.VarChar(255)
+  colorSnapshot  String?
+  precioUnitario Decimal   @db.Decimal(10, 2)
+  cantidad       Int
+  subtotal       Decimal   @db.Decimal(10, 2)
+}
