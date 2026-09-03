@@ -54,18 +54,24 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * Menú de navegación por categorías/líneas ("Líneas", "Anteojos de Sol", "Clip-ons", "Accesorios").
   * Buscador rápido (trigger) e ícono de carrito interactivo con badge contador de items en tiempo real.
 * [x] **Footer Completo (Requisitos Legales):**
-  * Columnas de navegación secundaria y redes sociales (`@_laoptica`).
-  * Enlaces a páginas legales obligatorias: **Términos y Condiciones** y **Políticas de Privacidad/Cambios**.
-  * Enlace visible al **Botón de Arrepentimiento** (con formulario básico de solicitud de cancelación).
-  * Código e imagen de **Data Fiscal (Formulario 960/D)** asignado por la agencia tributaria.
+  * [x] Columnas de navegación secundaria y redes sociales (`@_laoptica`).
+  * [ ] Crear páginas legales con contenido: **Términos y Condiciones** (`/terminos-y-condiciones`) y **Políticas de Privacidad/Cambios** (`/politicas-de-privacidad`).
+  * [ ] Crear página del **Botón de Arrepentimiento** (`/boton-de-arrepentimiento`) con formulario de solicitud de cancelación (plazo legal de 10 días corridos).
+  * [ ] Completar **Data Fiscal (Formulario 960/D)**: obtener código/QR de la agencia de recaudación e insertarlo en el footer (por ahora hay placeholder).
 
 #### **2. Páginas de la Tienda (UI/UX & Routing)**
 
-* [ ] **Home / Landing Page (`/`):**
-  * *Hero Section:* Banner principal con mensaje de marca ("Encontrá tu marco ideal"), foto lifestyle y CTA "Ver Catálogo".
-  * *Carousel/Grid de Colecciones:* Acceso directo a las líneas destacadas.
-  * *Grid de Productos Destacados:* Cards de productos más vendidos.
-  * *Banner de Valor:* Bloque con beneficios ("Envío Nacional", "3 Cuotas Sin Interés", "Retiro Gratis en Local").
+* [x] **Home / Landing Page (`/`):**
+  * [x] *Hero Section:* Banner principal con mensaje de marca ("Encontrá tu marco ideal") y CTA "Ver Catálogo".
+  * [ ] Reemplazar el placeholder del hero (isologo sobre fondo `#F9FAFB`) por la **foto lifestyle real** con modelos de marca, en alta resolución. Por ahora el hero usa un placeholder visual a la espera del asset.
+  * [x] *Carousel/Grid de Colecciones:* Acceso directo a las líneas destacadas.
+  * [ ] Conectar las colecciones y productos destacados de la home a la base de datos (en Supabase/Prisma) cuando exista el catálogo. Por ahora usan datos/imágenes mock.
+    * Las etiquetas de las cards se **calculan** (Opción A), NO se guardan como texto:
+      * **"10% OFF" / descuento** = derivado de la diferencia entre `Variante.precio` y `Variante.precioTransferencia` (ej. `100 * (1 - precioTransferencia / precio)`).
+      * **"NUEVO"** = derivado de la antigüedad del `Producto.createdAt`. Umbral de días **por definir (N)** — ⚠️ *queda pendiente fijar N y anotarlo acá.*
+  * [ ] Reemplazar los placeholders de imagen (isologo sobre `#F9FAFB`) de las cards por las **imágenes reales de cada línea/colección**.
+  * [x] *Grid de Productos Destacados:* Cards de productos más vendidos, con "Agregar al Carrito" (datos mock por ahora).
+  * [x] *Banner de Valor:* Bloque con beneficios ("Envío Nacional", "3 Cuotas Sin Interés", "Retiro Gratis en Local").
 * [ ] **Catálogo Completo / Colecciones (`/catalogo` o `/aros`):**
   * Filtros horizontales por Línea/Colección, Material y Tipo de Producto.
   * Grid responsivo (2 columnas en Mobile, 3-4 en Desktop).
