@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { InstagramIcon } from "@/components/icons/instagram-icon";
 
 const INSTAGRAM_HANDLE = "@_laoptica";
 const INSTAGRAM_URL = "https://instagram.com/_laoptica";
@@ -84,9 +85,10 @@ export function SiteFooter({ className }: { className?: string }) {
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
             >
-              Instagram {INSTAGRAM_HANDLE}
+              <InstagramIcon size={18} />
+              {INSTAGRAM_HANDLE}
             </a>
           </div>
           <div>
@@ -102,7 +104,15 @@ export function SiteFooter({ className }: { className?: string }) {
       <div className="border-t">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
           <p>© {year} La Óptica. Todos los derechos reservados.</p>
-          <p>Instagram {INSTAGRAM_HANDLE}</p>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 hover:text-foreground"
+          >
+            <InstagramIcon size={15} />
+            {INSTAGRAM_HANDLE}
+          </a>
         </div>
       </div>
     </footer>
