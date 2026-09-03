@@ -48,8 +48,8 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
 
 #### **1. Sistema de Layout Base & Navegación (`app/layout.tsx`)**
 
-* [ ] **Announcement Bar (Top Bar):** Barra fija superior con fondo Teal (`#00848C`) destacando incentivos clave (ej. *"10% OFF vía Transferencia | Envío gratis a todo el país"*).
-* [ ] **Header / Navbar Responsiva:**
+* [x] **Announcement Bar (Top Bar):** Barra fija superior con fondo Teal (`#00848C`) destacando incentivos clave (ej. *"10% OFF vía Transferencia | Envío gratis a todo el país"*).
+* [x] **Header / Navbar Responsiva:**
   * Logo de **La Óptica** con enlace a la Home.
   * Menú de navegación por categorías/líneas ("Líneas", "Anteojos de Sol", "Clip-ons", "Accesorios").
   * Buscador rápido (trigger) e ícono de carrito interactivo con badge contador de items en tiempo real.
