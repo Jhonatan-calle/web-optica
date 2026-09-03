@@ -4,3 +4,5 @@ opencode.sh
 util-remove/
 .obsidian.vimrc
 AGENTS.md
+credenciales.txt
+.env.local
