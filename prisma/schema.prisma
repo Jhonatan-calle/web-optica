@@ -79,9 +79,13 @@ model Producto {
   nombre      String
   slug        String    @unique
   descripcion String?
+  // Nota (Fase 2): los productos con destacado = true alimentan el bloque
+  // "Productos Destacados" de la Home.
   destacado   Boolean   @default(false)
   activo      Boolean   @default(true)
   variantes   Variante[]
+  // Nota (Fase 2): la etiqueta "NUEVO" de las cards se CALCULA a partir de este
+  // campo (producto nuevo si createdAt es reciente). Umbral de días (N) por definir.
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -94,6 +98,8 @@ model Variante {
   color              String?
   material           String?
   precio             Decimal    @db.Decimal(10, 2)
+  // Nota (Fase 2): la etiqueta de descuento ("10% OFF") de las cards está
+  // calculada a partir de la diferencia entre precio y precioTransferencia.
   precioTransferencia Decimal?  @db.Decimal(10, 2)
   stock              Int        @default(0)
   imagenes           Imagen[]
