@@ -13,7 +13,7 @@ Esta fase sienta los cimientos del proyecto. No se escribe lógica compleja de n
 * [x] **Gestión de credenciales:** Accesos o creación de cuentas en Supabase y Vercel (para obtener claves de API / Testing).
 * [ ] **Gestión de credenciales:** Accesos o creación de cuenta en Mercado Pago.
 #### **2. Arquitectura de Base de Datos (Modelado ER)**
-* [ ] Diseñar el esquema de base de datos en `schema.prisma` definiendo las tablas principales:
+* [x] Diseñar el esquema de base de datos en `schema.prisma` definiendo las tablas principales:
 * `Usuario` (ID, email, rol, datos de contacto).
 * `Producto` y `Linea/Colección` (Nombre, precio, stock, imágenes).
 * `Orden` e `ItemOrden` (Relación entre cliente, productos comprados, estado del pago, datos de envío).
