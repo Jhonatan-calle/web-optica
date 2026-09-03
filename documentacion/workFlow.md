@@ -53,7 +53,7 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * Logo de **La Óptica** con enlace a la Home.
   * Menú de navegación por categorías/líneas ("Líneas", "Anteojos de Sol", "Clip-ons", "Accesorios").
   * Buscador rápido (trigger) e ícono de carrito interactivo con badge contador de items en tiempo real.
-* [ ] **Footer Completo (Requisitos Legales):**
+* [x] **Footer Completo (Requisitos Legales):**
   * Columnas de navegación secundaria y redes sociales (`@_laoptica`).
   * Enlaces a páginas legales obligatorias: **Términos y Condiciones** y **Políticas de Privacidad/Cambios**.
   * Enlace visible al **Botón de Arrepentimiento** (con formulario básico de solicitud de cancelación).
