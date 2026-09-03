@@ -18,8 +18,8 @@ Esta fase sienta los cimientos del proyecto. No se escribe lógica compleja de n
 * `Producto` y `Linea/Colección` (Nombre, precio, stock, imágenes).
 * `Orden` e `ItemOrden` (Relación entre cliente, productos comprados, estado del pago, datos de envío).
 #### **3. Setup del Proyecto (Entorno de Desarrollo)**
-* [ ] Inicializar proyecto Next.js con TypeScript, Tailwind CSS y Shadcn UI.
-* [ ] Configurar Prisma ORM y conectar con la instancia de Supabase.
+* [x] Inicializar proyecto Next.js con TypeScript, Tailwind CSS y Shadcn UI.
+* [x] Configurar Prisma ORM y conectar con la instancia de Supabase.
 * [ ] Configurar Zustand para la persistencia del carrito en `localStorage`.
 * [ ] Desplegar un "Hola Mundo" inicial en Vercel vinculado al repositorio (GitHub) para verificar el pipeline CI/CD desde el día uno.
 ---
