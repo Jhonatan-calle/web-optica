@@ -73,9 +73,10 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * [x] *Grid de Productos Destacados:* Cards de productos más vendidos, con "Agregar al Carrito" (datos mock por ahora).
   * [x] *Banner de Valor:* Bloque con beneficios ("Envío Nacional", "3 Cuotas Sin Interés", "Retiro Gratis en Local").
 * [ ] **Catálogo Completo / Colecciones (`/catalogo` o `/aros`):**
-  * Filtros horizontales por Línea/Colección, Material y Tipo de Producto.
-  * Grid responsivo (2 columnas en Mobile, 3-4 en Desktop).
-  * Cards de Producto con contenedor `bg-[#F9FAFB]`, badges ("10% OFF", "NUEVO"), hover para segunda imagen, stack de precios (Lista vs. Transferencia) y desglose de cuotas.
+  * [x] Filtros horizontales por Línea/Colección, Material y Tipo de Producto (+ orden por precio). Con datos mock y estado local.
+  * [x] Grid responsivo (2 columnas en Mobile, 3-4 en Desktop).
+  * [x] Cards de Producto (componente `ProductCard` reutilizable) con contenedor `bg-[#F9FAFB]`, badges ("10% OFF", "NUEVO"), stack de precios (Lista vs. Transferencia) y desglose de cuotas.
+  * [ ] Conectar el catálogo a la base de datos (Línea/Variante reales en Supabase/Prisma) y reemplazar los datos/imágenes mock. Implementar también el cálculo real de etiquetas (Opción A: descuento desde `precio`/`precioTransferencia`, "NUEVO" desde `createdAt` con umbral N por definir).
 * [ ] **Página de Detalle de Producto - PDP (`/producto/[slug]`):**
   * Galería de fotos con imágenes en alta resolución.
   * Selector de variantes por color/material mediante *swatches* o *pills* de color.
