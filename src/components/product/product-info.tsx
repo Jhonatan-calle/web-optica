@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
 import type { MockProducto, MockVariante } from "@/lib/mock-products";
+import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -24,15 +25,23 @@ const TARIFAS_ENVIO = [
 export function ProductInfo({ producto }: { producto: MockProducto }) {
   const addItem = useCartStore((state) => state.addItem);
 
-  const [varianteActivaId, setVarianteActivaId] = useState(producto.varianteId);
+  const [varianteActivaId, setVarianteActivaId] = useState(
+    producto.variantes[0]?.id,
+  );
   const [cp, setCp] = useState("");
   const [cotizado, setCotizado] = useState<number | null>(null);
 
   const varianteActiva = useMemo<MockVariante>(
     () =>
-      producto.variantes.find((v) => v.varianteId === varianteActivaId) ??
+      producto.variantes.find((v) => v.id === varianteActivaId) ??
       producto.variantes[0],
     [producto, varianteActivaId],
+  );
+
+  const badge = calcularBadge(
+    varianteActiva.precio,
+    varianteActiva.precioTransferencia,
+    producto.createdAt,
   );
 
   const calcularEnvio = () => {
@@ -51,14 +60,14 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
     <div className="flex flex-col gap-6">
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {producto.linea} · {producto.tipo}
+          {producto.linea.nombre} · {producto.linea.tipo.nombre}
         </p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">
           {producto.nombre}
         </h1>
-        {producto.badge && (
+        {badge && (
           <span className="mt-3 inline-block rounded-full bg-[#00848C] px-2 py-1 text-xs font-medium text-white">
-            {producto.badge}
+            {badge}
           </span>
         )}
       </div>
@@ -66,27 +75,29 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
       <div className="flex flex-col gap-1">
         <div className="flex items-baseline gap-3">
           <span className="text-2xl font-semibold">
-            ${producto.precio.toLocaleString("es-AR")}
+            ${varianteActiva.precio.toLocaleString("es-AR")}
           </span>
-          {producto.precioTransferencia && (
+          {varianteActiva.precioTransferencia && (
             <span className="text-sm font-medium text-[#00848C]">
-              ${producto.precioTransferencia.toLocaleString("es-AR")} transferencia
+              ${varianteActiva.precioTransferencia.toLocaleString("es-AR")} transferencia
             </span>
           )}
         </div>
-        <span className="text-sm text-muted-foreground">{producto.cuotas}</span>
+        <span className="text-sm text-muted-foreground">
+          {calcularCuotas(varianteActiva.precio)}
+        </span>
       </div>
 
       <div>
         <h2 className="mb-2 text-sm font-semibold">Color / Material</h2>
         <div className="flex flex-wrap gap-2">
           {producto.variantes.map((variante) => {
-            const activo = variante.varianteId === varianteActivaId;
+            const activo = variante.id === varianteActivaId;
             return (
               <button
-                key={variante.varianteId}
+                key={variante.id}
                 type="button"
-                onClick={() => setVarianteActivaId(variante.varianteId)}
+                onClick={() => setVarianteActivaId(variante.id)}
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                   activo
@@ -150,13 +161,13 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
         className="w-full"
         onClick={() =>
           addItem({
-            varianteId: varianteActiva.varianteId,
-            productoId: producto.productoId,
+            varianteId: varianteActiva.id,
+            productoId: producto.id,
             nombre: producto.nombre,
             color: varianteActiva.color,
             material: varianteActiva.material,
-            precio: producto.precio,
-            imagen: varianteActiva.imagen,
+            precio: varianteActiva.precio,
+            imagen: varianteActiva.imagenes[0]?.url,
             cantidad: 1,
           })
         }

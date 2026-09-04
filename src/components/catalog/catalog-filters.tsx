@@ -48,9 +48,13 @@ export function CatalogFilters({
 }) {
   const opciones = useMemo(
     () => ({
-      lineas: [...new Set(MOCK_PRODUCTOS.map((p) => p.linea))],
-      materiales: [...new Set(MOCK_PRODUCTOS.map((p) => p.material).filter(Boolean))] as string[],
-      tipos: [...new Set(MOCK_PRODUCTOS.map((p) => p.tipo))],
+      lineas: [...new Set(MOCK_PRODUCTOS.map((p) => p.linea.nombre))],
+      materiales: [
+        ...new Set(
+          MOCK_PRODUCTOS.flatMap((p) => p.variantes.map((v) => v.material)),
+        ),
+      ].filter(Boolean) as string[],
+      tipos: [...new Set(MOCK_PRODUCTOS.map((p) => p.linea.tipo.nombre))],
     }),
     []
   );

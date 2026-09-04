@@ -23,7 +23,10 @@ export default async function ProductoPage({
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2 md:gap-12">
-        <ProductGallery imagen={producto.imagen} nombre={producto.nombre} />
+        <ProductGallery
+          imagen={producto.variantes[0].imagenes[0].url}
+          nombre={producto.nombre}
+        />
         <ProductInfo producto={producto} />
       </div>
     </main>

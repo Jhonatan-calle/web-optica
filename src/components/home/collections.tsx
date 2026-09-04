@@ -1,10 +1,25 @@
 import Link from "next/link";
 
-const COLLECTIONS = [
-  { name: "Línea Sun", href: "/catalogo/sol" },
-  { name: "Línea Clip-on", href: "/catalogo/clip-ons" },
-  { name: "Línea Recetados", href: "/catalogo/recetados" },
-];
+import { MOCK_PRODUCTOS } from "@/lib/mock-products";
+
+const HREF_POR_LINEA: Record<string, string> = {
+  "Línea Sun": "/catalogo/sol",
+  "Línea Clip-on": "/catalogo/clip-ons",
+  "Línea Recetados": "/catalogo/recetados",
+};
+
+const COLECCIONES = MOCK_PRODUCTOS.reduce((acc, producto) => {
+  const linea = producto.linea;
+  if (!acc.some((c) => c.nombre === linea.nombre)) {
+    acc.push({
+      nombre: linea.nombre,
+      tipo: linea.tipo.nombre,
+      imagenUrl: linea.imagenUrl ?? "/isologo.svg",
+      href: HREF_POR_LINEA[linea.nombre] ?? "/catalogo",
+    });
+  }
+  return acc;
+}, [] as { nombre: string; tipo: string; imagenUrl: string; href: string }[]);
 
 export function Collections() {
   return (
@@ -13,22 +28,21 @@ export function Collections() {
         Colecciones
       </h2>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
-        {COLLECTIONS.map((collection) => (
+        {COLECCIONES.map((collection) => (
           <Link
-            key={collection.href}
+            key={collection.nombre}
             href={collection.href}
             className="group flex flex-col overflow-hidden rounded-lg"
           >
             <div className="flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
               <img
-                src="/isologo.svg"
-                alt=""
-                aria-hidden="true"
+                src={collection.imagenUrl}
+                alt={collection.nombre}
                 className="h-16 w-auto opacity-80"
               />
             </div>
             <span className="mt-3 text-sm font-medium md:text-base">
-              {collection.name}
+              {collection.nombre}
             </span>
           </Link>
         ))}

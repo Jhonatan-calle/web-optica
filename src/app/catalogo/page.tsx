@@ -23,19 +23,21 @@ export default function CatalogoPage() {
     let lista = MOCK_PRODUCTOS;
 
     if (filtros.linea !== TODAS) {
-      lista = lista.filter((p) => p.linea === filtros.linea);
+      lista = lista.filter((p) => p.linea.nombre === filtros.linea);
     }
     if (filtros.material !== TODAS) {
-      lista = lista.filter((p) => p.material === filtros.material);
+      lista = lista.filter((p) =>
+        p.variantes.some((v) => v.material === filtros.material),
+      );
     }
     if (filtros.tipo !== TODAS) {
-      lista = lista.filter((p) => p.tipo === filtros.tipo);
+      lista = lista.filter((p) => p.linea.tipo.nombre === filtros.tipo);
     }
 
     if (filtros.orden === "precio-asc") {
-      lista = [...lista].sort((a, b) => a.precio - b.precio);
+      lista = [...lista].sort((a, b) => a.variantes[0].precio - b.variantes[0].precio);
     } else if (filtros.orden === "precio-desc") {
-      lista = [...lista].sort((a, b) => b.precio - a.precio);
+      lista = [...lista].sort((a, b) => b.variantes[0].precio - a.variantes[0].precio);
     }
 
     return lista;
@@ -60,7 +62,7 @@ export default function CatalogoPage() {
       {productos.length > 0 ? (
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
           {productos.map((producto) => (
-            <ProductCard key={producto.varianteId} producto={producto} />
+            <ProductCard key={producto.id} producto={producto} />
           ))}
         </div>
       ) : (

@@ -3,10 +3,17 @@ import { Plus } from "lucide-react";
 
 import { useCartStore } from "@/lib/cart-store";
 import type { MockProducto } from "@/lib/mock-products";
+import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
 
 export function ProductCard({ producto }: { producto: MockProducto }) {
   const addItem = useCartStore((state) => state.addItem);
+  const variante = producto.variantes[0];
+  const badge = calcularBadge(
+    variante.precio,
+    variante.precioTransferencia,
+    producto.createdAt,
+  );
 
   return (
     <div className="flex flex-col">
@@ -16,14 +23,14 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
       >
         <div className="flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
           <img
-            src={producto.imagen}
+            src={variante.imagenes[0].url}
             alt={producto.nombre}
             className="h-16 w-auto opacity-80"
           />
         </div>
-        {producto.badge && (
+        {badge && (
           <span className="absolute left-2 top-2 rounded-full bg-[#00848C] px-2 py-1 text-xs font-medium text-white">
-            {producto.badge}
+            {badge}
           </span>
         )}
       </Link>
@@ -37,16 +44,16 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
 
       <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
         <span className="text-sm font-semibold">
-          ${producto.precio.toLocaleString("es-AR")}
+          ${variante.precio.toLocaleString("es-AR")}
         </span>
-        {producto.precioTransferencia && (
+        {variante.precioTransferencia && (
           <span className="text-xs font-medium text-[#00848C]">
-            ${producto.precioTransferencia.toLocaleString("es-AR")} transferencia
+            ${variante.precioTransferencia.toLocaleString("es-AR")} transferencia
           </span>
         )}
       </div>
       <span className="mt-0.5 text-xs text-muted-foreground">
-        {producto.cuotas}
+        {calcularCuotas(variante.precio)}
       </span>
 
       <Button
@@ -55,13 +62,13 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
         className="mt-3 w-full"
         onClick={() =>
           addItem({
-            varianteId: producto.varianteId,
-            productoId: producto.productoId,
+            varianteId: variante.id,
+            productoId: producto.id,
             nombre: producto.nombre,
-            color: producto.color,
-            material: producto.material,
-            precio: producto.precio,
-            imagen: producto.imagen,
+            color: variante.color,
+            material: variante.material,
+            precio: variante.precio,
+            imagen: variante.imagenes[0].url,
             cantidad: 1,
           })
         }
