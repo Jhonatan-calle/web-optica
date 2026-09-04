@@ -5,10 +5,10 @@ import { useCartStore } from "@/lib/cart-store";
 import type { MockProducto } from "@/lib/mock-products";
 import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
+import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 
 export function ProductCard({ producto }: { producto: MockProducto }) {
   const addItem = useCartStore((state) => state.addItem);
-  const setOpen = useCartStore((state) => state.setOpen);
   const variante = producto.variantes[0];
   const badge = calcularBadge(
     variante.precio,
@@ -72,7 +72,7 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
             imagen: variante.imagenes[0].url,
             cantidad: 1,
           });
-          setOpen(true);
+          showAddToCartToast(producto.nombre);
         }}
       >
         <Plus />

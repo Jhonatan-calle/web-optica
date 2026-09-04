@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { MOCK_PRODUCTOS } from "@/lib/mock-products";
@@ -42,9 +43,13 @@ function Chip({
 export function CatalogFilters({
   filtros,
   onChange,
+  busqueda,
+  onBusquedaChange,
 }: {
   filtros: Filtros;
   onChange: (filtros: Filtros) => void;
+  busqueda: string;
+  onBusquedaChange: (valor: string) => void;
 }) {
   const opciones = useMemo(
     () => ({
@@ -72,6 +77,17 @@ export function CatalogFilters({
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="text"
+          value={busqueda}
+          onChange={(e) => onBusquedaChange(e.target.value)}
+          placeholder="Buscar productos…"
+          className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        />
+      </div>
+
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-muted-foreground">

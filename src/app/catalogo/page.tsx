@@ -18,9 +18,17 @@ const FILTROS_INICIALES: Filtros = {
 
 export default function CatalogoPage() {
   const [filtros, setFiltros] = useState<Filtros>(FILTROS_INICIALES);
+  const [busqueda, setBusqueda] = useState("");
 
   const productos = useMemo(() => {
     let lista = MOCK_PRODUCTOS;
+
+    const termino = busqueda.trim().toLowerCase();
+    if (termino) {
+      lista = lista.filter((p) =>
+        p.nombre.toLowerCase().includes(termino),
+      );
+    }
 
     if (filtros.linea !== TODAS) {
       lista = lista.filter((p) => p.linea.nombre === filtros.linea);
@@ -41,7 +49,9 @@ export default function CatalogoPage() {
     }
 
     return lista;
-  }, [filtros]);
+  }, [filtros, busqueda]);
+
+  const hayTerminoBusqueda = busqueda.trim() !== "";
 
   const hayFiltrosActivos =
     filtros.linea !== TODAS ||
@@ -57,7 +67,12 @@ export default function CatalogoPage() {
         Nuestras líneas de anteojos y accesorios.
       </p>
 
-      <CatalogFilters filtros={filtros} onChange={setFiltros} />
+      <CatalogFilters
+        filtros={filtros}
+        onChange={setFiltros}
+        busqueda={busqueda}
+        onBusquedaChange={setBusqueda}
+      />
 
       {productos.length > 0 ? (
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
@@ -68,16 +83,23 @@ export default function CatalogoPage() {
       ) : (
         <div className="mt-16 flex flex-col items-center gap-3 text-center">
           <p className="text-sm font-medium text-foreground">
-            No encontramos productos con esos filtros.
+            {hayTerminoBusqueda
+              ? "No encontramos productos que coincidan con tu búsqueda"
+              : "No encontramos productos con esos filtros."}
           </p>
           <p className="text-sm text-muted-foreground">
-            Probá ajustando o limpiando los filtros.
+            {hayTerminoBusqueda
+              ? "Probá con otro término o limpiá los filtros."
+              : "Probá ajustando o limpiando los filtros."}
           </p>
-          {hayFiltrosActivos && (
+          {(hayFiltrosActivos || hayTerminoBusqueda) && (
             <Button
               variant="outline"
               className="mt-2"
-              onClick={() => setFiltros(FILTROS_INICIALES)}
+              onClick={() => {
+                setFiltros(FILTROS_INICIALES);
+                setBusqueda("");
+              }}
             >
               Limpiar filtros
             </Button>

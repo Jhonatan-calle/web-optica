@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 
 const TARIFAS_ENVIO = [
   { rango: "CABA y GBA", minimo: 1000, maximo: 1999, precio: 4500 },
@@ -24,6 +25,7 @@ const TARIFAS_ENVIO = [
 
 export function ProductInfo({ producto }: { producto: MockProducto }) {
   const addItem = useCartStore((state) => state.addItem);
+  const setOpen = useCartStore((state) => state.setOpen);
 
   const [varianteActivaId, setVarianteActivaId] = useState(
     producto.variantes[0]?.id,
@@ -159,7 +161,7 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
       <Button
         size="lg"
         className="w-full"
-        onClick={() =>
+        onClick={() => {
           addItem({
             varianteId: varianteActiva.id,
             productoId: producto.id,
@@ -169,8 +171,10 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
             precio: varianteActiva.precio,
             imagen: varianteActiva.imagenes[0]?.url,
             cantidad: 1,
-          })
-        }
+          });
+          setOpen(true);
+          showAddToCartToast(producto.nombre);
+        }}
       >
         <Plus />
         Agregar al Carrito
