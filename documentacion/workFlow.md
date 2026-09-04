@@ -78,11 +78,12 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * [x] Cards de Producto (componente `ProductCard` reutilizable) con contenedor `bg-[#F9FAFB]`, badges ("10% OFF", "NUEVO"), stack de precios (Lista vs. Transferencia) y desglose de cuotas.
   * [ ] Conectar el catálogo a la base de datos (Línea/Variante reales en Supabase/Prisma) y reemplazar los datos/imágenes mock. Implementar también el cálculo real de etiquetas (Opción A: descuento desde `precio`/`precioTransferencia`, "NUEVO" desde `createdAt` con umbral N por definir).
 * [ ] **Página de Detalle de Producto - PDP (`/producto/[slug]`):**
-  * Galería de fotos con imágenes en alta resolución.
-  * Selector de variantes por color/material mediante *swatches* o *pills* de color.
-  * Calculador interactivo de envíos por Código Postal (preparado con valores mock/estimados antes de la API final).
-  * Acordeones colapsables (Shadcn Accordion) para dimensiones de los armazones, materiales y garantía.
-  * Botón principal "Agregar al Carrito".
+  * [x] Galería de fotos con imágenes en alta resolución (placeholders / isologo por ahora).
+  * [x] Selector de variantes por color/material mediante *swatches* / pills de color (con variantes mock).
+  * [x] Calculador interactivo de envíos por Código Postal (tabla de tarifas mock por rango de CP; pendiente API real/transportistas).
+  * [x] Acordeones colapsables (Shadcn Accordion) para dimensiones de los armazones, materiales y garantía (contenido placeholder por ahora).
+  * [x] Botón principal "Agregar al Carrito" (usa `useCartStore`; sin toast aún, queda para la fase de carrito).
+  * [ ] Reemplazar imágenes placeholder (isologo) por las **fotos reales** de cada producto/variante y conectar a la BD cuando exista el catálogo real.
 
 #### **3. Carrito de Compras & Estado Global (Zustand)**
 

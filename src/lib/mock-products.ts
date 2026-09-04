@@ -1,3 +1,10 @@
+export interface MockVariante {
+  varianteId: string;
+  color: string;
+  material: string;
+  imagen: string;
+}
+
 export interface MockProducto {
   varianteId: string;
   productoId: string;
@@ -12,6 +19,9 @@ export interface MockProducto {
   cuotas: string;
   badge?: string;
   imagen: string;
+  variantes: MockVariante[];
+  garantia: string;
+  dimensiones: string;
 }
 
 export const MOCK_PRODUCTOS: MockProducto[] = [
@@ -29,6 +39,13 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     cuotas: "3 cuotas sin interés de $19.334",
     badge: "10% OFF",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-sun-1", color: "Negro", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-sun-1b", color: "Carey", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-sun-1c", color: "Gris", material: "Metal", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 6 meses por defectos de fabricación en armazón y cristales.",
+    dimensiones: "Ancho del lente: 52mm · Puente: 18mm · Varilla: 145mm.",
   },
   {
     varianteId: "variante-mock-sun-2",
@@ -44,6 +61,12 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     cuotas: "3 cuotas sin interés de $20.667",
     badge: "NUEVO",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-sun-2", color: "Carey", material: "Metal", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-sun-2b", color: "Dorado", material: "Metal", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 6 meses por defectos de fabricación en armazón y cristales.",
+    dimensiones: "Ancho del lente: 58mm · Puente: 14mm · Varilla: 140mm.",
   },
   {
     varianteId: "variante-mock-sun-3",
@@ -58,6 +81,12 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     precioTransferencia: 48600,
     cuotas: "3 cuotas sin interés de $18.000",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-sun-3", color: "Tortuga", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-sun-3b", color: "Negro", material: "Acetato", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 6 meses por defectos de fabricación en armazón y cristales.",
+    dimensiones: "Ancho del lente: 49mm · Puente: 21mm · Varilla: 145mm.",
   },
   {
     varianteId: "variante-mock-clip-1",
@@ -72,6 +101,12 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     precioTransferencia: 22050,
     cuotas: "3 cuotas sin interés de $8.167",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-clip-1", color: "Tabaco", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-clip-1b", color: "Negro", material: "Acetato", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 3 meses por defectos de fabricación en el clip.",
+    dimensiones: "Se adapta a armazones de hasta 140mm de ancho.",
   },
   {
     varianteId: "variante-mock-clip-2",
@@ -87,6 +122,12 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     cuotas: "3 cuotas sin interés de $8.667",
     badge: "10% OFF",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-clip-2", color: "Negro", material: "Metal", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-clip-2b", color: "Plateado", material: "Metal", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 3 meses por defectos de fabricación en el clip.",
+    dimensiones: "Se adapta a armazones de hasta 140mm de ancho.",
   },
   {
     varianteId: "variante-mock-armazon-1",
@@ -101,6 +142,13 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     precioTransferencia: 35100,
     cuotas: "3 cuotas sin interés de $13.000",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-armazon-1", color: "Azul oscuro", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-armazon-1b", color: "Negro", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-armazon-1c", color: "Marrón", material: "Acetato", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 12 meses por defectos de fabricación en el armazón.",
+    dimensiones: "Ancho del lente: 50mm · Puente: 19mm · Varilla: 145mm.",
   },
   {
     varianteId: "variante-mock-armazon-2",
@@ -116,5 +164,11 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     cuotas: "3 cuotas sin interés de $13.667",
     badge: "NUEVO",
     imagen: "/isologo.svg",
+    variantes: [
+      { varianteId: "variante-mock-armazon-2", color: "Negro", material: "Acetato", imagen: "/isologo.svg" },
+      { varianteId: "variante-mock-armazon-2b", color: "Gris", material: "Acetato", imagen: "/isologo.svg" },
+    ],
+    garantia: "Garantía de 12 meses por defectos de fabricación en el armazón.",
+    dimensiones: "Ancho del lente: 53mm · Puente: 17mm · Varilla: 148mm.",
   },
 ];
