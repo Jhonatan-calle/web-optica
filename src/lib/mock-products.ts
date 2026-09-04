@@ -34,7 +34,7 @@ export interface MockProducto {
   garantia: string;
   createdAt: string;
   destacado: boolean;
-  activo?: boolean;
+  activo: boolean;
   variantes: MockVariante[];
 }
 
@@ -77,6 +77,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 6 meses por defectos de fabricación en armazón y cristales.",
     createdAt: fechaHace(90),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-sun-1",
@@ -117,6 +118,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 6 meses por defectos de fabricación en armazón y cristales.",
     createdAt: fechaHace(5),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-sun-2",
@@ -148,6 +150,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 6 meses por defectos de fabricación en armazón y cristales.",
     createdAt: fechaHace(60),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-sun-3",
@@ -179,6 +182,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 3 meses por defectos de fabricación en el clip.",
     createdAt: fechaHace(120),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-clip-1",
@@ -210,6 +214,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 3 meses por defectos de fabricación en el clip.",
     createdAt: fechaHace(100),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-clip-2",
@@ -241,6 +246,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 12 meses por defectos de fabricación en el armazón.",
     createdAt: fechaHace(150),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-armazon-1",
@@ -281,6 +287,7 @@ export const MOCK_PRODUCTOS: MockProducto[] = [
     garantia: "Garantía de 12 meses por defectos de fabricación en el armazón.",
     createdAt: fechaHace(3),
     destacado: true,
+    activo: true,
     variantes: [
       {
         id: "variante-mock-armazon-2",

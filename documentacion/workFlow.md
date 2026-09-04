@@ -5,11 +5,9 @@
 * **Fase 3: Panel Administrativo & Integraciones (Pagos/Envíos)**
 * **Fase 4: Pruebas, Despliegue & Entrega**
 
-> 📄 **Documento de decisiones de datos:** antes de conectar la interfaz a la base de datos real, revisar
-> [`documentacion/schema-vs-ui.md`](./schema-vs-ui.md) (mapa "schema ↔ UI" y brechas de datos: imagen de línea, cuotas, dimensiones/garantía, tipo de producto y tarifas de envío).
+> ✅ **Los mocks y la UI ya están reformateados a la forma del modelo de datos** (jerarquía `Tipo → Linea → Producto → Variante → Imagen`). Los helpers de cuotas/badges ya existen en `src/lib/product-utils.ts`: `calcularCuotas`, `calcularBadge` y `MOCK_CONFIG`. *No hay que reimplementarlos.*
 >
-> 🛠️ **Adaptación de los datos y la UI a la forma de la base de datos:** el detalle accionable de cómo reformatear los **mocks** para que imiten el modelo de datos real, y de cómo ajustar luego los componentes que los consumen (filtros, tarjetas, detalle, home), está en
-> [`documentacion/adaptar-datos-ui.md`](./adaptar-datos-ui.md). *(No es "conectar a la BD": eso se hará más adelante.)*
+> ⚠️ **Única decisión de datos pendiente — B5 (envío):** decidir si las **tarifas de envío por código postal** salen de una **tabla propia en la base de datos** o de una **API de transportista externa**. Afecta solo cuando se integre el envío real (Fase 3); por ahora el estimado mock alcanza.
 
 ---
 
