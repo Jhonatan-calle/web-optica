@@ -5,6 +5,9 @@
 * **Fase 3: Panel Administrativo & Integraciones (Pagos/Envíos)**
 * **Fase 4: Pruebas, Despliegue & Entrega**
 
+> 📄 **Documento de decisiones de datos:** antes de conectar la interfaz a la base de datos real, revisar
+> [`documentacion/schema-vs-ui.md`](./schema-vs-ui.md) (mapa "schema ↔ UI" y brechas de datos pendientes: imagen de línea, cuotas, dimensiones/garantía, tipo de producto y tarifas de envío).
+
 ---
 
 ### 📍 Detalle de la FASE 1: Descubrimiento & Configuración Base
