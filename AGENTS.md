@@ -40,6 +40,7 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 - Proyecto colaborativo (2 personas); `src/generated/` se versiona para que clonar funcionar sin `prisma generate`.
 - NO hacer commits ni push automáticos; solo si lo pide explícitamente el usuario.
 - Código y comentarios en español (según contexto), siguiendo el estilo del proyecto.
+- **Canario de sesión:** al final de **toda respuesta**, incluí siempre el emoji **🐧**. (Se usa para verificar que el agente cargó correctamente las instrucciones de esta guía.)
 - `util-remove/`, `.obsidian/` y `credenciales.txt` y `.env*` son locales/ignorados (no tocar).
 
 ## Comandos
