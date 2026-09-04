@@ -101,12 +101,12 @@ Para cada brecha se indica: **dónde aparece** · **cómo está hoy** · **recom
 
 ---
 
-### B3 — Dimensiones y Garantía del producto (en el detalle/PDP)
+### B3 — Dimensiones y Garantía del producto (en el detalle/PDP) — ✅ RESUELTO (en BD)
 
 - **Dónde aparece:** en el detalle de producto, dentro de los acordeones "Dimensiones" y "Garantía".
-- **Cómo está hoy:** son campos de texto de relleno en los datos de prueba. La tabla `Producto` **no tiene estos campos**.
-- **Recomendación:** agregar campos `dimensiones` (texto) y `garantia` (texto) a la tabla `Producto`.
-- **Estado:** 🟢 SOLUCIÓN PROPUESTA CLARA (agregar dos columnas de texto opcionales).
+- **Decisión tomada:** agregar campos `dimensiones` (texto) y `garantia` (texto) a la tabla `Producto`, ambos **opcionales**.
+- **Estado en la base de datos:** ✅ **implementado** (modelo `Producto` con `dimensiones String?` y `garantia String?`). Migración aplicada.
+- **Pendiente (siguiente paso, fuera de este documento):** al conectar la UI, los acordeones del PDP deben leer estos campos reales (los datos de prueba ya los tenían).
 
 ---
 
@@ -138,11 +138,11 @@ Letras de referencia para discutirlas por nombre.
 
 - [x] **B1 — Imagen de Línea:** ✅ RESUELTO e implementado en BD (`Linea.imagenUrl` opcional). Falta conectar la UI (home "Colecciones").
 - [x] **B2 — Cuotas:** ✅ RESUELTO e implementado en BD (modelo `Configuracion`, config global). Falta conectar la UI (helper de cálculo + reemplazar campo mock).
-- [ ] **B3 — Dimensiones y Garantía:** agregar campos `dimensiones` y `garantia` a `Producto`. 
+- [x] **B3 — Dimensiones y Garantía:** ✅ RESUELTO e implementado en BD (`Producto.dimensiones` y `Producto.garantia` opcionales). Falta conectar la UI (acordeones del PDP).
 - [x] **B4 — Tipo de Producto:** ✅ RESUELTO e implementado en BD (modelo `Tipo` + `Linea.tipoId`). Falta solo conectar la UI al modelo (siguiente paso).
 - [ ] **B5 — Envío:** ¿tabla de tarifas propia o API externa de transporte?
 
-> Cuando estas decisiones estén tomadas, se actualiza el modelo de datos y este documento, y se conecta la interfaz a la base de datos real (reemplazando los datos de prueba). Las brechas B1, B2 y B4 ya quedaron implementadas en la base de datos.
+> Cuando estas decisiones estén tomadas, se actualiza el modelo de datos y este documento, y se conecta la interfaz a la base de datos real (reemplazando los datos de prueba). Las brechas B1, B2, B3 y B4 ya quedaron implementadas en la base de datos.
 
 ---
 

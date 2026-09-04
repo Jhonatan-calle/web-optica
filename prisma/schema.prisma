@@ -92,6 +92,10 @@ model Producto {
   nombre      String
   slug        String    @unique
   descripcion String?
+  // Nota (Fase 2): textos que se muestran en los acordeones "Dimensiones" y
+  // "Garantía" del detalle de producto (PDP).
+  dimensiones String?
+  garantia    String?
   // Nota (Fase 2): los productos con destacado = true alimentan el bloque
   // "Productos Destacados" de la Home.
   destacado   Boolean   @default(false)
