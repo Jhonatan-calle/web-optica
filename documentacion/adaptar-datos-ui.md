@@ -8,14 +8,14 @@
 
 ## 1. Por qué importa "la forma de los datos"
 
-Hoy la interfaz usa **datos de prueba** en `src/lib/mock-products.ts` que son **planos y mixtos** (mezclan concepto de producto, línea, tipo, variante, imagen y cuotas todo en un solo objeto). Pero la **base de datos es jerárquica y relacional**:
+Hoy la interfaz usa **datos de prueba** en `src/lib/mock-products.ts` que son **planos y mixtos**: un solo objeto mezcla el producto, la línea, el tipo, una "primera variante" (color, material, precio, imagen), las cuotas y el badge. Pero la **base de datos es jerárquica y relacional**, y **cada dato vive exactamente donde vive en la BD** (el precio y la imagen viven en la **Variante**, el nombre/portada en la **Línea**, el tipo en el nivel superior **Tipo**, las cuotas en la **config global**, los badges se **calculan**).
 
 ```
 Configuracion (clave → valor)     // config global (cuotas)
 Tipo (1) → Linea (N) → Producto (N) → Variante (N) → Imagen (N)
 ```
 
-Si los mocks se mantienen planos, cuando llegue el momento de conectar la BD la UI **se tendría que reescribir de golpe**. En cambio, si **reformateamos ahora los mocks para que imiten la estructura de la BD**, la UI queda ya "adaptada a la forma de los datos" y la conexión después será mecánica.
+**Regla de oro que guía todo el reformateo:** imitar esa ubicación. Si el mock sigue plano, cuando llegue el momento de conectar la BD la UI **se tendría que reescribir de golpe**. En cambio, si **reformateamos ahora los mocks para que imiten la estructura de la BD**, la UI queda ya "adaptada a la forma de los datos" y la conexión después será mecánica.
 
 ---
 
@@ -32,6 +32,7 @@ Referencia: `prisma/schema.prisma`.
 
 Reglas de negocio a respetar en la forma de los datos:
 - El **tipo** de un producto se obtiene subiendo por la jerarquía (`Producto → Linea → Tipo`), **no** se guarda en cada producto.
+- El **precio**, **color** y **material** viven en la **Variante** (y la **imagen** en la `Imagen` de esa variante); **no** se guardan duplicados a nivel producto.
 - Las **cuotas** son **config global** (`Configuracion`) + **cálculo** a partir del precio; **no** un texto fijo por producto.
 - Los **badges** ("10% OFF", "NUEVO") se **calculan**: descuento desde `precio` vs `precioTransferencia`; "NUEVO" desde `createdAt`. No son texto guardado.
 
@@ -45,13 +46,18 @@ Discrepancias entre el `MockProducto` actual (plano) y la forma real, y cómo de
 |---|---|---|
 | `tipo` (string plano por producto) | En la BD el tipo NO está en el producto; se sube por la jerarquía | **Quitar** `tipo` del producto. Anidarlo en `linea` (ver abajo) |
 | `linea` (string plano) | En la BD `Linea` es una **entidad** con `tipo`, `nombre`, `imagenUrl` | Representar `linea` como **objeto** con `{ tipo, nombre, imagenUrl }` |
+| `varianteId` (string a nivel producto) | En la BD el id vive en `Variante` | **Renombrar** a `id` y moverlo a cada variaante (`MockVariante.id`). El producto ya no tiene un `varianteId` propio |
+| `precio`, `precioTransferencia` a nivel producto | En la BD viven en `Variante` | **Moverlos a cada `MockVariante`**. El producto ya NO los repite |
+| `color`, `material` a nivel producto | En la BD viven en `Variante` | **Moverlos a cada `MockVariante`** (ya están en `variantes[]`, dejar de duplicarlos) |
+| `imagen` a nivel producto | En la BD vive en `Imagen` (de la variante) | **Moverlo a `MockVariante.imagenes[]`** (lista). El producto usa la imagen de la variante "destacada" (primera) |
 | `cuotas` (string fijo "3 cuotas sin interés de $X") | BD: config global + cálculo (B2) | **Quitar** el campo string. Las cuotas salen de un **helper `calcularCuotas(precio)`** que lee la **config global** |
 | `badge` (texto "10% OFF" / "NUEVO") | BD: se **calcula** | **Quitar** el texto. Derivarlo (descuento desde precios; "NUEVO" desde `createdAt`) |
-| `precio`, `precioTransferencia`, `color`, `material`, `imagen` a nivel producto | En la BD viven en `Variante` (y su `Imagen`) | Ya existe `variantes[]`; **dejar de duplicar** la primera variante a nivel producto (o, si se quiere, conservar solo una referencia explícita a la "variante destacada") |
 | `garantia`, `dimensiones` | BD: viven en `Producto` (✅ ya implementado) | **OK** — ya viven a nivel producto |
-| `createdAt` | BD: existe en `Producto` (para calcular "NUEVO") | **Agregar** `createdAt` al mock para poder calcular el badge "NUEVO" |
-| Falta `Configuracion` (cuotas) | No existe en el mock | Definir una **constante/objeto `MOCK_CONFIG`** global con `{ cuotas: { cantidad, conInteres } }` imitando la tabla `Configuracion` |
+| Falta `descripcion` | BD: existe en `Producto` | **Agregar** `descripcion` opcional al mock |
+| Falta `destacado` / `activo` | BD: existen en `Producto` | **Agregar** al mock (para saber qué mostrar como "destacado") |
+| Falta `createdAt` | BD: existe en `Producto` (para calcular "NUEVO") | **Agregar** `createdAt` al mock |
 | Falta `stock` | BD: existe en `Variante` | **Agregar** `stock` a cada `MockVariante` |
+| Falta `Configuracion` (cuotas) | No existe en el mock | Definir una **constante/objeto `MOCK_CONFIG`** global con `{ cuotas: { cantidad, conInteres } }` imitando la tabla `Configuracion` |
 
 ### Forma propuesta de las interfaces (resultado buscado)
 
@@ -79,18 +85,19 @@ interface MockLinea {
   id?: string;            // opcional: idLinea
   nombre: string;         // "Línea Sun"
   imagenUrl?: string;     // portada (B1)
-  tipo: MockTipo;         // nivel superior
+  tipo: MockTipo;         // nivel superior (ver nota)
 }
 
 interface MockProducto {
   id: string;
   slug: string;
   nombre: string;
+  descripcion?: string;
   linea: MockLinea;
-  variantes: MockVariante[];
   dimensiones: string;
   garantia: string;
   createdAt: string;      // para calcular "NUEVO"
+  variantes: MockVariante[];
 }
 
 // Config global imitando la tabla Configuracion (B2)
@@ -99,7 +106,9 @@ const MOCK_CONFIG = {
 };
 ```
 
-> **Nota sobre el campo `linea`:** en la BD la línea no guarda una lista de tipos; el tipo es un nivel superior independiente. En el mock, para imitar eso, cada `linea` referencia un `tipo`. Si además se quiere un id, agregarlo (`lineaId`, `productoId`, etc.) de forma opcional.
+**Variante destacada:** se define como la **primera** del array (`producto.variantes[0]`). Se usa su `imagenes[0].url`, `precio` y `color`/`material` para la tarjeta, la galería y el "agregar al carrito" inicial. No se agrega un campo extra.
+
+> **Nota sobre el campo `linea.tipo`:** en la BD la línea no guarda un objeto de tipo; guarda `linea.tipoId` y el `Tipo` es una tabla aparte (relación por FK). En el **mock** se usa un **objeto anidado** `linea.tipo` por ergonomía de la UI (acceso directo), aclarando que es una simplificación: no replica la clave foránea, solo la "forma" en pantalla.
 
 ---
 
@@ -108,31 +117,33 @@ const MOCK_CONFIG = {
 Una vez reformateado el mock, hay que ajustar cada componente que lo consume. Orden lógico de trabajo (de "origen" a "pantalla").
 
 ### 4.1 `src/lib/mock-products.ts`
-- Reescribir las interfaces y los datos a la forma de la sección 3.
-- Crear un **helper de cuotas** (`calcularCuotas(precio, config)`) y, si aplica, un **helper de badge** (descuento / nuevo).
+- Reescribir las interfaces y los 7 productos a la forma de la sección 3.
+- Renombrar `varianteId` → `id` en variantes; agregar `descripcion`, `destacado`, `activo`, `createdAt`; mover `precio`/`precioTransferencia`/`stock`/`imagenes` a cada variante; quitar `cuotas`, `badge`, y los duplicados a nivel producto.
+- Crear un **helper de cuotas** (`calcularCuotas(precio, config)`) y un **helper de badge** (`calcularBadge(precio, precioTransferencia, createdAt)`).
 
 ### 4.2 `src/components/catalog/catalog-filters.tsx` (filtro del catálogo)
 - Hoy lee `p.linea`, `p.material`, `p.tipo` desde el mock plano.
 - Con la nueva forma:
   - **Líneas:** derivar de `p.linea.nombre` (o de un listado de líneas).
   - **Tipos:** derivar de `p.linea.tipo.nombre`.
-  - **Material:** hoy está a nivel producto; en la BD está por **variante**. Decidir cómo se filtra material a nivel producto (ej. unir los materiales de todas sus variantes, o usar la variante destacada).
+  - **Material:** hoy está a nivel producto; en la BD está por **variante**. Decidir cómo se filtra material a nivel producto (ej. unir los materiales de todas sus variantes: `new Set(p.variantes.map(v => v.material))`).
 
 ### 4.3 `src/components/catalog/product-card.tsx` (tarjeta)
-- `producto.imagen` → imagen de la **variante destacada** (o primera) → `producto.variantes[0].imagenes[0].url`.
-- `producto.badge` → **calcular** (descuento / nuevo).
+- `producto.imagen` → `producto.variantes[0].imagenes[0].url`.
+- `producto.badge` → **calcular** con `calcularBadge(...)`.
 - `producto.cuotas` → **helper de cuotas**.
-- `producto.color`/`material` al agregar al carrito → de la variante destacada.
+- Color/material/precio para el carrito → de `producto.variantes[0]`.
 
 ### 4.4 `src/components/product/product-info.tsx` (detalle/PDP)
 - `producto.linea · producto.tipo` → de la jerarquía `producto.linea.nombre` / `producto.linea.tipo.nombre`.
 - `producto.badge` → calcular.
 - `producto.cuotas` → helper de cuotas.
 - `producto.dimensiones`, `producto.garantia` → **OK** (ya en producto).
-- Selector de variantes: ya usa `producto.variantes` → adaptar nombres de campos (`varianteId` → `id` si cambia, y uso de `precio` desde la variante, no del producto).
+- Selector de variantes: ya usa `producto.variantes` → actualizar nombres de campos (`varianteId` → `id`) y tomar `precio` de la **variante activa** (`variante.precio`), no del producto.
 
 ### 4.5 `src/components/home/featured-products.tsx` (home, destacados)
-- Usa `MOCK_PRODUCTOS` + `ProductCard` → se adapta solo al cambiar la card. Verificar que los "destacados" se tomen de `producto.destacado`.
+- Usa `MOCK_PRODUCTOS` + `ProductCard` → se adapta solo al cambiar la card.
+- Verificar que tome los productos con `producto.destacado === true`.
 
 ### 4.6 `src/components/home/collections.tsx` (home, colecciones)
 - Hoy usa una **constante `COLLECTIONS`** hardcodeada (`name`, `href`).
@@ -149,11 +160,11 @@ Una vez reformateado el mock, hay que ajustar cada componente que lo consume. Or
 
 ## 5. Checklist de trabajo (en orden)
 
-- [ ] **Mocks:** reescribir `mock-products.ts` (interfaces + datos) a la forma de la sección 3.
+- [ ] **Mocks:** reescribir `mock-products.ts` (interfaces + 7 productos) a la forma de la sección 3 (renombrar `varianteId`→`id`, mover `precio`/`stock`/`imagenes` a variante, agregar `descripcion`/`destacado`/`activo`/`createdAt`, quitar `cuotas`/`badge` y duplicados).
 - [ ] **Mocks:** agregar `MOCK_CONFIG` (cuotas global) y helper `calcularCuotas`.
-- [ ] **Mocks:** helper/derivado de `badge` (descuento y "NUEVO").
-- [ ] **Tarjeta:** `product-card.tsx` → imagen de variante, badge y cuotas calculados.
-- [ ] **Detalle:** `product-info.tsx` → jerarquía línea/tipo, badge/cuotas, precio desde variante.
+- [ ] **Mocks:** helper `calcularBadge` (descuento y "NUEVO").
+- [ ] **Tarjeta:** `product-card.tsx` → imagen de variante destacada, badge y cuotas calculados.
+- [ ] **Detalle:** `product-info.tsx` → jerarquía línea/tipo, badge/cuotas, precio desde variante activa, renombramiento `varianteId`→`id`.
 - [ ] **Filtro:** `catalog-filters.tsx` + `catalogo/page.tsx` → líneas/tipos/matériales desde la nueva forma.
 - [ ] **Home:** `collections.tsx` → derivar líneas (con `imagenUrl` y `tipo`) en vez de constante fija.
 - [ ] **Home:** `featured-products.tsx` → usar `destacado`.
@@ -163,7 +174,7 @@ Una vez reformateado el mock, hay que ajustar cada componente que lo consume. Or
 
 ## 6. Qué es deuda que arrastramos (para no olvidar)
 
-- B3 (`Producto.dimensiones`, `Producto.garantia`) **ya implementado en BD** ✅ → al conectar, los acordeones del PDP leen estos campos (el mock ya los tenía).
+- **Reestructurar los 7 productos del mock:** pasar cada `MockProducto` plano a la nueva forma implica reordenar los datos de los 7 ejemplos (mover los precios de la "primera variante" a `variantes[].precio`, crear `imagenes[]`, llenar `stock`, `createdAt`, `descripcion`, `destacado`).
 - B5 (tarifas de envío) **requiere decisión** (tabla propia vs API) → el calculador de `product-info.tsx` usa una tabla hardcodeada; se resuelve en la fase de integración de envíos.
 
 ---
