@@ -25,7 +25,7 @@ Referencia: `prisma/schema.prisma`.
 
 - **Tipo**: `id`, `nombre` (ej. "Anteojo de Sol", "Clip-on", "Armazón"). Un Tipo tiene muchas Líneas.
 - **Linea**: `id`, `tipoId`, `nombre`, `descripcion`, `imagenUrl` (portada, B1), `orden`. Pertenece a un Tipo; tiene muchos Productos.
-- **Producto**: `id`, `lineaId`, `nombre`, `slug`, `descripcion`, `destacado`, `activo`, `createdAt`. *(Pendiente agregar `dimensiones` y `garantia` — B3.)*
+- **Producto**: `id`, `lineaId`, `nombre`, `slug`, `descripcion`, `dimensiones`, `garantia`, `destacado`, `activo`, `createdAt`.
 - **Variante**: `id`, `productoId`, `color`, `material`, `precio`, `precioTransferencia`, `stock`. Pertenece a un Producto; tiene muchas Imágenes.
 - **Imagen**: `id`, `varianteId`, `url`, `alt`, `orden`.
 - **Configuracion**: `id`, `clave`, `valor` (ej. `cuotas_cantidad`, `cuotas_con_interes`).
@@ -48,7 +48,7 @@ Discrepancias entre el `MockProducto` actual (plano) y la forma real, y cómo de
 | `cuotas` (string fijo "3 cuotas sin interés de $X") | BD: config global + cálculo (B2) | **Quitar** el campo string. Las cuotas salen de un **helper `calcularCuotas(precio)`** que lee la **config global** |
 | `badge` (texto "10% OFF" / "NUEVO") | BD: se **calcula** | **Quitar** el texto. Derivarlo (descuento desde precios; "NUEVO" desde `createdAt`) |
 | `precio`, `precioTransferencia`, `color`, `material`, `imagen` a nivel producto | En la BD viven en `Variante` (y su `Imagen`) | Ya existe `variantes[]`; **dejar de duplicar** la primera variante a nivel producto (o, si se quiere, conservar solo una referencia explícita a la "variante destacada") |
-| `garantia`, `dimensiones` | BD: van en `Producto` (B3 pendiente) | **OK** — ya viven a nivel producto |
+| `garantia`, `dimensiones` | BD: viven en `Producto` (✅ ya implementado) | **OK** — ya viven a nivel producto |
 | `createdAt` | BD: existe en `Producto` (para calcular "NUEVO") | **Agregar** `createdAt` al mock para poder calcular el badge "NUEVO" |
 | Falta `Configuracion` (cuotas) | No existe en el mock | Definir una **constante/objeto `MOCK_CONFIG`** global con `{ cuotas: { cantidad, conInteres } }` imitando la tabla `Configuracion` |
 | Falta `stock` | BD: existe en `Variante` | **Agregar** `stock` a cada `MockVariante` |
@@ -158,13 +158,12 @@ Una vez reformateado el mock, hay que ajustar cada componente que lo consume. Or
 - [ ] **Home:** `collections.tsx` → derivar líneas (con `imagenUrl` y `tipo`) en vez de constante fija.
 - [ ] **Home:** `featured-products.tsx` → usar `destacado`.
 - [ ] **PDP:** `producto/[slug]/page.tsx` → imagen de variante destacada.
-- [ ] **(Futuro)** garantía/dimensiones en BD (B3) cuando se agregue el campo.
 
 ---
 
 ## 6. Qué es deuda que arrastramos (para no olvidar)
 
-- B3 **no está aún en la BD** (`Producto.dimensiones`, `Producto.garantia`): mientras tanto el mock los tiene; al conectar se pasan al schema.
+- B3 (`Producto.dimensiones`, `Producto.garantia`) **ya implementado en BD** ✅ → al conectar, los acordeones del PDP leen estos campos (el mock ya los tenía).
 - B5 (tarifas de envío) **requiere decisión** (tabla propia vs API) → el calculador de `product-info.tsx` usa una tabla hardcodeada; se resuelve en la fase de integración de envíos.
 
 ---
