@@ -52,6 +52,7 @@ Tablas principales ya definidas en la base de datos:
 | **Orden** | Una compra (datos del cliente, envío, método de pago, totales). | Tiene muchos ítems. |
 | **ItemOrden** | Cada producto dentro de una orden, con un "snapshot" (copia) del nombre/color/precio en el momento de la compra. | Pertenece a una Orden y a una Variante. |
 | **Usuario** | Cuentas (cliente/admin). | Tiene direcciones y órdenes. |
+| **Configuracion** | Configuración global de la tienda (clave → valor), editable desde el panel admin. Ej. `cuotas_cantidad`, `cuotas_con_interes`. *(Agregado)* | Independiente (no se relaciona con otras tablas). |
 
 **Este modelo central está bien diseñado** y corresponde casi perfectamente con lo que vemos en la interfaz. No hace falta rediseñar esta estructura.
 
@@ -91,12 +92,12 @@ Para cada brecha se indica: **dónde aparece** · **cómo está hoy** · **recom
 
 ---
 
-### B2 — Texto de cuotas ("3 cuotas sin interés de $19.334")
+### B2 — Texto de cuotas ("3 cuotas sin interés de $19.334") — ✅ RESUELTO (en BD)
 
 - **Dónde aparece:** en las tarjetas de producto (home y catálogo) y en el detalle (PDP).
-- **Cómo está hoy:** es un **texto fijo escrito a mano** en los datos de prueba (ej. "3 cuotas sin interés de $19.334"). No hay un campo ni una lógica de cuotas.
-- **Recomendación (a confirmar):** **calcularlo** automáticamente a partir del precio y una configuración de cuotas (cantidad de cuotas, con/sin interés), igual que se hace con el descuento. Habría que definir si la cantidad de cuotas (ej. 3) es un valor fijo de la tienda o configurable por producto.
-- **Estado:** 🔶 PENDIENTE DE DEFINIR (cálculo vs. configuración).
+- **Decisión tomada:** configuración **global de cuotas** (no por producto), más simple y cubre el caso real. El texto se **calcula** a partir del precio y la config global (cantidad de cuotas, con/sin interés).
+- **Estado en la base de datos:** ✅ **implementado**. Se creó el modelo `Configuracion` (clave-valor) para las configuraciones globales de la tienda (ej. `cuotas_cantidad`, `cuotas_con_interes`). Migración aplicada. *(Sin seed: los valores se crearán/editarán desde el futuro panel admin.)*
+- **Pendiente (siguiente paso, fuera de este documento):** crear el **helper de cálculo de cuotas** en la UI que lea la config global, y reemplazar el campo `cuotas` (texto fijo) hoy presente en los datos de prueba.
 
 ---
 
@@ -136,12 +137,12 @@ Para cada brecha se indica: **dónde aparece** · **cómo está hoy** · **recom
 Letras de referencia para discutirlas por nombre.
 
 - [x] **B1 — Imagen de Línea:** ✅ RESUELTO e implementado en BD (`Linea.imagenUrl` opcional). Falta conectar la UI (home "Colecciones").
-- [ ] **B2 — Cuotas:** ¿calcularlas desde el precio + configuración de cuotas? ¿las cuotas son fijas de la tienda o por producto?
+- [x] **B2 — Cuotas:** ✅ RESUELTO e implementado en BD (modelo `Configuracion`, config global). Falta conectar la UI (helper de cálculo + reemplazar campo mock).
 - [ ] **B3 — Dimensiones y Garantía:** agregar campos `dimensiones` y `garantia` a `Producto`. 
 - [x] **B4 — Tipo de Producto:** ✅ RESUELTO e implementado en BD (modelo `Tipo` + `Linea.tipoId`). Falta solo conectar la UI al modelo (siguiente paso).
 - [ ] **B5 — Envío:** ¿tabla de tarifas propia o API externa de transporte?
 
-> Cuando estas decisiones estén tomadas, se actualiza el modelo de datos y este documento, y se conecta la interfaz a la base de datos real (reemplazando los datos de prueba). La B4 ya quedó implementada en la base de datos.
+> Cuando estas decisiones estén tomadas, se actualiza el modelo de datos y este documento, y se conecta la interfaz a la base de datos real (reemplazando los datos de prueba). Las brechas B1, B2 y B4 ya quedaron implementadas en la base de datos.
 
 ---
 
@@ -151,4 +152,5 @@ Letras de referencia para discutirlas por nombre.
 - **Datos de prueba (mock):** `src/lib/mock-products.ts`
 - **Roadmap / fases:** `documentacion/workFlow.md`
 - **Guía estética (UI):** `documentacion/guiaEstetica.md`
+- **Pendiente de adaptar los datos/UI a la forma de la BD:** `documentacion/adaptar-datos-ui.md`
 - **Archivos de UI donde aparecen estas brechas:** home (`collections.tsx`), catálogo (`catalog-filters.tsx`, `product-card.tsx`), detalle (`product-info.tsx`).

@@ -169,3 +169,12 @@ model ItemOrden {
   cantidad       Int
   subtotal       Decimal   @db.Decimal(10, 2)
 }
+
+// ---------- CONFIGURACIÓN ----------
+// Configuración global de la tienda (clave-valor), editable desde el panel admin.
+// Ej. cuotas: "cuotas_cantidad" -> "3", "cuotas_con_interes" -> "false".
+model Configuracion {
+  id    String @id @default(cuid())
+  clave String @unique
+  valor String
+}
