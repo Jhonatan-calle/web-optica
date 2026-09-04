@@ -44,7 +44,8 @@ Tablas principales ya definidas en la base de datos:
 
 | Tabla | Para qué guarda | Relaciones |
 |---|---|---|
-| **Linea** | Las líneas/colecciones (nombre, descripción, orden). | Una Línea tiene muchos Productos. |
+| **Tipo** | El tipo de producto (nivel superior): ej. "Anteojo de Sol", "Clip-on", "Armazón". | Un Tipo tiene muchas Líneas. *(Agregado)* |
+| **Linea** | Las líneas/colecciones (nombre, descripción, orden). | Pertenece a un Tipo; una Línea tiene muchos Productos. |
 | **Producto** | Cada artículo (nombre, slug/url, descripción, destacado, activo). | Pertenece a una Línea; tiene muchas Variantes. |
 | **Variante** | Versiones por color/material, con precio, precio de transferencia y stock. | Pertenece a un Producto; tiene muchas Imágenes. |
 | **Imagen** | URL de cada foto. | Pertenece a una Variante. |
@@ -108,16 +109,14 @@ Para cada brecha se indica: **dónde aparece** · **cómo está hoy** · **recom
 
 ---
 
-### B4 — "Tipo de Producto" (filtro del catálogo)
+### B4 — "Tipo de Producto" (filtro del catálogo) — ✅ RESUELTO
 
 - **Dónde aparece:** en el catálogo se puede **filtrar por "Tipo de Producto"** (ej. "Anteojo de Sol", "Clip-on", "Armazón"). También se muestra en el detalle y en las tarjetas.
-- **Cómo está hoy:** el tipo es un **campo escrito a mano** en los datos de prueba. La tabla `Producto` **no tiene este campo**.
-- **Por qué importa:** este es el punto que más necesita una decisión de diseño de datos, porque hay dos opciones posibles:
-  - **Opción A:** agregar un campo `tipo` a `Producto` (texto o enumerado de tipos).
-  - **Opción B:** considerar que el "tipo" ya está cubierto por la "Línea" (y no duplicar conceptos).
-    - ⚠️ Nota: hoy "Línea" y "Tipo" están algo superpuestos en los datos de prueba (por ej., tanto "Anteojo de Sol" como la "Línea Sun" se refieren a lo mismo).
-- **Recomendación (a confirmar):** definir una **tabla de tipos única** o un **campo `tipo`** en `Producto`, asegurando que no se duplique con "Línea". Decisiones así convienen tomarlas ahora.
-- **Estado:** 🔴 REQUIERE DECISIÓN DE DISEÑO (la más importante de la lista).
+- **Decisión tomada:** el "Tipo" es un nivel superior, y **cada Línea pertenece a exactamente un Tipo**. Un Tipo puede tener varias Líneas. Jerarquía del modelo:
+  `Tipo (1) → Línea (N) → Producto (N)`
+- **Cómo se obtiene el tipo de un producto:** subiendo por la jerarquía `Producto → Linea → Tipo` (no se guarda en cada producto).
+- **Estado en la base de datos:** ✅ **implementado**. Se creó el modelo `Tipo` y la relación en `Linea` (`tipoId` obligatorio). Migración aplicada.
+- **Pendiente (siguiente paso, fuera de este documento):** conectar la UI (filtro de catálogo, tarjetas, detalle) a este modelo, reemplazando el campo `tipo` que hoy vive en los datos de prueba.
 
 ---
 
@@ -139,10 +138,10 @@ Letras de referencia para discutirlas por nombre.
 - [ ] **B1 — Imagen de Línea:** ¿agregar campo `imagen` a `Linea`? 
 - [ ] **B2 — Cuotas:** ¿calcularlas desde el precio + configuración de cuotas? ¿las cuotas son fijas de la tienda o por producto?
 - [ ] **B3 — Dimensiones y Garantía:** agregar campos `dimensiones` y `garantia` a `Producto`. 
-- [ ] **B4 — Tipo de Producto:** ¿campo/tabla de tipos, o derivarlo de "Línea"? *(requiere decisión de diseño)*
+- [x] **B4 — Tipo de Producto:** ✅ RESUELTO e implementado en BD (modelo `Tipo` + `Linea.tipoId`). Falta solo conectar la UI al modelo (siguiente paso).
 - [ ] **B5 — Envío:** ¿tabla de tarifas propia o API externa de transporte?
 
-> Cuando estas decisiones estén tomadas, se actualiza el modelo de datos y este documento, y se conecta la interfaz a la base de datos real (reemplazando los datos de prueba).
+> Cuando estas decisiones estén tomadas, se actualiza el modelo de datos y este documento, y se conecta la interfaz a la base de datos real (reemplazando los datos de prueba). La B4 ya quedó implementada en la base de datos.
 
 ---
 

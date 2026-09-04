@@ -64,8 +64,19 @@ model Direccion {
 }
 
 // ---------- CATÁLOGO ----------
+// Jerarquía de producto: Tipo (1) -> Linea (N) -> Producto (N).
+// El "Tipo" es el nivel superior (ej. "Anteojo de Sol", "Clip-on", "Armazón");
+// un Tipo puede tener varias Líneas/Colecciones, pero cada Línea pertenece a un único Tipo.
+model Tipo {
+  id     String  @id @default(cuid())
+  nombre String  @unique
+  lineas Linea[]
+}
+
 model Linea {
   id          String    @id @default(cuid())
+  tipo        Tipo      @relation(fields: [tipoId], references: [id])
+  tipoId      String
   nombre      String
   descripcion String?
   orden       Int?
