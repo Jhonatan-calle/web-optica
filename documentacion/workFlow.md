@@ -99,11 +99,12 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * [x] **Toasts de notificación (Sonner):** `<Toaster />` montado en `src/app/layout.tsx`; helper `showAddToCartToast` en `src/components/cart/add-to-cart-toast.tsx`. Se dispara al agregar desde `ProductCard` y `ProductInfo`.
   * [x] **Estados vacíos (*Empty States*):** carrito sin ítems (`cart-drawer.tsx`) y catálogo sin resultados de filtros/búsqueda (`catalogo/page.tsx`, distingue búsqueda vs. filtros).
   * [x] **Búsqueda en catálogo:** campo de búsqueda en `catalog-filters.tsx` filtrando por nombre en `catalogo/page.tsx`.
-  * [x] **Skeletons de carga:** componentes `src/components/ui/skeleton.tsx` y `src/components/catalog/product-card-skeleton.tsx` creados. ⚠️ **Pendiente de testear**: aún NO se renderizan en ningún lado porque la UI usa mocks síncronos. Al conectar la UI a la BD (reemplazar `MOCK_PRODUCTOS`), usar `ProductCardSkeleton` en el grid del catálogo mientras se consultan los productos.
+  * [x] **Skeletons de carga:** componentes `src/components/ui/skeleton.tsx` y `src/components/catalog/product-card-skeleton.tsx` creados. 
+	  * [ ] ⚠️ **Pendiente de testear**: aún NO se renderizan en ningún lado porque la UI usa mocks síncronos. Al conectar la UI a la BD (reemplazar `MOCK_PRODUCTOS`), usar `ProductCardSkeleton` en el grid del catálogo mientras se consultan los productos.
 
 #### **4. Flujo de Checkout sin Registro (Guest Checkout) (`/checkout`)**
 
-* [ ] **Formulario de Datos del Cliente:** Toma de datos obligatorios (Email, Nombre, Teléfono, DNI para facturación).
+* [x] **Formulario de Datos del Cliente:** Toma de datos obligatorios (Email, Nombre, Teléfono, DNI para facturación). Implementado en `src/components/checkout/checkout-form.tsx` + `src/app/checkout/page.tsx` con **react-hook-form + Zod** (`src/lib/checkout-schema.ts`). Los datos se persisten en un store Zustand (`src/lib/checkout-store.ts`, localStorage). Si el carrito está vacío, se bloquea el submit y se muestra `CheckoutVacio`. Al validar, guarda los datos y muestra toast "El siguiente paso (entrega y pago) llega pronto."
 * [ ] **Selección de Método de Entrega:**
   * Opción 1: Envío a Domicilio (solicita dirección completa y CP).
   * Opción 2: Retiro Gratis en el Local Físico de La Óptica.
