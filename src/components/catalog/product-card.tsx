@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export function ProductCard({ producto }: { producto: MockProducto }) {
   const addItem = useCartStore((state) => state.addItem);
+  const setOpen = useCartStore((state) => state.setOpen);
   const variante = producto.variantes[0];
   const badge = calcularBadge(
     variante.precio,
@@ -60,7 +61,7 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
         variant="outline"
         size="sm"
         className="mt-3 w-full"
-        onClick={() =>
+        onClick={() => {
           addItem({
             varianteId: variante.id,
             productoId: producto.id,
@@ -70,8 +71,9 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
             precio: variante.precio,
             imagen: variante.imagenes[0].url,
             cantidad: 1,
-          })
-        }
+          });
+          setOpen(true);
+        }}
       >
         <Plus />
         Agregar al Carrito
