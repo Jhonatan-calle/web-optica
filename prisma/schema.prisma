@@ -79,6 +79,8 @@ model Linea {
   tipoId      String
   nombre      String
   descripcion String?
+  // Imagen/portada de la línea (colección). Ej. "/lineas/linea-sun.jpg".
+  imagenUrl   String?
   orden       Int?
   productos   Producto[]
 }

@@ -45,7 +45,7 @@ Tablas principales ya definidas en la base de datos:
 | Tabla | Para qué guarda | Relaciones |
 |---|---|---|
 | **Tipo** | El tipo de producto (nivel superior): ej. "Anteojo de Sol", "Clip-on", "Armazón". | Un Tipo tiene muchas Líneas. *(Agregado)* |
-| **Linea** | Las líneas/colecciones (nombre, descripción, orden). | Pertenece a un Tipo; una Línea tiene muchos Productos. |
+| **Linea** | Las líneas/colecciones (nombre, descripción, imagen/portada, orden). | Pertenece a un Tipo; una Línea tiene muchos Productos. |
 | **Producto** | Cada artículo (nombre, slug/url, descripción, destacado, activo). | Pertenece a una Línea; tiene muchas Variantes. |
 | **Variante** | Versiones por color/material, con precio, precio de transferencia y stock. | Pertenece a un Producto; tiene muchas Imágenes. |
 | **Imagen** | URL de cada foto. | Pertenece a una Variante. |
@@ -82,12 +82,12 @@ Para cada brecha se indica: **dónde aparece** · **cómo está hoy** · **recom
 
 ---
 
-### B1 — Imagen/portada de cada Línea o Colección
+### B1 — Imagen/portada de cada Línea o Colección — ✅ RESUELTO
 
 - **Dónde aparece:** en el home, el bloque de "Colecciones" muestra una imagen/portada por cada línea.
-- **Cómo está hoy:** se usa un logo de relleno (placeholder). La tabla `Linea` **no tiene ningún campo de imagen**.
-- **Recomendación (a confirmar):** agregar un campo `imagen` a la tabla `Linea` para guardar la URL de su portada.
-- **Estado:** 🔶 PENDIENTE DE DEFINIR (solución simple, pero hay que confirmarla).
+- **Decisión tomada:** se agregó el campo **`imagenUrl` (opcional)** a la tabla `Linea` para guardar la URL de la portada.
+- **Estado en la base de datos:** ✅ **implementado**. Campo `Linea.imagenUrl String?` y migración aplicada.
+- **Pendiente (siguiente paso, fuera de este documento):** conectar la UI (home, bloque "Colecciones") a este campo, reemplazando el placeholder.
 
 ---
 
@@ -135,7 +135,7 @@ Para cada brecha se indica: **dónde aparece** · **cómo está hoy** · **recom
 
 Letras de referencia para discutirlas por nombre.
 
-- [ ] **B1 — Imagen de Línea:** ¿agregar campo `imagen` a `Linea`? 
+- [x] **B1 — Imagen de Línea:** ✅ RESUELTO e implementado en BD (`Linea.imagenUrl` opcional). Falta conectar la UI (home "Colecciones").
 - [ ] **B2 — Cuotas:** ¿calcularlas desde el precio + configuración de cuotas? ¿las cuotas son fijas de la tienda o por producto?
 - [ ] **B3 — Dimensiones y Garantía:** agregar campos `dimensiones` y `garantia` a `Producto`. 
 - [x] **B4 — Tipo de Producto:** ✅ RESUELTO e implementado en BD (modelo `Tipo` + `Linea.tipoId`). Falta solo conectar la UI al modelo (siguiente paso).
