@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
 import type { MockProducto, MockVariante } from "@/lib/mock-products";
 import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
+import { calcularTarifaEnvio } from "@/lib/envio-utils";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -15,13 +16,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
-
-const TARIFAS_ENVIO = [
-  { rango: "CABA y GBA", minimo: 1000, maximo: 1999, precio: 4500 },
-  { rango: "Provincia de Buenos Aires", minimo: 2000, maximo: 6499, precio: 6200 },
-  { rango: "Centro del país", minimo: 6500, maximo: 9999, precio: 7800 },
-  { rango: "Resto del país", minimo: 10000, maximo: 99999, precio: 8900 },
-];
 
 export function ProductInfo({ producto }: { producto: MockProducto }) {
   const addItem = useCartStore((state) => state.addItem);
@@ -47,15 +41,12 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
   );
 
   const calcularEnvio = () => {
-    const cpNum = parseInt(cp.replace(/\D/g, ""), 10);
-    if (!cpNum || String(cpNum).length !== 4) {
+    const resultado = calcularTarifaEnvio(cp);
+    if (resultado.estado === "invalido") {
       setCotizado(-1);
       return;
     }
-    const tarifa = TARIFAS_ENVIO.find(
-      (t) => cpNum >= t.minimo && cpNum <= t.maximo,
-    );
-    setCotizado(tarifa ? tarifa.precio : 0);
+    setCotizado(resultado.estado === "ok" ? resultado.precio : 0);
   };
 
   return (

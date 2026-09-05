@@ -105,9 +105,10 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
 #### **4. Flujo de Checkout sin Registro (Guest Checkout) (`/checkout`)**
 
 * [x] **Formulario de Datos del Cliente:** Toma de datos obligatorios (Email, Nombre, Teléfono, DNI para facturación). Implementado en `src/components/checkout/checkout-form.tsx` + `src/app/checkout/page.tsx` con **react-hook-form + Zod** (`src/lib/checkout-schema.ts`). Los datos se persisten en un store Zustand (`src/lib/checkout-store.ts`, localStorage). Si el carrito está vacío, se bloquea el submit y se muestra `CheckoutVacio`. Al validar, guarda los datos y muestra toast "El siguiente paso (entrega y pago) llega pronto."
-* [ ] **Selección de Método de Entrega:**
+* [x] **Selección de Método de Entrega:**
   * Opción 1: Envío a Domicilio (solicita dirección completa y CP).
   * Opción 2: Retiro Gratis en el Local Físico de La Óptica.
+  * Implementado en `src/components/checkout/entrega-form.tsx` + stepper en `src/app/checkout/page.tsx` (Paso 1 Datos → Paso 2 Entrega → Paso 3 Pago). Los datos se persisten en `src/lib/checkout-store.ts` (`entrega`, localStorage). El costo de envío se estima con el util compartido `src/lib/envio-utils.ts` (`calcularTarifaEnvio`, reutiliza la tabla mock de tarifas por CP; pendiente API real/transportistas — ver B5). La dirección y horario del local para retiro viven en `src/lib/tienda-info.ts`.
 * [ ] **Selección de Método de Pago:**
   * Opción 1: Pago Online (preparado para conectar el SDK de Mercado Pago en la Fase 3).
   * Opción 2: Transferencia Bancaria (muestra datos CBU/Alias y aplica descuento automático).

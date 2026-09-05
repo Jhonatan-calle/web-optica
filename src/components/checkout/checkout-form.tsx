@@ -81,7 +81,7 @@ export function CheckoutForm() {
     }
     setDatos(datos);
     toast.success("Datos guardados", {
-      description: "El siguiente paso (entrega y pago) llega pronto.",
+      description: "Ahora elegí cómo querés recibir tu pedido.",
     });
   };
 
