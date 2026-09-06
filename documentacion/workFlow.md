@@ -120,3 +120,108 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * Implementado con la Server Action `crearOrden` en `src/app/checkout/actions.ts` (valida el payload con zod, recalcula totales con `calcularTotales` en el servidor y crea `Orden` + `ItemOrden` con estado `PENDIENTE`). El mapping de métodos vive en `src/lib/orden-utils.ts` (`METODO_PAGO`/`METODO_ENVIO`: envío a domicilio → `ENVIO_PROPIO` por decisión de logística local, B5; retiro → `RETIRO_LOCAL`). La página `src/app/orden/[id]/page.tsx` muestra número, datos de contacto y totales vía el componente compartido `src/components/checkout/resumen-orden.tsx`, más instrucciones por método (transferencia: CBU/Alias/titular; retiro: dirección y horario; online: aviso de Fase 3). El botón "Confirmar pedido" del paso 4 crea la orden, limpia carrito y checkout y redirige. El modelo `Orden` se extendió con `nombreContacto`/`telefonoContacto`/`dniContacto` (migración `agregar-contacto-orden`).
 
 ---
+
+### 📍 Detalle de la FASE 3: Panel Administrativo & Integraciones (Pagos/Envíos)
+
+El objetivo de esta fase es dotar al cliente de **La Óptica** de las herramientas de gestión interna (Backoffice), conectar la pasarela de pagos real (**Mercado Pago**) y resolver la logística de envíos para procesar transacciones completas de principio a fin.
+
+#### **1. Autenticación y Control de Acceso por Roles (`NextAuth.js` / Supabase Auth)**
+
+* [ ] **Configuración de Providers & Middleware:**
+  * [ ] Implementar autenticación segura basada en credenciales (e-mail y contraseña) o enlace mágico (*Magic Link*).
+  * [ ] Crear `src/middleware.ts` para la protección de rutas privadas (`/admin/*`).
+
+* [ ] **Rutas y Control de Permisos:**
+  * [ ] Login administrativo en `/admin/login`.
+  * [ ] Verificación del rol de usuario (`ADMIN` vs `CLIENT`): si un usuario sin rol `ADMIN` intenta acceder a `/admin`, el middleware lo redirige a la tienda pública o al login.
+  * [ ] Persistencia de sesión mediante JWT/Session Tokens.
+
+#### **2. Panel Administrativo / Backoffice (`/admin`)**
+
+* [ ] **Dashboard General (`/admin`):**
+  * [ ] Vista de métricas clave: Ventas totales del mes, pedidos pendientes de despacho, stock crítico/bajo y total de órdenes del día.
+
+* [ ] **Módulo de Gestión de Catálogo - CRUD (`/admin/productos` y `/admin/lineas`):**
+  * [ ] **Lista de Productos (Data Table con Shadcn):** Tabla con buscador, filtros por línea, estado (`Activo`/`Pausado`) y acciones rápidas.
+  * [ ] **Formulario de Creación/Edición de Producto (`/admin/productos/nuevo`):**
+    * [ ] Campos base: Nombre, Slug automático, Descripción, Línea asignada (`tipoId` / `lineaId`), Dimensiones y Garantía (B3).
+    * [ ] Gestión de Variantes: Alta dinámica de variantes por Color/Material, Precio de Lista, Precio por Transferencia y Stock disponible.
+    * [ ] Carga de Imágenes: Integración con Supabase Storage para subir fotografías por variante y obtener URLs públicas.
+
+* [ ] **Módulo de Gestión de Órdenes (`/admin/ordenes`):**
+  * [ ] Lista global de pedidos ordenados por fecha con badges de estado: `PENDIENTE`, `PAGADO`, `EN_PREPARACION`, `DESPACHADO`, `ENTREGADO`, `CANCELADO`.
+  * [ ] Vista de Detalle de Orden (`/admin/ordenes/[id]`):
+    * [ ] Desglose de productos comprados (Snapshot de precio/variante).
+    * [ ] Datos de contacto, DNI de facturación y dirección de envío / retiro en local.
+    * [ ] Selector para actualizar el estado del pedido y adjuntar el **Número de Seguimiento / Código de Tracking** de la empresa de correo.
+
+#### **3. Integración de Pasarela de Pago Online (Mercado Pago)**
+
+* [ ] **Configuración del SDK y Entorno:**
+  * [ ] Instalación de `mercadopago` (Node.js SDK) en el backend de Next.js.
+  * [ ] Configuración de variables de entorno privadas (`MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_PUBLIC_KEY`).
+
+* [ ] **Generación de Preferencias de Pago:**
+  * [ ] Creación de Server Action / API Route `/api/checkout/preference` que recibe la `Orden` creada en la Fase 2.
+  * [ ] Mapeo de items, precios reales consultados en la BD (validación backend contra manipulaciones del cliente) y datos del comprador.
+  * [ ] Redirección del usuario al checkout seguro de Mercado Pago (*Redirect* o *Modal Overlay*).
+
+* [ ] **Procesamiento de Webhooks & Confirmación de Pagos (`/api/webhooks/mercadopago`):**
+  * [ ] Endpoint seguro (API Route) preparado para recibir las notificaciones push de Mercado Pago (`payment.created`, `payment.updated`).
+  * [ ] Validación de firmas / tokens de seguridad para evitar peticiones maliciosas.
+  * [ ] **Lógica de negocio post-pago:**
+    * [ ] Actualizar el estado de la `Orden` en Supabase de `PENDIENTE` a `PAGADO`.
+    * [ ] **Descontar automáticamente el stock** de las `Variantes` compradas.
+    * [ ] Enviar e-mail de confirmación de compra al cliente (vía Resend / SendGrid / Nodemailer).
+
+#### **4. Resolución de Logística y Envíos Nacionales (Decisión B5)**
+
+* [ ] **Integración de Cotización Real:**
+  * [ ] Conectar el calculador de envíos (PDP/Checkout) a la API del proveedor seleccionado (ej. **Shipnow**, **Andreani** o **Correo Argentino**).
+  * [ ] Reemplazar la función de tarifas mock (`envio-utils.ts`) por una llamada al servidor que consulte la tarifa en tiempo real según el Código Postal y el peso/volumen estimado del paquete.
+
+* [ ] **Generación de Etiquetas y Despacho:**
+  * [ ] Al marcar una orden como `EN_PREPARACION` en el panel admin, invocar la API del transportista para generar la etiqueta de despacho imprimible (*Shipping Label*) y obtener la URL/Código de seguimiento.
+
+---
+
+### 📍 Detalle de la FASE 4: Pruebas, Despliegue & Entrega
+
+El objetivo de la fase final es asegurar la calidad técnica, el cumplimiento normativo legal argentino y realizar el traspaso formal de la plataforma al cliente.
+
+#### **1. Pruebas de Extremo a Extremo (E2E) & Auditoría**
+
+* [ ] **Simulación de Compras (Sandbox Mercado Pago):**
+  * [ ] Verificación del flujo completo con tarjetas de prueba (*Test Cards*):
+    * [ ] Flujo A: Compra con Tarjeta Aprobada ➔ Verificación de actualización a `PAGADO` en BD y descuento de stock.
+    * [ ] Flujo B: Compra Rechazada ➔ Verificación de cancelación de orden y mantenimiento de stock.
+    * [ ] Flujo C: Compra por Transferencia Bancaria ➔ Verificación de instrucciones CBU reales y aprobación manual desde el panel admin.
+
+* [ ] **Auditoría de Experiencia de Usuario (UI/UX) y Rendimiento:**
+  * [ ] Verificación de carga responsiva en smartphones reales (iOS Safari y Android Chrome).
+  * [ ] Pruebas de velocidad de carga con Google Lighthouse (Puntajes > 90 en Performance y SEO).
+  * [ ] Validación del comportamiento de Toasts (Sonner), Skeletons de carga al consultar la BD real y resiliencia sin conexión.
+
+#### **2. Puesta en Producción & Configuraciones Finales**
+
+* [ ] **Carga Inicial del Catálogo Real:**
+  * [ ] Asistencia al cliente para el alta de las primeras líneas, productos, precios, colores/materiales y fotografías reales en alta resolución.
+
+* [ ] **Verificación de Requisitos Legales (Argentina):**
+  * [ ] Confirmación de inserción del script/QR interactivo de **Data Fiscal (Formulario 960/D)** en el footer.
+  * [ ] Verificación del correcto funcionamiento del **Botón de Arrepentimiento** (`/boton-de-arrepentimiento`) y recepción de solicitudes de cancelación en el panel/e-mail de la óptica.
+  * [ ] Publicación final de las páginas de Términos y Condiciones y Políticas de Privacidad.
+
+* [ ] **Configuración de Dominio y Producción:**
+  * [ ] Vinculación del dominio propio comercial (ej. `laoptica.com.ar`) en el panel de Vercel.
+  * [ ] Configuración de registros DNS (A, CNAME) y emisión de certificados SSL HTTPS.
+  * [ ] Cambio de las credenciales de Mercado Pago de modo *Sandbox/Testing* a modo *Producción*.
+
+#### **3. Capacitación y Traspaso de Propiedad**
+
+* [ ] **Manual de Uso para el Personal de la Óptica:**
+  * [ ] Guía paso a paso sobre cómo cargar nuevos productos, pausar modelos sin stock, revisar compras recibidas y cambiar estados de envío.
+
+* [ ] **Traspaso de Accesos e Infraestructura:**
+  * [ ] Invitación/Transferencia de roles de *Owner* en la Organización de Vercel, proyecto de Supabase y repositorio de GitHub.
+  * [ ] Cierre formal del proyecto y entrega del software.
