@@ -1,43 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowLeft, Check, PackageCheck, Truck } from "lucide-react";
+import { useMemo } from "react";
+import {
+  ArrowLeft,
+  Banknote,
+  Check,
+  CreditCard,
+  Landmark,
+  PackageCheck,
+  Truck,
+} from "lucide-react";
 
 import { CheckoutForm, CheckoutVacio } from "@/components/checkout/checkout-form";
 import { EntregaForm } from "@/components/checkout/entrega-form";
+import { PagoForm } from "@/components/checkout/pago-form";
 import { useCartStore, selectTotalCount } from "@/lib/cart-store";
 import { useCheckoutStore } from "@/lib/checkout-store";
+import { calcularTotales } from "@/lib/pago-utils";
 import { DIRECCION_LOCAL } from "@/lib/tienda-info";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const PASOS = ["Datos", "Entrega", "Pago"] as const;
-type PasoIndex = number;
+const PASOS = ["Datos", "Entrega", "Pago", "Confirmar"] as const;
 
 export default function CheckoutPage() {
   const count = useCartStore(selectTotalCount);
+  const items = useCartStore((state) => state.items);
   const hasHydrated = useCartStore((state) => state.hasHydrated);
   const datos = useCheckoutStore((state) => state.datos);
   const entrega = useCheckoutStore((state) => state.entrega);
-  const clearEntrega = useCheckoutStore((state) => state.clearEntrega);
+  const pago = useCheckoutStore((state) => state.pago);
   const clearDatos = useCheckoutStore((state) => state.clearDatos);
+  const clearEntrega = useCheckoutStore((state) => state.clearEntrega);
+  const clearPago = useCheckoutStore((state) => state.clearPago);
+  const paso = useCheckoutStore((state) => state.paso);
+  const setPaso = useCheckoutStore((state) => state.setPaso);
 
-  const [paso, setPaso] = useState<PasoIndex>(() =>
-    !datos ? 0 : !entrega ? 1 : 2,
+  const costoEnvio =
+    entrega?.tipo === "envio" ? (entrega.costoEnvio ?? 0) : 0;
+  const totales = useMemo(
+    () => calcularTotales(items, costoEnvio, pago?.tipo ?? "online"),
+    [items, costoEnvio, pago?.tipo],
   );
-
-  useEffect(() => {
-    const unsubscribe = useCheckoutStore.subscribe((state, prev) => {
-      if (!prev.datos && state.datos) {
-        setPaso(1);
-        return;
-      }
-      if (!prev.entrega && state.entrega) {
-        setPaso(2);
-      }
-    });
-    return unsubscribe;
-  }, []);
 
   if (!hasHydrated) {
     return (
@@ -70,7 +74,7 @@ export default function CheckoutPage() {
                       <span
                         aria-hidden="true"
                         className={cn(
-                          "h-px w-6",
+                          "h-px w-5 md:w-6",
                           i <= paso ? "bg-[#00848C]" : "bg-border",
                         )}
                       />
@@ -97,7 +101,7 @@ export default function CheckoutPage() {
                       >
                         {completado ? <Check className="h-3 w-3" /> : i + 1}
                       </span>
-                      {label}
+                      <span className="hidden sm:inline">{label}</span>
                     </span>
                   </li>
                 );
@@ -139,10 +143,43 @@ export default function CheckoutPage() {
           )}
 
           {paso === 2 && (
+            <>
+              <p className="mb-8 text-sm text-muted-foreground">
+                Elegí cómo querés pagar.
+              </p>
+              <PagoForm />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-4 w-full"
+                onClick={() => setPaso(1)}
+              >
+                <ArrowLeft />
+                Volver a elegir entrega
+              </Button>
+            </>
+          )}
+
+          {paso === 3 && (
             <div className="flex flex-col gap-4">
               <p className="text-sm text-muted-foreground">
-                El siguiente paso (pago) llega pronto.
+                Confirmación del pedido: llega pronto (próximo paso: generar la
+                orden en la base de datos).
               </p>
+
+              {datos && (
+                <div className="rounded-xl border border-border p-4">
+                  <h2 className="mb-2 text-sm font-semibold">
+                    Datos de contacto
+                  </h2>
+                  <p className="text-sm">
+                    {datos.nombre} · {datos.email}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {datos.telefono} · DNI {datos.dni}
+                  </p>
+                </div>
+              )}
 
               <div className="rounded-xl border border-border p-4">
                 <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
@@ -163,12 +200,6 @@ export default function CheckoutPage() {
                       {entrega.ciudad}, {entrega.provincia} · CP{" "}
                       {entrega.codigoPostal}
                     </p>
-                    <p className="mt-1 text-muted-foreground">
-                      Costo de envío:{" "}
-                      <span className="font-semibold text-foreground">
-                        ${(entrega.costoEnvio ?? 0).toLocaleString("es-AR")}
-                      </span>
-                    </p>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-1 text-sm">
@@ -178,38 +209,103 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full"
-                onClick={() => setPaso(1)}
-              >
-                <ArrowLeft />
-                Volver a elegir entrega
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  clearEntrega();
-                  setPaso(1);
-                }}
-              >
-                Cambiar método de entrega
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  clearDatos();
-                  clearEntrega();
-                  setPaso(0);
-                }}
-              >
-                Editar datos de contacto
-              </Button>
+              <div className="rounded-xl border border-border p-4">
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                  {pago?.tipo === "online" ? (
+                    <CreditCard className="h-4 w-4 text-[#00848C]" />
+                  ) : pago?.tipo === "transferencia" ? (
+                    <Landmark className="h-4 w-4 text-[#00848C]" />
+                  ) : (
+                    <Banknote className="h-4 w-4 text-[#00848C]" />
+                  )}
+                  Método de pago
+                </h2>
+                <p className="text-sm">
+                  {pago?.tipo === "online" &&
+                    "Pago online (Mercado Pago, se conecta en Fase 3)"}
+                  {pago?.tipo === "transferencia" && "Transferencia bancaria"}
+                  {pago?.tipo === "efectivo_local" &&
+                    "Efectivo al retirar en el local"}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-1.5 rounded-xl border border-border p-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium">
+                    ${totales.subtotal.toLocaleString("es-AR")}
+                  </span>
+                </div>
+                {totales.descuento > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#00848C]">
+                      Descuento transferencia
+                    </span>
+                    <span className="font-medium text-[#00848C]">
+                      −${totales.descuento.toLocaleString("es-AR")}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Costo de envío</span>
+                  <span className="font-medium">
+                    {costoEnvio > 0
+                      ? `$${costoEnvio.toLocaleString("es-AR")}`
+                      : "Gratis"}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center justify-between border-t border-border pt-2">
+                  <span className="font-semibold">Total</span>
+                  <span className="text-lg font-semibold">
+                    ${totales.total.toLocaleString("es-AR")}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setPaso(2)}
+                >
+                  <ArrowLeft />
+                  Volver a pagar
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    clearPago();
+                    setPaso(2);
+                  }}
+                >
+                  Cambiar método de pago
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    clearEntrega();
+                    setPaso(1);
+                  }}
+                >
+                  Cambiar método de entrega
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    clearDatos();
+                    setPaso(0);
+                  }}
+                >
+                  Editar datos de contacto
+                </Button>
+              </div>
             </div>
           )}
         </>

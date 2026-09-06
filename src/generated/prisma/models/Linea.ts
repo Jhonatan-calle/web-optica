@@ -36,22 +36,28 @@ export type LineaSumAggregateOutputType = {
 
 export type LineaMinAggregateOutputType = {
   id: string | null
+  tipoId: string | null
   nombre: string | null
   descripcion: string | null
+  imagenUrl: string | null
   orden: number | null
 }
 
 export type LineaMaxAggregateOutputType = {
   id: string | null
+  tipoId: string | null
   nombre: string | null
   descripcion: string | null
+  imagenUrl: string | null
   orden: number | null
 }
 
 export type LineaCountAggregateOutputType = {
   id: number
+  tipoId: number
   nombre: number
   descripcion: number
+  imagenUrl: number
   orden: number
   _all: number
 }
@@ -67,22 +73,28 @@ export type LineaSumAggregateInputType = {
 
 export type LineaMinAggregateInputType = {
   id?: true
+  tipoId?: true
   nombre?: true
   descripcion?: true
+  imagenUrl?: true
   orden?: true
 }
 
 export type LineaMaxAggregateInputType = {
   id?: true
+  tipoId?: true
   nombre?: true
   descripcion?: true
+  imagenUrl?: true
   orden?: true
 }
 
 export type LineaCountAggregateInputType = {
   id?: true
+  tipoId?: true
   nombre?: true
   descripcion?: true
+  imagenUrl?: true
   orden?: true
   _all?: true
 }
@@ -175,8 +187,10 @@ export type LineaGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type LineaGroupByOutputType = {
   id: string
+  tipoId: string
   nombre: string
   descripcion: string | null
+  imagenUrl: string | null
   orden: number | null
   _count: LineaCountAggregateOutputType | null
   _avg: LineaAvgAggregateOutputType | null
@@ -205,17 +219,23 @@ export type LineaWhereInput = {
   OR?: Prisma.LineaWhereInput[]
   NOT?: Prisma.LineaWhereInput | Prisma.LineaWhereInput[]
   id?: Prisma.StringFilter<"Linea"> | string
+  tipoId?: Prisma.StringFilter<"Linea"> | string
   nombre?: Prisma.StringFilter<"Linea"> | string
   descripcion?: Prisma.StringNullableFilter<"Linea"> | string | null
+  imagenUrl?: Prisma.StringNullableFilter<"Linea"> | string | null
   orden?: Prisma.IntNullableFilter<"Linea"> | number | null
+  tipo?: Prisma.XOR<Prisma.TipoScalarRelationFilter, Prisma.TipoWhereInput>
   productos?: Prisma.ProductoListRelationFilter
 }
 
 export type LineaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  tipoId?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrderInput | Prisma.SortOrder
+  imagenUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   orden?: Prisma.SortOrderInput | Prisma.SortOrder
+  tipo?: Prisma.TipoOrderByWithRelationInput
   productos?: Prisma.ProductoOrderByRelationAggregateInput
 }
 
@@ -224,16 +244,21 @@ export type LineaWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.LineaWhereInput | Prisma.LineaWhereInput[]
   OR?: Prisma.LineaWhereInput[]
   NOT?: Prisma.LineaWhereInput | Prisma.LineaWhereInput[]
+  tipoId?: Prisma.StringFilter<"Linea"> | string
   nombre?: Prisma.StringFilter<"Linea"> | string
   descripcion?: Prisma.StringNullableFilter<"Linea"> | string | null
+  imagenUrl?: Prisma.StringNullableFilter<"Linea"> | string | null
   orden?: Prisma.IntNullableFilter<"Linea"> | number | null
+  tipo?: Prisma.XOR<Prisma.TipoScalarRelationFilter, Prisma.TipoWhereInput>
   productos?: Prisma.ProductoListRelationFilter
 }, "id">
 
 export type LineaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  tipoId?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrderInput | Prisma.SortOrder
+  imagenUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   orden?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.LineaCountOrderByAggregateInput
   _avg?: Prisma.LineaAvgOrderByAggregateInput
@@ -247,8 +272,10 @@ export type LineaScalarWhereWithAggregatesInput = {
   OR?: Prisma.LineaScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LineaScalarWhereWithAggregatesInput | Prisma.LineaScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Linea"> | string
+  tipoId?: Prisma.StringWithAggregatesFilter<"Linea"> | string
   nombre?: Prisma.StringWithAggregatesFilter<"Linea"> | string
   descripcion?: Prisma.StringNullableWithAggregatesFilter<"Linea"> | string | null
+  imagenUrl?: Prisma.StringNullableWithAggregatesFilter<"Linea"> | string | null
   orden?: Prisma.IntNullableWithAggregatesFilter<"Linea"> | number | null
 }
 
@@ -256,14 +283,18 @@ export type LineaCreateInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  imagenUrl?: string | null
   orden?: number | null
+  tipo: Prisma.TipoCreateNestedOneWithoutLineasInput
   productos?: Prisma.ProductoCreateNestedManyWithoutLineaInput
 }
 
 export type LineaUncheckedCreateInput = {
   id?: string
+  tipoId: string
   nombre: string
   descripcion?: string | null
+  imagenUrl?: string | null
   orden?: number | null
   productos?: Prisma.ProductoUncheckedCreateNestedManyWithoutLineaInput
 }
@@ -272,22 +303,28 @@ export type LineaUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tipo?: Prisma.TipoUpdateOneRequiredWithoutLineasNestedInput
   productos?: Prisma.ProductoUpdateManyWithoutLineaNestedInput
 }
 
 export type LineaUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tipoId?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   productos?: Prisma.ProductoUncheckedUpdateManyWithoutLineaNestedInput
 }
 
 export type LineaCreateManyInput = {
   id?: string
+  tipoId: string
   nombre: string
   descripcion?: string | null
+  imagenUrl?: string | null
   orden?: number | null
 }
 
@@ -295,20 +332,35 @@ export type LineaUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type LineaUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tipoId?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type LineaListRelationFilter = {
+  every?: Prisma.LineaWhereInput
+  some?: Prisma.LineaWhereInput
+  none?: Prisma.LineaWhereInput
+}
+
+export type LineaOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type LineaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tipoId?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  imagenUrl?: Prisma.SortOrder
   orden?: Prisma.SortOrder
 }
 
@@ -318,15 +370,19 @@ export type LineaAvgOrderByAggregateInput = {
 
 export type LineaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tipoId?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  imagenUrl?: Prisma.SortOrder
   orden?: Prisma.SortOrder
 }
 
 export type LineaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tipoId?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  imagenUrl?: Prisma.SortOrder
   orden?: Prisma.SortOrder
 }
 
@@ -337,6 +393,48 @@ export type LineaSumOrderByAggregateInput = {
 export type LineaScalarRelationFilter = {
   is?: Prisma.LineaWhereInput
   isNot?: Prisma.LineaWhereInput
+}
+
+export type LineaCreateNestedManyWithoutTipoInput = {
+  create?: Prisma.XOR<Prisma.LineaCreateWithoutTipoInput, Prisma.LineaUncheckedCreateWithoutTipoInput> | Prisma.LineaCreateWithoutTipoInput[] | Prisma.LineaUncheckedCreateWithoutTipoInput[]
+  connectOrCreate?: Prisma.LineaCreateOrConnectWithoutTipoInput | Prisma.LineaCreateOrConnectWithoutTipoInput[]
+  createMany?: Prisma.LineaCreateManyTipoInputEnvelope
+  connect?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+}
+
+export type LineaUncheckedCreateNestedManyWithoutTipoInput = {
+  create?: Prisma.XOR<Prisma.LineaCreateWithoutTipoInput, Prisma.LineaUncheckedCreateWithoutTipoInput> | Prisma.LineaCreateWithoutTipoInput[] | Prisma.LineaUncheckedCreateWithoutTipoInput[]
+  connectOrCreate?: Prisma.LineaCreateOrConnectWithoutTipoInput | Prisma.LineaCreateOrConnectWithoutTipoInput[]
+  createMany?: Prisma.LineaCreateManyTipoInputEnvelope
+  connect?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+}
+
+export type LineaUpdateManyWithoutTipoNestedInput = {
+  create?: Prisma.XOR<Prisma.LineaCreateWithoutTipoInput, Prisma.LineaUncheckedCreateWithoutTipoInput> | Prisma.LineaCreateWithoutTipoInput[] | Prisma.LineaUncheckedCreateWithoutTipoInput[]
+  connectOrCreate?: Prisma.LineaCreateOrConnectWithoutTipoInput | Prisma.LineaCreateOrConnectWithoutTipoInput[]
+  upsert?: Prisma.LineaUpsertWithWhereUniqueWithoutTipoInput | Prisma.LineaUpsertWithWhereUniqueWithoutTipoInput[]
+  createMany?: Prisma.LineaCreateManyTipoInputEnvelope
+  set?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  disconnect?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  delete?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  connect?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  update?: Prisma.LineaUpdateWithWhereUniqueWithoutTipoInput | Prisma.LineaUpdateWithWhereUniqueWithoutTipoInput[]
+  updateMany?: Prisma.LineaUpdateManyWithWhereWithoutTipoInput | Prisma.LineaUpdateManyWithWhereWithoutTipoInput[]
+  deleteMany?: Prisma.LineaScalarWhereInput | Prisma.LineaScalarWhereInput[]
+}
+
+export type LineaUncheckedUpdateManyWithoutTipoNestedInput = {
+  create?: Prisma.XOR<Prisma.LineaCreateWithoutTipoInput, Prisma.LineaUncheckedCreateWithoutTipoInput> | Prisma.LineaCreateWithoutTipoInput[] | Prisma.LineaUncheckedCreateWithoutTipoInput[]
+  connectOrCreate?: Prisma.LineaCreateOrConnectWithoutTipoInput | Prisma.LineaCreateOrConnectWithoutTipoInput[]
+  upsert?: Prisma.LineaUpsertWithWhereUniqueWithoutTipoInput | Prisma.LineaUpsertWithWhereUniqueWithoutTipoInput[]
+  createMany?: Prisma.LineaCreateManyTipoInputEnvelope
+  set?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  disconnect?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  delete?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  connect?: Prisma.LineaWhereUniqueInput | Prisma.LineaWhereUniqueInput[]
+  update?: Prisma.LineaUpdateWithWhereUniqueWithoutTipoInput | Prisma.LineaUpdateWithWhereUniqueWithoutTipoInput[]
+  updateMany?: Prisma.LineaUpdateManyWithWhereWithoutTipoInput | Prisma.LineaUpdateManyWithWhereWithoutTipoInput[]
+  deleteMany?: Prisma.LineaScalarWhereInput | Prisma.LineaScalarWhereInput[]
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -361,17 +459,77 @@ export type LineaUpdateOneRequiredWithoutProductosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LineaUpdateToOneWithWhereWithoutProductosInput, Prisma.LineaUpdateWithoutProductosInput>, Prisma.LineaUncheckedUpdateWithoutProductosInput>
 }
 
+export type LineaCreateWithoutTipoInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  imagenUrl?: string | null
+  orden?: number | null
+  productos?: Prisma.ProductoCreateNestedManyWithoutLineaInput
+}
+
+export type LineaUncheckedCreateWithoutTipoInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  imagenUrl?: string | null
+  orden?: number | null
+  productos?: Prisma.ProductoUncheckedCreateNestedManyWithoutLineaInput
+}
+
+export type LineaCreateOrConnectWithoutTipoInput = {
+  where: Prisma.LineaWhereUniqueInput
+  create: Prisma.XOR<Prisma.LineaCreateWithoutTipoInput, Prisma.LineaUncheckedCreateWithoutTipoInput>
+}
+
+export type LineaCreateManyTipoInputEnvelope = {
+  data: Prisma.LineaCreateManyTipoInput | Prisma.LineaCreateManyTipoInput[]
+  skipDuplicates?: boolean
+}
+
+export type LineaUpsertWithWhereUniqueWithoutTipoInput = {
+  where: Prisma.LineaWhereUniqueInput
+  update: Prisma.XOR<Prisma.LineaUpdateWithoutTipoInput, Prisma.LineaUncheckedUpdateWithoutTipoInput>
+  create: Prisma.XOR<Prisma.LineaCreateWithoutTipoInput, Prisma.LineaUncheckedCreateWithoutTipoInput>
+}
+
+export type LineaUpdateWithWhereUniqueWithoutTipoInput = {
+  where: Prisma.LineaWhereUniqueInput
+  data: Prisma.XOR<Prisma.LineaUpdateWithoutTipoInput, Prisma.LineaUncheckedUpdateWithoutTipoInput>
+}
+
+export type LineaUpdateManyWithWhereWithoutTipoInput = {
+  where: Prisma.LineaScalarWhereInput
+  data: Prisma.XOR<Prisma.LineaUpdateManyMutationInput, Prisma.LineaUncheckedUpdateManyWithoutTipoInput>
+}
+
+export type LineaScalarWhereInput = {
+  AND?: Prisma.LineaScalarWhereInput | Prisma.LineaScalarWhereInput[]
+  OR?: Prisma.LineaScalarWhereInput[]
+  NOT?: Prisma.LineaScalarWhereInput | Prisma.LineaScalarWhereInput[]
+  id?: Prisma.StringFilter<"Linea"> | string
+  tipoId?: Prisma.StringFilter<"Linea"> | string
+  nombre?: Prisma.StringFilter<"Linea"> | string
+  descripcion?: Prisma.StringNullableFilter<"Linea"> | string | null
+  imagenUrl?: Prisma.StringNullableFilter<"Linea"> | string | null
+  orden?: Prisma.IntNullableFilter<"Linea"> | number | null
+}
+
 export type LineaCreateWithoutProductosInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  imagenUrl?: string | null
   orden?: number | null
+  tipo: Prisma.TipoCreateNestedOneWithoutLineasInput
 }
 
 export type LineaUncheckedCreateWithoutProductosInput = {
   id?: string
+  tipoId: string
   nombre: string
   descripcion?: string | null
+  imagenUrl?: string | null
   orden?: number | null
 }
 
@@ -395,13 +553,51 @@ export type LineaUpdateWithoutProductosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tipo?: Prisma.TipoUpdateOneRequiredWithoutLineasNestedInput
 }
 
 export type LineaUncheckedUpdateWithoutProductosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tipoId?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type LineaCreateManyTipoInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  imagenUrl?: string | null
+  orden?: number | null
+}
+
+export type LineaUpdateWithoutTipoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productos?: Prisma.ProductoUpdateManyWithoutLineaNestedInput
+}
+
+export type LineaUncheckedUpdateWithoutTipoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productos?: Prisma.ProductoUncheckedUpdateManyWithoutLineaNestedInput
+}
+
+export type LineaUncheckedUpdateManyWithoutTipoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imagenUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orden?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -438,51 +634,70 @@ export type LineaCountOutputTypeCountProductosArgs<ExtArgs extends runtime.Types
 
 export type LineaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tipoId?: boolean
   nombre?: boolean
   descripcion?: boolean
+  imagenUrl?: boolean
   orden?: boolean
+  tipo?: boolean | Prisma.TipoDefaultArgs<ExtArgs>
   productos?: boolean | Prisma.Linea$productosArgs<ExtArgs>
   _count?: boolean | Prisma.LineaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["linea"]>
 
 export type LineaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tipoId?: boolean
   nombre?: boolean
   descripcion?: boolean
+  imagenUrl?: boolean
   orden?: boolean
+  tipo?: boolean | Prisma.TipoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["linea"]>
 
 export type LineaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tipoId?: boolean
   nombre?: boolean
   descripcion?: boolean
+  imagenUrl?: boolean
   orden?: boolean
+  tipo?: boolean | Prisma.TipoDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["linea"]>
 
 export type LineaSelectScalar = {
   id?: boolean
+  tipoId?: boolean
   nombre?: boolean
   descripcion?: boolean
+  imagenUrl?: boolean
   orden?: boolean
 }
 
-export type LineaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "orden", ExtArgs["result"]["linea"]>
+export type LineaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tipoId" | "nombre" | "descripcion" | "imagenUrl" | "orden", ExtArgs["result"]["linea"]>
 export type LineaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tipo?: boolean | Prisma.TipoDefaultArgs<ExtArgs>
   productos?: boolean | Prisma.Linea$productosArgs<ExtArgs>
   _count?: boolean | Prisma.LineaCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type LineaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type LineaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type LineaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tipo?: boolean | Prisma.TipoDefaultArgs<ExtArgs>
+}
+export type LineaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tipo?: boolean | Prisma.TipoDefaultArgs<ExtArgs>
+}
 
 export type $LineaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Linea"
   objects: {
+    tipo: Prisma.$TipoPayload<ExtArgs>
     productos: Prisma.$ProductoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    tipoId: string
     nombre: string
     descripcion: string | null
+    imagenUrl: string | null
     orden: number | null
   }, ExtArgs["result"]["linea"]>
   composites: {}
@@ -878,6 +1093,7 @@ readonly fields: LineaFieldRefs;
  */
 export interface Prisma__LineaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tipo<T extends Prisma.TipoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TipoDefaultArgs<ExtArgs>>): Prisma.Prisma__TipoClient<runtime.Types.Result.GetResult<Prisma.$TipoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   productos<T extends Prisma.Linea$productosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Linea$productosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -909,8 +1125,10 @@ export interface Prisma__LineaClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface LineaFieldRefs {
   readonly id: Prisma.FieldRef<"Linea", 'String'>
+  readonly tipoId: Prisma.FieldRef<"Linea", 'String'>
   readonly nombre: Prisma.FieldRef<"Linea", 'String'>
   readonly descripcion: Prisma.FieldRef<"Linea", 'String'>
+  readonly imagenUrl: Prisma.FieldRef<"Linea", 'String'>
   readonly orden: Prisma.FieldRef<"Linea", 'Int'>
 }
     
@@ -1166,6 +1384,10 @@ export type LineaCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    */
   data: Prisma.LineaCreateManyInput | Prisma.LineaCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LineaIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1236,6 +1458,10 @@ export type LineaUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many Lineas to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LineaIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

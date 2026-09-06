@@ -42,6 +42,19 @@ export const entregaSchema = z.discriminatedUnion("tipo", [
 export type EntregaDatos = z.infer<typeof entregaSchema>;
 export type TipoEntrega = EntregaDatos["tipo"];
 
+export const pagoSchema = z.discriminatedUnion("tipo", [
+  z.object({ tipo: z.literal("online") }),
+  z.object({ tipo: z.literal("transferencia") }),
+  z.object({ tipo: z.literal("efectivo_local") }),
+]);
+
+export type PagoDatos = z.infer<typeof pagoSchema>;
+export type TipoPago = PagoDatos["tipo"];
+
+export interface PagoFormValues {
+  tipo: TipoPago;
+}
+
 export type CheckoutDatos = z.infer<typeof checkoutSchema>;
 
 /**

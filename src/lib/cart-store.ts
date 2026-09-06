@@ -16,6 +16,12 @@ export interface CartItem {
   material?: string;
   /** Precio unitario capturado como snapshot al momento de agregar. */
   precio: number;
+  /**
+   * Precio por transferencia capturado como snapshot al momento de agregar.
+   * Se usa para el descuento automático al pagar por transferencia.
+   * Ítems agregados antes de este campo no lo tienen (sin descuento).
+   */
+  precioTransferencia?: number;
   /** Imagen representativa (opcional) para la UI del carrito. */
   imagen?: string;
   cantidad: number;

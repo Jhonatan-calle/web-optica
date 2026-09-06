@@ -30,6 +30,8 @@ export type ProductoMinAggregateOutputType = {
   nombre: string | null
   slug: string | null
   descripcion: string | null
+  dimensiones: string | null
+  garantia: string | null
   destacado: boolean | null
   activo: boolean | null
   createdAt: Date | null
@@ -42,6 +44,8 @@ export type ProductoMaxAggregateOutputType = {
   nombre: string | null
   slug: string | null
   descripcion: string | null
+  dimensiones: string | null
+  garantia: string | null
   destacado: boolean | null
   activo: boolean | null
   createdAt: Date | null
@@ -54,6 +58,8 @@ export type ProductoCountAggregateOutputType = {
   nombre: number
   slug: number
   descripcion: number
+  dimensiones: number
+  garantia: number
   destacado: number
   activo: number
   createdAt: number
@@ -68,6 +74,8 @@ export type ProductoMinAggregateInputType = {
   nombre?: true
   slug?: true
   descripcion?: true
+  dimensiones?: true
+  garantia?: true
   destacado?: true
   activo?: true
   createdAt?: true
@@ -80,6 +88,8 @@ export type ProductoMaxAggregateInputType = {
   nombre?: true
   slug?: true
   descripcion?: true
+  dimensiones?: true
+  garantia?: true
   destacado?: true
   activo?: true
   createdAt?: true
@@ -92,6 +102,8 @@ export type ProductoCountAggregateInputType = {
   nombre?: true
   slug?: true
   descripcion?: true
+  dimensiones?: true
+  garantia?: true
   destacado?: true
   activo?: true
   createdAt?: true
@@ -177,6 +189,8 @@ export type ProductoGroupByOutputType = {
   nombre: string
   slug: string
   descripcion: string | null
+  dimensiones: string | null
+  garantia: string | null
   destacado: boolean
   activo: boolean
   createdAt: Date
@@ -210,6 +224,8 @@ export type ProductoWhereInput = {
   nombre?: Prisma.StringFilter<"Producto"> | string
   slug?: Prisma.StringFilter<"Producto"> | string
   descripcion?: Prisma.StringNullableFilter<"Producto"> | string | null
+  dimensiones?: Prisma.StringNullableFilter<"Producto"> | string | null
+  garantia?: Prisma.StringNullableFilter<"Producto"> | string | null
   destacado?: Prisma.BoolFilter<"Producto"> | boolean
   activo?: Prisma.BoolFilter<"Producto"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Producto"> | Date | string
@@ -224,6 +240,8 @@ export type ProductoOrderByWithRelationInput = {
   nombre?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   descripcion?: Prisma.SortOrderInput | Prisma.SortOrder
+  dimensiones?: Prisma.SortOrderInput | Prisma.SortOrder
+  garantia?: Prisma.SortOrderInput | Prisma.SortOrder
   destacado?: Prisma.SortOrder
   activo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -241,6 +259,8 @@ export type ProductoWhereUniqueInput = Prisma.AtLeast<{
   lineaId?: Prisma.StringFilter<"Producto"> | string
   nombre?: Prisma.StringFilter<"Producto"> | string
   descripcion?: Prisma.StringNullableFilter<"Producto"> | string | null
+  dimensiones?: Prisma.StringNullableFilter<"Producto"> | string | null
+  garantia?: Prisma.StringNullableFilter<"Producto"> | string | null
   destacado?: Prisma.BoolFilter<"Producto"> | boolean
   activo?: Prisma.BoolFilter<"Producto"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Producto"> | Date | string
@@ -255,6 +275,8 @@ export type ProductoOrderByWithAggregationInput = {
   nombre?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   descripcion?: Prisma.SortOrderInput | Prisma.SortOrder
+  dimensiones?: Prisma.SortOrderInput | Prisma.SortOrder
+  garantia?: Prisma.SortOrderInput | Prisma.SortOrder
   destacado?: Prisma.SortOrder
   activo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -273,6 +295,8 @@ export type ProductoScalarWhereWithAggregatesInput = {
   nombre?: Prisma.StringWithAggregatesFilter<"Producto"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Producto"> | string
   descripcion?: Prisma.StringNullableWithAggregatesFilter<"Producto"> | string | null
+  dimensiones?: Prisma.StringNullableWithAggregatesFilter<"Producto"> | string | null
+  garantia?: Prisma.StringNullableWithAggregatesFilter<"Producto"> | string | null
   destacado?: Prisma.BoolWithAggregatesFilter<"Producto"> | boolean
   activo?: Prisma.BoolWithAggregatesFilter<"Producto"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Producto"> | Date | string
@@ -284,6 +308,8 @@ export type ProductoCreateInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -298,6 +324,8 @@ export type ProductoUncheckedCreateInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -310,6 +338,8 @@ export type ProductoUpdateInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -324,6 +354,8 @@ export type ProductoUncheckedUpdateInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,6 +369,8 @@ export type ProductoCreateManyInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -348,6 +382,8 @@ export type ProductoUpdateManyMutationInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -360,6 +396,8 @@ export type ProductoUncheckedUpdateManyInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -382,6 +420,8 @@ export type ProductoCountOrderByAggregateInput = {
   nombre?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  dimensiones?: Prisma.SortOrder
+  garantia?: Prisma.SortOrder
   destacado?: Prisma.SortOrder
   activo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -394,6 +434,8 @@ export type ProductoMaxOrderByAggregateInput = {
   nombre?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  dimensiones?: Prisma.SortOrder
+  garantia?: Prisma.SortOrder
   destacado?: Prisma.SortOrder
   activo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -406,6 +448,8 @@ export type ProductoMinOrderByAggregateInput = {
   nombre?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  dimensiones?: Prisma.SortOrder
+  garantia?: Prisma.SortOrder
   destacado?: Prisma.SortOrder
   activo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -482,6 +526,8 @@ export type ProductoCreateWithoutLineaInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -494,6 +540,8 @@ export type ProductoUncheckedCreateWithoutLineaInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -536,6 +584,8 @@ export type ProductoScalarWhereInput = {
   nombre?: Prisma.StringFilter<"Producto"> | string
   slug?: Prisma.StringFilter<"Producto"> | string
   descripcion?: Prisma.StringNullableFilter<"Producto"> | string | null
+  dimensiones?: Prisma.StringNullableFilter<"Producto"> | string | null
+  garantia?: Prisma.StringNullableFilter<"Producto"> | string | null
   destacado?: Prisma.BoolFilter<"Producto"> | boolean
   activo?: Prisma.BoolFilter<"Producto"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Producto"> | Date | string
@@ -547,6 +597,8 @@ export type ProductoCreateWithoutVariantesInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -560,6 +612,8 @@ export type ProductoUncheckedCreateWithoutVariantesInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -587,6 +641,8 @@ export type ProductoUpdateWithoutVariantesInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -600,6 +656,8 @@ export type ProductoUncheckedUpdateWithoutVariantesInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -611,6 +669,8 @@ export type ProductoCreateManyLineaInput = {
   nombre: string
   slug: string
   descripcion?: string | null
+  dimensiones?: string | null
+  garantia?: string | null
   destacado?: boolean
   activo?: boolean
   createdAt?: Date | string
@@ -622,6 +682,8 @@ export type ProductoUpdateWithoutLineaInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -634,6 +696,8 @@ export type ProductoUncheckedUpdateWithoutLineaInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -646,6 +710,8 @@ export type ProductoUncheckedUpdateManyWithoutLineaInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dimensiones?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  garantia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   destacado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -689,6 +755,8 @@ export type ProductoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   nombre?: boolean
   slug?: boolean
   descripcion?: boolean
+  dimensiones?: boolean
+  garantia?: boolean
   destacado?: boolean
   activo?: boolean
   createdAt?: boolean
@@ -704,6 +772,8 @@ export type ProductoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   nombre?: boolean
   slug?: boolean
   descripcion?: boolean
+  dimensiones?: boolean
+  garantia?: boolean
   destacado?: boolean
   activo?: boolean
   createdAt?: boolean
@@ -717,6 +787,8 @@ export type ProductoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   nombre?: boolean
   slug?: boolean
   descripcion?: boolean
+  dimensiones?: boolean
+  garantia?: boolean
   destacado?: boolean
   activo?: boolean
   createdAt?: boolean
@@ -730,13 +802,15 @@ export type ProductoSelectScalar = {
   nombre?: boolean
   slug?: boolean
   descripcion?: boolean
+  dimensiones?: boolean
+  garantia?: boolean
   destacado?: boolean
   activo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "lineaId" | "nombre" | "slug" | "descripcion" | "destacado" | "activo" | "createdAt" | "updatedAt", ExtArgs["result"]["producto"]>
+export type ProductoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "lineaId" | "nombre" | "slug" | "descripcion" | "dimensiones" | "garantia" | "destacado" | "activo" | "createdAt" | "updatedAt", ExtArgs["result"]["producto"]>
 export type ProductoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   linea?: boolean | Prisma.LineaDefaultArgs<ExtArgs>
   variantes?: boolean | Prisma.Producto$variantesArgs<ExtArgs>
@@ -761,6 +835,8 @@ export type $ProductoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     nombre: string
     slug: string
     descripcion: string | null
+    dimensiones: string | null
+    garantia: string | null
     destacado: boolean
     activo: boolean
     createdAt: Date
@@ -1195,6 +1271,8 @@ export interface ProductoFieldRefs {
   readonly nombre: Prisma.FieldRef<"Producto", 'String'>
   readonly slug: Prisma.FieldRef<"Producto", 'String'>
   readonly descripcion: Prisma.FieldRef<"Producto", 'String'>
+  readonly dimensiones: Prisma.FieldRef<"Producto", 'String'>
+  readonly garantia: Prisma.FieldRef<"Producto", 'String'>
   readonly destacado: Prisma.FieldRef<"Producto", 'Boolean'>
   readonly activo: Prisma.FieldRef<"Producto", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Producto", 'DateTime'>

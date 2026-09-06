@@ -44,6 +44,7 @@ export type MetodoEnvio = (typeof MetodoEnvio)[keyof typeof MetodoEnvio]
 
 export const MetodoPago = {
   MERCADO_PAGO: 'MERCADO_PAGO',
+  TRANSFERENCIA: 'TRANSFERENCIA',
   PAGO_EN_LOCAL: 'PAGO_EN_LOCAL'
 } as const
 

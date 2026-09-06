@@ -109,10 +109,12 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * Opción 1: Envío a Domicilio (solicita dirección completa y CP).
   * Opción 2: Retiro Gratis en el Local Físico de La Óptica.
   * Implementado en `src/components/checkout/entrega-form.tsx` + stepper en `src/app/checkout/page.tsx` (Paso 1 Datos → Paso 2 Entrega → Paso 3 Pago). Los datos se persisten en `src/lib/checkout-store.ts` (`entrega`, localStorage). El costo de envío se estima con el util compartido `src/lib/envio-utils.ts` (`calcularTarifaEnvio`, reutiliza la tabla mock de tarifas por CP; pendiente API real/transportistas — ver B5). La dirección y horario del local para retiro viven en `src/lib/tienda-info.ts`.
-* [ ] **Selección de Método de Pago:**
+* [x] **Selección de Método de Pago:**
   * Opción 1: Pago Online (preparado para conectar el SDK de Mercado Pago en la Fase 3).
   * Opción 2: Transferencia Bancaria (muestra datos CBU/Alias y aplica descuento automático).
   * Opción 3: Pago en Efectivo al Retirar en el Local.
+  * Implementado en `src/components/checkout/pago-form.tsx` + paso 3 del stepper en `src/app/checkout/page.tsx`. Los datos se persisten en `src/lib/checkout-store.ts` (`pago`, localStorage). Los totales (subtotal/descuento por transferencia/envío/total) se calculan con `src/lib/pago-utils.ts` (`calcularTotales`); el descuento por transferencia usa el snapshot `precioTransferencia` del carrito (`src/lib/cart-store.ts`), las cuotas (3 sin interés) solo aplican a Pago Online (`calcularCuotas`). El CBU/Alias/titular viven (placeholder `EDITAR`) en `src/lib/tienda-info.ts`. Efectivo en local solo disponible si la entrega es retiro (RF-11). Enum `MetodoPago` extendido con `TRANSFERENCIA` en `prisma/schema.prisma` (migración `agregar-transferencia-metodo-pago`), listo para mapear la orden.
+* [ ] ⚠️ **Pendiente (dato real):** completar `ALIAS_LA_OPTICA`, `CBU_LA_OPTICA` y `TITULAR_CUENTA` en `src/lib/tienda-info.ts` — hoy son placeholders `EDITAR` y son necesarios para que la opción "Transferencia Bancaria" funcione de verdad.
 * [ ] **Página de Confirmación de Pedido (`/orden/[id]`):**
   * Resumen del pedido generado en la base de datos (PostgreSQL/Prisma) con estado "Pendiente de Pago".
 

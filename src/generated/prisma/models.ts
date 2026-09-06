@@ -10,10 +10,12 @@
  */
 export type * from './models/Usuario'
 export type * from './models/Direccion'
+export type * from './models/Tipo'
 export type * from './models/Linea'
 export type * from './models/Producto'
 export type * from './models/Variante'
 export type * from './models/Imagen'
 export type * from './models/Orden'
 export type * from './models/ItemOrden'
+export type * from './models/Configuracion'
 export type * from './commonInputTypes'

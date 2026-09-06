@@ -160,6 +160,7 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
             color: varianteActiva.color,
             material: varianteActiva.material,
             precio: varianteActiva.precio,
+            precioTransferencia: varianteActiva.precioTransferencia,
             imagen: varianteActiva.imagenes[0]?.url,
             cantidad: 1,
           });

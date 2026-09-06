@@ -53,12 +53,14 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Usuario: 'Usuario',
   Direccion: 'Direccion',
+  Tipo: 'Tipo',
   Linea: 'Linea',
   Producto: 'Producto',
   Variante: 'Variante',
   Imagen: 'Imagen',
   Orden: 'Orden',
-  ItemOrden: 'ItemOrden'
+  ItemOrden: 'ItemOrden',
+  Configuracion: 'Configuracion'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,10 +107,20 @@ export const DireccionScalarFieldEnum = {
 export type DireccionScalarFieldEnum = (typeof DireccionScalarFieldEnum)[keyof typeof DireccionScalarFieldEnum]
 
 
+export const TipoScalarFieldEnum = {
+  id: 'id',
+  nombre: 'nombre'
+} as const
+
+export type TipoScalarFieldEnum = (typeof TipoScalarFieldEnum)[keyof typeof TipoScalarFieldEnum]
+
+
 export const LineaScalarFieldEnum = {
   id: 'id',
+  tipoId: 'tipoId',
   nombre: 'nombre',
   descripcion: 'descripcion',
+  imagenUrl: 'imagenUrl',
   orden: 'orden'
 } as const
 
@@ -121,6 +133,8 @@ export const ProductoScalarFieldEnum = {
   nombre: 'nombre',
   slug: 'slug',
   descripcion: 'descripcion',
+  dimensiones: 'dimensiones',
+  garantia: 'garantia',
   destacado: 'destacado',
   activo: 'activo',
   createdAt: 'createdAt',
@@ -192,6 +206,15 @@ export const ItemOrdenScalarFieldEnum = {
 } as const
 
 export type ItemOrdenScalarFieldEnum = (typeof ItemOrdenScalarFieldEnum)[keyof typeof ItemOrdenScalarFieldEnum]
+
+
+export const ConfiguracionScalarFieldEnum = {
+  id: 'id',
+  clave: 'clave',
+  valor: 'valor'
+} as const
+
+export type ConfiguracionScalarFieldEnum = (typeof ConfiguracionScalarFieldEnum)[keyof typeof ConfiguracionScalarFieldEnum]
 
 
 export const SortOrder = {

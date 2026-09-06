@@ -26,7 +26,7 @@ function RadioGroupItem({
       htmlFor={id}
       data-slot="radio-group-item"
       className={cn(
-        "group flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-background p-4 transition-all hover:border-muted-foreground/40 has-[:checked]:border-[#00848C] has-[:checked]:ring-3 has-[:checked]:ring-[#00848C]/10 has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50",
+        "group flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-background p-4 transition-all hover:border-muted-foreground/40 has-[:checked]:border-[#00848C] has-[:checked]:ring-3 has-[:checked]:ring-[#00848C]/10 has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
         className,
       )}
     >

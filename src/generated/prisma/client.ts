@@ -52,6 +52,11 @@ export type Usuario = Prisma.UsuarioModel
  */
 export type Direccion = Prisma.DireccionModel
 /**
+ * Model Tipo
+ * 
+ */
+export type Tipo = Prisma.TipoModel
+/**
  * Model Linea
  * 
  */
@@ -81,3 +86,8 @@ export type Orden = Prisma.OrdenModel
  * 
  */
 export type ItemOrden = Prisma.ItemOrdenModel
+/**
+ * Model Configuracion
+ * 
+ */
+export type Configuracion = Prisma.ConfiguracionModel
