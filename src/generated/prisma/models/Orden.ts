@@ -45,6 +45,9 @@ export type OrdenMinAggregateOutputType = {
   numero: number | null
   usuarioId: string | null
   emailContacto: string | null
+  nombreContacto: string | null
+  telefonoContacto: string | null
+  dniContacto: string | null
   estado: $Enums.EstadoOrden | null
   metodoPago: $Enums.MetodoPago | null
   metodoEnvio: $Enums.MetodoEnvio | null
@@ -67,6 +70,9 @@ export type OrdenMaxAggregateOutputType = {
   numero: number | null
   usuarioId: string | null
   emailContacto: string | null
+  nombreContacto: string | null
+  telefonoContacto: string | null
+  dniContacto: string | null
   estado: $Enums.EstadoOrden | null
   metodoPago: $Enums.MetodoPago | null
   metodoEnvio: $Enums.MetodoEnvio | null
@@ -89,6 +95,9 @@ export type OrdenCountAggregateOutputType = {
   numero: number
   usuarioId: number
   emailContacto: number
+  nombreContacto: number
+  telefonoContacto: number
+  dniContacto: number
   estado: number
   metodoPago: number
   metodoEnvio: number
@@ -127,6 +136,9 @@ export type OrdenMinAggregateInputType = {
   numero?: true
   usuarioId?: true
   emailContacto?: true
+  nombreContacto?: true
+  telefonoContacto?: true
+  dniContacto?: true
   estado?: true
   metodoPago?: true
   metodoEnvio?: true
@@ -149,6 +161,9 @@ export type OrdenMaxAggregateInputType = {
   numero?: true
   usuarioId?: true
   emailContacto?: true
+  nombreContacto?: true
+  telefonoContacto?: true
+  dniContacto?: true
   estado?: true
   metodoPago?: true
   metodoEnvio?: true
@@ -171,6 +186,9 @@ export type OrdenCountAggregateInputType = {
   numero?: true
   usuarioId?: true
   emailContacto?: true
+  nombreContacto?: true
+  telefonoContacto?: true
+  dniContacto?: true
   estado?: true
   metodoPago?: true
   metodoEnvio?: true
@@ -280,6 +298,9 @@ export type OrdenGroupByOutputType = {
   numero: number
   usuarioId: string | null
   emailContacto: string
+  nombreContacto: string | null
+  telefonoContacto: string | null
+  dniContacto: string | null
   estado: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -325,6 +346,9 @@ export type OrdenWhereInput = {
   numero?: Prisma.IntFilter<"Orden"> | number
   usuarioId?: Prisma.StringNullableFilter<"Orden"> | string | null
   emailContacto?: Prisma.StringFilter<"Orden"> | string
+  nombreContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
+  telefonoContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
+  dniContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
   estado?: Prisma.EnumEstadoOrdenFilter<"Orden"> | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFilter<"Orden"> | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFilter<"Orden"> | $Enums.MetodoEnvio
@@ -349,6 +373,9 @@ export type OrdenOrderByWithRelationInput = {
   numero?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrderInput | Prisma.SortOrder
   emailContacto?: Prisma.SortOrder
+  nombreContacto?: Prisma.SortOrderInput | Prisma.SortOrder
+  telefonoContacto?: Prisma.SortOrderInput | Prisma.SortOrder
+  dniContacto?: Prisma.SortOrderInput | Prisma.SortOrder
   estado?: Prisma.SortOrder
   metodoPago?: Prisma.SortOrder
   metodoEnvio?: Prisma.SortOrder
@@ -376,6 +403,9 @@ export type OrdenWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.OrdenWhereInput | Prisma.OrdenWhereInput[]
   usuarioId?: Prisma.StringNullableFilter<"Orden"> | string | null
   emailContacto?: Prisma.StringFilter<"Orden"> | string
+  nombreContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
+  telefonoContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
+  dniContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
   estado?: Prisma.EnumEstadoOrdenFilter<"Orden"> | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFilter<"Orden"> | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFilter<"Orden"> | $Enums.MetodoEnvio
@@ -400,6 +430,9 @@ export type OrdenOrderByWithAggregationInput = {
   numero?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrderInput | Prisma.SortOrder
   emailContacto?: Prisma.SortOrder
+  nombreContacto?: Prisma.SortOrderInput | Prisma.SortOrder
+  telefonoContacto?: Prisma.SortOrderInput | Prisma.SortOrder
+  dniContacto?: Prisma.SortOrderInput | Prisma.SortOrder
   estado?: Prisma.SortOrder
   metodoPago?: Prisma.SortOrder
   metodoEnvio?: Prisma.SortOrder
@@ -430,6 +463,9 @@ export type OrdenScalarWhereWithAggregatesInput = {
   numero?: Prisma.IntWithAggregatesFilter<"Orden"> | number
   usuarioId?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
   emailContacto?: Prisma.StringWithAggregatesFilter<"Orden"> | string
+  nombreContacto?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
+  telefonoContacto?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
+  dniContacto?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
   estado?: Prisma.EnumEstadoOrdenWithAggregatesFilter<"Orden"> | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoWithAggregatesFilter<"Orden"> | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioWithAggregatesFilter<"Orden"> | $Enums.MetodoEnvio
@@ -451,6 +487,9 @@ export type OrdenCreateInput = {
   id?: string
   numero?: number
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -475,6 +514,9 @@ export type OrdenUncheckedCreateInput = {
   numero?: number
   usuarioId?: string | null
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -496,6 +538,9 @@ export type OrdenUncheckedCreateInput = {
 export type OrdenUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -520,6 +565,9 @@ export type OrdenUncheckedUpdateInput = {
   numero?: Prisma.IntFieldUpdateOperationsInput | number
   usuarioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -543,6 +591,9 @@ export type OrdenCreateManyInput = {
   numero?: number
   usuarioId?: string | null
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -563,6 +614,9 @@ export type OrdenCreateManyInput = {
 export type OrdenUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -585,6 +639,9 @@ export type OrdenUncheckedUpdateManyInput = {
   numero?: Prisma.IntFieldUpdateOperationsInput | number
   usuarioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -617,6 +674,9 @@ export type OrdenCountOrderByAggregateInput = {
   numero?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   emailContacto?: Prisma.SortOrder
+  nombreContacto?: Prisma.SortOrder
+  telefonoContacto?: Prisma.SortOrder
+  dniContacto?: Prisma.SortOrder
   estado?: Prisma.SortOrder
   metodoPago?: Prisma.SortOrder
   metodoEnvio?: Prisma.SortOrder
@@ -646,6 +706,9 @@ export type OrdenMaxOrderByAggregateInput = {
   numero?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   emailContacto?: Prisma.SortOrder
+  nombreContacto?: Prisma.SortOrder
+  telefonoContacto?: Prisma.SortOrder
+  dniContacto?: Prisma.SortOrder
   estado?: Prisma.SortOrder
   metodoPago?: Prisma.SortOrder
   metodoEnvio?: Prisma.SortOrder
@@ -668,6 +731,9 @@ export type OrdenMinOrderByAggregateInput = {
   numero?: Prisma.SortOrder
   usuarioId?: Prisma.SortOrder
   emailContacto?: Prisma.SortOrder
+  nombreContacto?: Prisma.SortOrder
+  telefonoContacto?: Prisma.SortOrder
+  dniContacto?: Prisma.SortOrder
   estado?: Prisma.SortOrder
   metodoPago?: Prisma.SortOrder
   metodoEnvio?: Prisma.SortOrder
@@ -769,6 +835,9 @@ export type OrdenCreateWithoutUsuarioInput = {
   id?: string
   numero?: number
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -791,6 +860,9 @@ export type OrdenUncheckedCreateWithoutUsuarioInput = {
   id?: string
   numero?: number
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -843,6 +915,9 @@ export type OrdenScalarWhereInput = {
   numero?: Prisma.IntFilter<"Orden"> | number
   usuarioId?: Prisma.StringNullableFilter<"Orden"> | string | null
   emailContacto?: Prisma.StringFilter<"Orden"> | string
+  nombreContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
+  telefonoContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
+  dniContacto?: Prisma.StringNullableFilter<"Orden"> | string | null
   estado?: Prisma.EnumEstadoOrdenFilter<"Orden"> | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFilter<"Orden"> | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFilter<"Orden"> | $Enums.MetodoEnvio
@@ -864,6 +939,9 @@ export type OrdenCreateWithoutItemsInput = {
   id?: string
   numero?: number
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -887,6 +965,9 @@ export type OrdenUncheckedCreateWithoutItemsInput = {
   numero?: number
   usuarioId?: string | null
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -923,6 +1004,9 @@ export type OrdenUpdateToOneWithWhereWithoutItemsInput = {
 export type OrdenUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -946,6 +1030,9 @@ export type OrdenUncheckedUpdateWithoutItemsInput = {
   numero?: Prisma.IntFieldUpdateOperationsInput | number
   usuarioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -967,6 +1054,9 @@ export type OrdenCreateManyUsuarioInput = {
   id?: string
   numero?: number
   emailContacto: string
+  nombreContacto?: string | null
+  telefonoContacto?: string | null
+  dniContacto?: string | null
   estado?: $Enums.EstadoOrden
   metodoPago: $Enums.MetodoPago
   metodoEnvio: $Enums.MetodoEnvio
@@ -987,6 +1077,9 @@ export type OrdenCreateManyUsuarioInput = {
 export type OrdenUpdateWithoutUsuarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -1009,6 +1102,9 @@ export type OrdenUncheckedUpdateWithoutUsuarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   numero?: Prisma.IntFieldUpdateOperationsInput | number
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -1031,6 +1127,9 @@ export type OrdenUncheckedUpdateManyWithoutUsuarioInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   numero?: Prisma.IntFieldUpdateOperationsInput | number
   emailContacto?: Prisma.StringFieldUpdateOperationsInput | string
+  nombreContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefonoContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dniContacto?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estado?: Prisma.EnumEstadoOrdenFieldUpdateOperationsInput | $Enums.EstadoOrden
   metodoPago?: Prisma.EnumMetodoPagoFieldUpdateOperationsInput | $Enums.MetodoPago
   metodoEnvio?: Prisma.EnumMetodoEnvioFieldUpdateOperationsInput | $Enums.MetodoEnvio
@@ -1084,6 +1183,9 @@ export type OrdenSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   numero?: boolean
   usuarioId?: boolean
   emailContacto?: boolean
+  nombreContacto?: boolean
+  telefonoContacto?: boolean
+  dniContacto?: boolean
   estado?: boolean
   metodoPago?: boolean
   metodoEnvio?: boolean
@@ -1109,6 +1211,9 @@ export type OrdenSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   numero?: boolean
   usuarioId?: boolean
   emailContacto?: boolean
+  nombreContacto?: boolean
+  telefonoContacto?: boolean
+  dniContacto?: boolean
   estado?: boolean
   metodoPago?: boolean
   metodoEnvio?: boolean
@@ -1132,6 +1237,9 @@ export type OrdenSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   numero?: boolean
   usuarioId?: boolean
   emailContacto?: boolean
+  nombreContacto?: boolean
+  telefonoContacto?: boolean
+  dniContacto?: boolean
   estado?: boolean
   metodoPago?: boolean
   metodoEnvio?: boolean
@@ -1155,6 +1263,9 @@ export type OrdenSelectScalar = {
   numero?: boolean
   usuarioId?: boolean
   emailContacto?: boolean
+  nombreContacto?: boolean
+  telefonoContacto?: boolean
+  dniContacto?: boolean
   estado?: boolean
   metodoPago?: boolean
   metodoEnvio?: boolean
@@ -1172,7 +1283,7 @@ export type OrdenSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrdenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "numero" | "usuarioId" | "emailContacto" | "estado" | "metodoPago" | "metodoEnvio" | "dirCalle" | "dirNumero" | "dirDepartamento" | "dirCiudad" | "dirProvincia" | "dirCodigoPostal" | "costoEnvio" | "subtotal" | "total" | "mpPaymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["orden"]>
+export type OrdenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "numero" | "usuarioId" | "emailContacto" | "nombreContacto" | "telefonoContacto" | "dniContacto" | "estado" | "metodoPago" | "metodoEnvio" | "dirCalle" | "dirNumero" | "dirDepartamento" | "dirCiudad" | "dirProvincia" | "dirCodigoPostal" | "costoEnvio" | "subtotal" | "total" | "mpPaymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["orden"]>
 export type OrdenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
   items?: boolean | Prisma.Orden$itemsArgs<ExtArgs>
@@ -1196,6 +1307,9 @@ export type $OrdenPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     numero: number
     usuarioId: string | null
     emailContacto: string
+    nombreContacto: string | null
+    telefonoContacto: string | null
+    dniContacto: string | null
     estado: $Enums.EstadoOrden
     metodoPago: $Enums.MetodoPago
     metodoEnvio: $Enums.MetodoEnvio
@@ -1640,6 +1754,9 @@ export interface OrdenFieldRefs {
   readonly numero: Prisma.FieldRef<"Orden", 'Int'>
   readonly usuarioId: Prisma.FieldRef<"Orden", 'String'>
   readonly emailContacto: Prisma.FieldRef<"Orden", 'String'>
+  readonly nombreContacto: Prisma.FieldRef<"Orden", 'String'>
+  readonly telefonoContacto: Prisma.FieldRef<"Orden", 'String'>
+  readonly dniContacto: Prisma.FieldRef<"Orden", 'String'>
   readonly estado: Prisma.FieldRef<"Orden", 'EstadoOrden'>
   readonly metodoPago: Prisma.FieldRef<"Orden", 'MetodoPago'>
   readonly metodoEnvio: Prisma.FieldRef<"Orden", 'MetodoEnvio'>

@@ -8,6 +8,11 @@ export interface Totales {
   total: number;
 }
 
+export type ItemTotal = Pick<
+  CartItem,
+  "precio" | "cantidad" | "precioTransferencia"
+>;
+
 /**
  * Calcula los totales del pedido según el método de pago.
  *
@@ -19,7 +24,7 @@ export interface Totales {
  * local es 0.
  */
 export function calcularTotales(
-  items: CartItem[],
+  items: ItemTotal[],
   costoEnvio: number,
   metodoPago: TipoPago,
 ): Totales {

@@ -140,6 +140,9 @@ model Orden {
   usuario    Usuario?     @relation(fields: [usuarioId], references: [id])
   usuarioId  String?
   emailContacto  String
+  nombreContacto String?
+  telefonoContacto String?
+  dniContacto    String?
   estado     EstadoOrden  @default(PENDIENTE)
   metodoPago MetodoPago
   metodoEnvio MetodoEnvio

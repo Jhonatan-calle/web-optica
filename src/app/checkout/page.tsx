@@ -1,23 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
-import {
-  ArrowLeft,
-  Banknote,
-  Check,
-  CreditCard,
-  Landmark,
-  PackageCheck,
-  Truck,
-} from "lucide-react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
+import { crearOrden } from "./actions";
 import { CheckoutForm, CheckoutVacio } from "@/components/checkout/checkout-form";
 import { EntregaForm } from "@/components/checkout/entrega-form";
 import { PagoForm } from "@/components/checkout/pago-form";
+import { ResumenOrden } from "@/components/checkout/resumen-orden";
 import { useCartStore, selectTotalCount } from "@/lib/cart-store";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { calcularTotales } from "@/lib/pago-utils";
-import { DIRECCION_LOCAL } from "@/lib/tienda-info";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -35,6 +30,10 @@ export default function CheckoutPage() {
   const clearPago = useCheckoutStore((state) => state.clearPago);
   const paso = useCheckoutStore((state) => state.paso);
   const setPaso = useCheckoutStore((state) => state.setPaso);
+  const clearCarrito = useCartStore((state) => state.clear);
+
+  const [creando, setCreando] = useState(false);
+  const router = useRouter();
 
   const costoEnvio =
     entrega?.tipo === "envio" ? (entrega.costoEnvio ?? 0) : 0;
@@ -42,6 +41,35 @@ export default function CheckoutPage() {
     () => calcularTotales(items, costoEnvio, pago?.tipo ?? "online"),
     [items, costoEnvio, pago?.tipo],
   );
+
+  const confirmarPedido = async () => {
+    if (!datos || !entrega || !pago || count === 0) {
+      toast.error("Faltan datos del pedido", {
+        description: "Completá todos los pasos del checkout para continuar.",
+      });
+      return;
+    }
+
+    setCreando(true);
+    try {
+      const resultado = await crearOrden({ datos, entrega, pago, items });
+      if (!resultado.ok) {
+        toast.error("No se pudo crear el pedido", {
+          description: resultado.error,
+        });
+        return;
+      }
+      clearCarrito();
+      clearDatos();
+      router.push(`/orden/${resultado.ordenId}`);
+    } catch {
+      toast.error("No se pudo crear el pedido", {
+        description: "Ocurrió un error inesperado. Intentá de nuevo.",
+      });
+    } finally {
+      setCreando(false);
+    }
+  };
 
   if (!hasHydrated) {
     return (
@@ -163,106 +191,29 @@ export default function CheckoutPage() {
           {paso === 3 && (
             <div className="flex flex-col gap-4">
               <p className="text-sm text-muted-foreground">
-                Confirmación del pedido: llega pronto (próximo paso: generar la
-                orden en la base de datos).
+                Revisá que todo esté en orden antes de confirmar.
               </p>
 
-              {datos && (
-                <div className="rounded-xl border border-border p-4">
-                  <h2 className="mb-2 text-sm font-semibold">
-                    Datos de contacto
-                  </h2>
-                  <p className="text-sm">
-                    {datos.nombre} · {datos.email}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {datos.telefono} · DNI {datos.dni}
-                  </p>
-                </div>
+              {datos && entrega && pago && (
+                <ResumenOrden
+                  datos={datos}
+                  entrega={entrega}
+                  pago={pago}
+                  items={items}
+                  totales={totales}
+                />
               )}
 
-              <div className="rounded-xl border border-border p-4">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                  {entrega?.tipo === "envio" ? (
-                    <Truck className="h-4 w-4 text-[#00848C]" />
-                  ) : (
-                    <PackageCheck className="h-4 w-4 text-[#00848C]" />
-                  )}
-                  Método de entrega
-                </h2>
-                {entrega?.tipo === "envio" ? (
-                  <div className="flex flex-col gap-1 text-sm">
-                    <p className="font-medium">
-                      Envío a domicilio · {entrega.calle} {entrega.numero}
-                      {entrega.departamento ? `, ${entrega.departamento}` : ""}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {entrega.ciudad}, {entrega.provincia} · CP{" "}
-                      {entrega.codigoPostal}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-1 text-sm">
-                    <p className="font-medium">Retiro en el local (gratis)</p>
-                    <p className="text-muted-foreground">{DIRECCION_LOCAL}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-xl border border-border p-4">
-                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                  {pago?.tipo === "online" ? (
-                    <CreditCard className="h-4 w-4 text-[#00848C]" />
-                  ) : pago?.tipo === "transferencia" ? (
-                    <Landmark className="h-4 w-4 text-[#00848C]" />
-                  ) : (
-                    <Banknote className="h-4 w-4 text-[#00848C]" />
-                  )}
-                  Método de pago
-                </h2>
-                <p className="text-sm">
-                  {pago?.tipo === "online" &&
-                    "Pago online (Mercado Pago, se conecta en Fase 3)"}
-                  {pago?.tipo === "transferencia" && "Transferencia bancaria"}
-                  {pago?.tipo === "efectivo_local" &&
-                    "Efectivo al retirar en el local"}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-1.5 rounded-xl border border-border p-4 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">
-                    ${totales.subtotal.toLocaleString("es-AR")}
-                  </span>
-                </div>
-                {totales.descuento > 0 && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#00848C]">
-                      Descuento transferencia
-                    </span>
-                    <span className="font-medium text-[#00848C]">
-                      −${totales.descuento.toLocaleString("es-AR")}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Costo de envío</span>
-                  <span className="font-medium">
-                    {costoEnvio > 0
-                      ? `$${costoEnvio.toLocaleString("es-AR")}`
-                      : "Gratis"}
-                  </span>
-                </div>
-                <div className="mt-1 flex items-center justify-between border-t border-border pt-2">
-                  <span className="font-semibold">Total</span>
-                  <span className="text-lg font-semibold">
-                    ${totales.total.toLocaleString("es-AR")}
-                  </span>
-                </div>
-              </div>
-
               <div className="flex flex-col gap-2">
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={confirmarPedido}
+                  disabled={creando}
+                >
+                  {creando && <Loader2 className="animate-spin" />}
+                  {creando ? "Procesando pago…" : "Confirmar pedido"}
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
