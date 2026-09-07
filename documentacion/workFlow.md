@@ -127,9 +127,10 @@ El objetivo de esta fase es dotar al cliente de **La Óptica** de las herramient
 
 #### **1. Autenticación y Control de Acceso por Roles (`NextAuth.js` / Supabase Auth)**
 
-* [ ] **Configuración de Providers & Middleware:**
-  * [ ] Implementar autenticación segura basada en credenciales (e-mail y contraseña) o enlace mágico (*Magic Link*).
-  * [ ] Crear `src/middleware.ts` para la protección de rutas privadas (`/admin/*`).
+* [ ] **Configuración de Supabase Auth (Providers & Middleware):**
+  * [x] Base SSR instalada con `@supabase/ssr`: clientes browser (`src/lib/supabase/client.ts`) y server (`src/lib/supabase/server.ts`, Server Components/Actions), refresco de sesión en `src/middleware.ts` (`updateSession` con `supabase.auth.getUser()`). Env: `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  * [ ] Implementar autenticación (email + contraseña o alias mágico) con alta de usuarios y rol (`CLIENT` / `ADMIN`, guardado en `app_metadata` de Supabase Auth).
+  * [ ] Crear la protección de rutas privadas `/admin/*` en el middleware (redirigir a `/admin/login` si no hay sesión/rol válido).
 
 * [ ] **Rutas y Control de Permisos:**
   * [ ] Login administrativo en `/admin/login`.

@@ -8,7 +8,7 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 - Tailwind CSS v4 + Shadcn UI
 - Zustand (carrito) + TanStack Query (datos del servidor)
 - Supabase (PostgreSQL) + Prisma 7 (adapter-pg, `prisma.config.ts`)
-- NextAuth.js (roles CLIENT / ADMIN)
+- Supabase Auth (roles CLIENT / ADMIN)
 - MercadoPago (Checkout)
 - Deploy: Vercel + dominio propio
 
