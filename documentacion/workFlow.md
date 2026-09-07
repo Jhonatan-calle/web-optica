@@ -129,13 +129,20 @@ El objetivo de esta fase es dotar al cliente de **La Óptica** de las herramient
 
 * [ ] **Configuración de Supabase Auth (Providers & Middleware):**
   * [x] Base SSR instalada con `@supabase/ssr`: clientes browser (`src/lib/supabase/client.ts`) y server (`src/lib/supabase/server.ts`, Server Components/Actions), refresco de sesión en `src/middleware.ts` (`updateSession` con `supabase.auth.getUser()`). Env: `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-  * [ ] Implementar autenticación (email + contraseña o alias mágico) con alta de usuarios y rol (`CLIENT` / `ADMIN`, guardado en `app_metadata` de Supabase Auth).
-  * [ ] Crear la protección de rutas privadas `/admin/*` en el middleware (redirigir a `/admin/login` si no hay sesión/rol válido).
+  * [x] Implementar autenticación (**email + contraseña**) con alta de usuarios y rol (`CLIENT` / `ADMIN`, guardado en `app_metadata` de Supabase Auth):
+    * Páginas públicas en `src/app/auth/`: `/auth/login` y `/auth/registro` (SSR, `max-w-md`, branding) con forms en `src/components/auth/` (`login-form.tsx` / `register-form.tsx`, react-hook-form + zod vía `src/lib/auth-schema.ts` + `useActionState`-style con estados de error/spinner). Server Actions en `src/app/auth/actions.ts` (`ingresar` con `signInWithPassword`, `registrarse` con `signUp` + `emailRedirectTo`; usan el cliente server `src/lib/supabase/server.ts`). Al estar logueado, `/auth/*` redirige a `/`.
+    * **Confirmación de email:** soporta ambas configuraciones. Con confirmación activa (default en proyectos hosted) muestra "revisá tu email" tras el registro; el link se intercambia en `src/app/auth/confirm/route.ts` (`verifyOtp` para `token_hash`+`type`, y `exchangeCodeForSession` como respaldo PKCE). Con confirmación desactivada (local/dev) redirige directo al inicio.
+    * **Rol en `app_metadata` (server-side, nunca desde el cliente):** trigger SQL `supabase/rol_app_metadata.sql` (ejecutar 1 vez en el SQL Editor de Supabase). `BEFORE INSERT ON auth.users` setea `app_metadata.rol` (whitelist de emails admin → `ADMIN`, resto → `CLIENT`) y `AFTER INSERT` **crea la fila en `public."Usuario"` (Prisma)** mapeando `id` de auth → id, email y rol (con backfill para usuarios preexistentes). ⚠️ Pendiente: reemplazar la whitelist de emails en ese archivo.
+  * [x] Crear la protección de rutas privadas `/admin/*` en el middleware (redirigir a `/admin/login` si no hay sesión/rol válido):
+    * Guard en `src/lib/supabase/middleware.ts` dentro de `updateSession` (reusa el `getUser()` que ya se llamaba): para rutas `/admin/*` (excepto `/admin/login`, que se excluye para no hacer bucle) sin sesión → redirect a `/admin/login?next=<ruta>`; con sesión pero rol distinto de `ADMIN` (`getRol()` sobre `app_metadata.rol`) → redirect a `/`. El matcher de `src/middleware.ts` ya cubría `/admin/*`.
+    * **`/admin/login` funcional** (`src/app/admin/login/page.tsx`): reutiliza `LoginForm` (ahora acepta prop `next`, hidden input) y la Server Action `ingresar` redirige a ese `next` (validado: ruta interna, default `/`; en el panel default `/admin`). Si ya está logueado: ADMIN → `/admin`, CLIENT → `/`.
+    * Placeholder mínimo `src/app/admin/page.tsx` ("Panel en construcción") hasta armar el Dashboard en la siguiente sección.
+    * ⚠️ El rol viene de `app_metadata.rol` (trigger `supabase/rol_app_metadata.sql`). Si el SQL no corrió, todos cuentan como CLIENT y el ADMIN no pasa el guard.
 
-* [ ] **Rutas y Control de Permisos:**
-  * [ ] Login administrativo en `/admin/login`.
-  * [ ] Verificación del rol de usuario (`ADMIN` vs `CLIENT`): si un usuario sin rol `ADMIN` intenta acceder a `/admin`, el middleware lo redirige a la tienda pública o al login.
-  * [ ] Persistencia de sesión mediante JWT/Session Tokens.
+* [x] **Rutas y Control de Permisos:**
+  * [x] Login administrativo en `/admin/login` (reutiliza `LoginForm` + `ingresar` con `next=/admin`; reemplaza a `/auth/login` para el backoffice).
+  * [x] Verificación del rol de usuario (`ADMIN` vs `CLIENT`) en el middleware: un usuario sin rol `ADMIN` que intenta acceder a `/admin` es redirigido a la tienda pública `/`.
+  * [x] Persistencia de sesión mediante JWT/Session Tokens (refresco y mantenimiento del token en `src/middleware.ts` → `updateSession` con `supabase.auth.getUser()`).
 
 #### **2. Panel Administrativo / Backoffice (`/admin`)**
 
