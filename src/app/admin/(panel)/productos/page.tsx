@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { prisma } from "@/lib/prisma";
@@ -10,6 +11,8 @@ import {
   ProductosTable,
   type LineaFiltro,
 } from "@/components/admin/productos-table";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const dynamic = "force-dynamic";
@@ -62,6 +65,13 @@ export default async function AdminProductosPage({
             Gestioná el catálogo: buscá, filtrá y pausá productos.
           </p>
         </div>
+        <Button
+          render={<Link href="/admin/productos/nuevo" />}
+          nativeButton={false}
+        >
+          <Plus className="size-4" aria-hidden="true" />
+          Nuevo producto
+        </Button>
       </header>
 
       <Suspense fallback={<ProductosTableSkeleton />}>
