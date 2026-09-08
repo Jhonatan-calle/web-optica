@@ -147,11 +147,11 @@ El objetivo de esta fase es dotar al cliente de **La Óptica** de las herramient
 
 #### **2. Panel Administrativo / Backoffice (`/admin`)**
 
-* [ ] **Dashboard General (`/admin`):**
+* [x] **Dashboard General (`/admin`):**
   * [ ] Vista de métricas clave: Ventas totales del mes, pedidos pendientes de despacho, stock crítico/bajo y total de órdenes del día.
 
 * [ ] **Módulo de Gestión de Catálogo - CRUD (`/admin/productos` y `/admin/lineas`):**
-  * [ ] **Lista de Productos (Data Table con Shadcn):** Tabla con buscador, filtros por línea, estado (`Activo`/`Pausado`) y acciones rápidas.
+  * [x] **Lista de Productos (Data Table con Shadcn):** Tabla con buscador, filtros por línea, estado (`Activo`/`Pausado`) y acciones rápidas. Implementada con **TanStack Table v8** (`@tanstack/react-table@^8`) + componentes Shadcn `table`/`select` (patrón base-nova con `@base-ui/react`). **Filtrado híbrido:** el Server Component (`src/app/admin/(panel)/productos/page.tsx`) lee los `searchParams` de la URL y ejecuta las queries de Prisma (buscador `q` con contains/insensitive sobre nombre y slug, filtro por `lineaId` y por `activo`); la tabla cliente (`src/components/admin/productos-table.tsx`) renderiza con TanStack y sincroniza los filtros con la URL vía `router.push` (debounce 300ms en el buscador). Toggle Activo/Pausado como Server Action `toggleEstadoProducto` (`src/app/admin/(panel)/productos/actions.ts`) con guard `esAdmin` + `revalidatePath("/admin/productos")`. Nota: la página vive en `(panel)/productos` para heredar el layout (sidebar). El sidebar ahora marca el item activo por ruta (`usePathname`, `src/components/admin/admin-sidebar.tsx`). ⚠️ Validación con datos reales: pendiente hasta que exista el catálogo en BD (hoy la tienda usa mocks); la tabla ya consulta Prisma directo.
   * [ ] **Formulario de Creación/Edición de Producto (`/admin/productos/nuevo`):**
     * [ ] Campos base: Nombre, Slug automático, Descripción, Línea asignada (`tipoId` / `lineaId`), Dimensiones y Garantía (B3).
     * [ ] Gestión de Variantes: Alta dinámica de variantes por Color/Material, Precio de Lista, Precio por Transferencia y Stock disponible.

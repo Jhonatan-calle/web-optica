@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "Tienda en línea de La Óptica: anteojos de sol, clip-ons, armazones y accesorios.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="es"

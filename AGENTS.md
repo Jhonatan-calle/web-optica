@@ -7,6 +7,7 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 - Next.js 16 (App Router) + TypeScript
 - Tailwind CSS v4 + Shadcn UI
 - Zustand (carrito) + TanStack Query (datos del servidor)
+- Tablas admin (backoffice): `@tanstack/react-table@^8` (API v8: `useReactTable`/`ColumnDef`, el patrón estándar de Shadcn Data Table). ⚠️ **NO** usar `^9`: su API cambió (`useTable` + features, `createCoreRowModel`), incompatible con el patrón.
 - Supabase (PostgreSQL) + Prisma 7 (adapter-pg, `prisma.config.ts`)
 - Supabase Auth (roles CLIENT / ADMIN)
 - MercadoPago (Checkout)
