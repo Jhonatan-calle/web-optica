@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
 import { useCartCount } from "@/hooks/use-cart-count";
+import { UserMenu } from "@/components/user-menu";
 
 const NAV_LINKS = [
   { label: "Líneas", href: "/catalogo" },
@@ -16,7 +17,12 @@ const NAV_LINKS = [
   { label: "Accesorios", href: "/catalogo/accesorios" },
 ];
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  userEmail: string | null;
+  isAdmin: boolean;
+}
+
+export function SiteHeader({ userEmail, isAdmin }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const setCartOpen = useCartStore((state) => state.setOpen);
   const { count, hasHydrated } = useCartCount();
@@ -66,6 +72,7 @@ export function SiteHeader() {
           >
             <Search />
           </Button>
+          <UserMenu userEmail={userEmail} isAdmin={isAdmin} />
           <Button
             variant="ghost"
             size="icon"
