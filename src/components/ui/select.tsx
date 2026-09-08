@@ -27,6 +27,32 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   )
 }
 
+function SelectValueLabel({
+  opciones,
+  placeholder,
+  className,
+}: {
+  opciones: { value: string; label: string }[];
+  placeholder?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <SelectPrimitive.Value
+      data-slot="select-value"
+      className={cn("flex flex-1 text-left", className)}
+    >
+      {(value: string | null) => {
+        if (!value) {
+          return (
+            <span className="text-muted-foreground">{placeholder}</span>
+          );
+        }
+        return opciones.find((opcion) => opcion.value === value)?.label ?? value;
+      }}
+    </SelectPrimitive.Value>
+  )
+}
+
 function SelectTrigger({
   className,
   size = "default",
@@ -197,4 +223,5 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
+  SelectValueLabel,
 }
