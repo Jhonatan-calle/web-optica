@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import { AnnouncementBar } from "@/components/announcement-bar";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { CartDrawer } from "@/components/cart/cart-drawer";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,11 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AnnouncementBar />
-        <SiteHeader />
         {children}
-        <SiteFooter />
-        <CartDrawer />
         <Toaster
           position="top-right"
           richColors={false}

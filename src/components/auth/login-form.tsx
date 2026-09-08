@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 
-import { ingresar, type AuthResultado } from "@/app/auth/actions";
+import { ingresar, type AuthResultado } from "@/app/(tienda)/auth/actions";
 import { loginSchema, type LoginDatos } from "@/lib/auth-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

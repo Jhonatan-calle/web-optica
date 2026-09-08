@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, MailCheck } from "lucide-react";
 
-import { registrarse, type AuthResultado } from "@/app/auth/actions";
+import { registrarse, type AuthResultado } from "@/app/(tienda)/auth/actions";
 import { registroSchema, type RegistroDatos } from "@/lib/auth-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

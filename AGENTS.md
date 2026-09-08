@@ -42,6 +42,8 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 - Código y comentarios en español (según contexto), siguiendo el estilo del proyecto.
 - **Canario de sesión:** al final de **toda respuesta**, incluí siempre el emoji **🐧**. (Se usa para verificar que el agente cargó correctamente las instrucciones de esta guía.)
 - `util-remove/`, `.obsidian/` y `credenciales.txt` y `.env*` son locales/ignorados (no tocar).
+- Estar atento a la documentación: proponer qué información nueva debería quedar en `documentacion/`, y advertir si el código deja desactualizado algún doc existente.
+
 
 ## Comandos
 - `npm run dev` — servidor de desarrollo
