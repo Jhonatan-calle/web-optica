@@ -61,7 +61,7 @@ begin
     new.id::text,
     new.email,
     case
-      when new.email = any(array['admin@laoptica.com.ar']) -- EDITAR: emails ADMIN
+      when new.email = any(array['jhonatancallegaleano@gmail.com']) -- EDITAR: emails ADMIN
       then 'ADMIN'::public."Rol"
       else 'CLIENT'::public."Rol"
     end,
@@ -85,7 +85,7 @@ select
   u.id::text,
   u.email,
   case
-    when u.email = any(array['admin@laoptica.com.ar']) -- EDITAR: emails ADMIN
+    when u.email = any(array['jhonatancallegaleano@gmail.com']) -- EDITAR: emails ADMIN
     then 'ADMIN'::public."Rol"
     else 'CLIENT'::public."Rol"
   end,
