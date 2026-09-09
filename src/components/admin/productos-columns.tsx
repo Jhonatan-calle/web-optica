@@ -34,6 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { formatearPesos } from "@/lib/format-utils";
 
 export interface ProductoRow {
   id: string;
@@ -50,14 +51,6 @@ export interface ProductoRow {
 }
 
 const STOCK_CRITICO_MAX = 5;
-
-function formatearPesos(monto: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(monto);
-}
 
 /** Encabezado con control de ordenamiento (sorting) para columnas numéricas/nombre. */
 function SortableHeader({

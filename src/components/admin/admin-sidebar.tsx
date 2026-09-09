@@ -28,7 +28,7 @@ const NAV_ITEMS = [
     label: "Órdenes",
     href: "/admin/ordenes",
     icono: Package,
-    proximamente: true,
+    proximamente: false,
   },
   {
     label: "Productos",

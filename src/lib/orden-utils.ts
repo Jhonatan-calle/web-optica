@@ -7,7 +7,60 @@ import {
   pagoSchema,
   retiroSchema,
 } from "@/lib/checkout-schema";
-import { MetodoEnvio, MetodoPago } from "@/generated/prisma/enums";
+import { EstadoOrden, MetodoEnvio, MetodoPago } from "@/generated/prisma/enums";
+
+/** Los 7 estados posibles de una orden (el enum Prisma es la fuente de verdad). */
+export const ESTADOS_ORDEN: EstadoOrden[] = [
+  EstadoOrden.PENDIENTE,
+  EstadoOrden.PAGADO,
+  EstadoOrden.EN_PREPARACION,
+  EstadoOrden.DESPACHADO,
+  EstadoOrden.LISTO_PARA_RETIRAR,
+  EstadoOrden.ENTREGADO,
+  EstadoOrden.CANCELADO,
+];
+
+/** Etiqueta legible por estado (para badges y selects). */
+export const ETIQUETAS_ESTADO: Record<EstadoOrden, string> = {
+  [EstadoOrden.PENDIENTE]: "Pendiente",
+  [EstadoOrden.PAGADO]: "Pagado",
+  [EstadoOrden.EN_PREPARACION]: "En preparación",
+  [EstadoOrden.DESPACHADO]: "Despachado",
+  [EstadoOrden.LISTO_PARA_RETIRAR]: "Listo para retirar",
+  [EstadoOrden.ENTREGADO]: "Entregado",
+  [EstadoOrden.CANCELADO]: "Cancelado",
+};
+
+/** Clases de color para el badge de estado (estilo tint + texto). */
+export const CLASES_COLOR_ESTADO: Record<EstadoOrden, string> = {
+  [EstadoOrden.PENDIENTE]: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  [EstadoOrden.PAGADO]: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  [EstadoOrden.EN_PREPARACION]:
+    "bg-sky-500/10 text-sky-700 dark:text-sky-400",
+  [EstadoOrden.DESPACHADO]: "bg-violet-500/10 text-violet-700 dark:text-violet-400",
+  [EstadoOrden.LISTO_PARA_RETIRAR]:
+    "bg-teal-500/10 text-teal-700 dark:text-teal-400",
+  [EstadoOrden.ENTREGADO]:
+    "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  [EstadoOrden.CANCELADO]: "bg-red-500/10 text-red-700 dark:text-red-400",
+};
+
+/** Etiqueta legible por método de pago. */
+export const ETIQUETAS_PAGO: Record<MetodoPago, string> = {
+  [MetodoPago.MERCADO_PAGO]: "Online",
+  [MetodoPago.TRANSFERENCIA]: "Transferencia",
+  [MetodoPago.PAGO_EN_LOCAL]: "Efectivo en local",
+};
+
+/** Etiqueta legible por método de envío/entrega. */
+export const ETIQUETAS_ENVIO: Record<MetodoEnvio, string> = {
+  [MetodoEnvio.CORREO_ARGENTINO]: "Correo Argentino",
+  [MetodoEnvio.ANDREANI]: "Andreani",
+  [MetodoEnvio.OCA]: "OCA",
+  [MetodoEnvio.SHIPNOW]: "Shipnow",
+  [MetodoEnvio.ENVIO_PROPIO]: "Envío propio",
+  [MetodoEnvio.RETIRO_LOCAL]: "Retiro en local",
+};
 
 /**
  * Mapea el método de pago de la UI (checkout) al enum de la base de datos.
