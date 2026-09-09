@@ -71,11 +71,43 @@ Marcar cada caso con ✅ (pasa) o ❌ (falla) y anotar observaciones.
 - [ ] **1. Iniciar sesión en Mercado Pago Developers:** Entrar a [Mercado Pago Developers (Panel)](https://www.mercadopago.com.ar/developers/panel/app) e iniciar sesión.
 - [ ] **2. Crear una Aplicación:** Hacer clic en "Crear aplicación". Elegir "Pagos online", en e-commerce elegir "No" (es a medida). Nombrarla, por ejemplo: `La Óptica Web`.
 - [ ] **3. Obtener credenciales de prueba:** Dentro de la app creada, en el menú izquierdo ir a **Credenciales de prueba**. Copiar `Access Token` y `Public Key` (ambas empiezan con `TEST-...`).
-- [ ] **4. Configurar variables de entorno:** En el repositorio local (tu PC), abrir o crear el archivo `.env.local` e insertar:
+- [ ] **4. Configurar variables de entorno:** En el repositorio local (tu PC), abrir o crear el archivo `.env` (o `.env.local`) e insertar:
   ```env
   MERCADOPAGO_ACCESS_TOKEN="TEST-AcaPonesTuAccessTokenDePrueba"
   MERCADOPAGO_PUBLIC_KEY="TEST-AcaPonesTuPublicKeyDePrueba"
   ```
 - [ ] **5. Probar con usuarios/tarjetas de prueba:** Podés usar las [Tarjetas de prueba de Mercado Pago](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/additional-content/test-cards) para simular compras sin gastar plata real.
 
-> **Nota:** Las credenciales de producción (que empiezan con `APP_USR-...` y mueven plata de verdad) se habilitan recién cuando completás el formulario de homologación de Mercado Pago (CUIT, rubro, etc.), y las configuraremos antes del lanzamiento oficial.
+> **Nota:** Las credenciales de producción (que empiezan con `APP_USR-...` y mueven plata de verdad) se habilitan recién cuando completás el formulario de homologación de Mercado Pago (CUIT, rubro, etc.), y las configuraremos antes del lanzamiento oficial. Una vez conectadas las **credenciales reales del negocio**, los escenarios de la web se prueban con una compra real de monto bajo; las tarjetas de prueba solo aplican con la cuenta de pruebas (`TEST-...`).
+
+---
+
+## Probar el pago online en la web (Mercado Pago)
+
+> Requiere haber completado la sección anterior (credenciales configuradas en el `.env`). El objetivo es validar el flujo completo de pago online simulando los escenarios reales, y verificar que los métodos de pago sin conexión (transferencia y efectivo en local) **no** pasan por Mercado Pago.
+
+### Casos de prueba
+
+- [ ] **1. Pago aprobado (flujo feliz):** agregar productos al carrito, ir a `/checkout`, elegir **Pago online**, completar datos/entrega y confirmar el pedido → debe redirigir al checkout seguro de Mercado Pago. Pagar con tarjeta de prueba (Visa `4509 9535 6623 3704` o Mastercard `5031 7557 3453 0604`). Al volver a `/orden/[id]` debe mostrarse "¡Gracias por tu compra!" con badge `Pagado` y **sin** botón de pagar. Verificar en `/admin/ordenes` que la orden figura como `Pagado` automáticamente.
+- [ ] **2. Pago rechazado:** pagar con una tarjeta de prueba que fuerza el rechazo (ej. datos de tarjeta incorrectos o sin fondos) → al volver a `/orden/[id]` debe verse "El pago no se pudo completar" con botón para reintentar.
+- [ ] **3. Pago abandonado:** en la pasarela de Mercado Pago, cerrar la pestaña o volver sin pagar → la orden debe quedar en estado `Pendiente`, la página muestra "Tu pedido se registró correctamente", el botón de pagar sigue disponible y la orden figura como `Pendiente` en `/admin/ordenes`.
+- [ ] **4. Fallo al generar el pago:** sin token configurado (o con la red caída) al confirmar el pedido online → debe mostrar el aviso de que el pedido se guardó pero no se pudo generar el pago, y dejar la opción de reintentar en `/orden/[id]`.
+- [ ] **5. Transferencia sin Mercado Pago:** confirmar el pedido con **transferencia** → va directo a "¡Gracias por tu compra!" con el bloque de CBU/alias, sin pasar por la pasarela.
+- [ ] **6. Efectivo en el local sin Mercado Pago:** con entrega **retiro en el local** y pago **efectivo** → va directo a "¡Gracias por tu compra!" con dirección y horario, sin pasar por la pasarela.
+- [ ] **7. Envío con costo:** elegir **envío a domicilio** (> $0) → en la pasarela de Mercado Pago debe aparecer el ítem "Costo de envío" y el total debe incluir el flete. Al confirmar, la orden guarda el costo de envío y el total correcto.
+
+### Resultados
+
+Marcar cada caso con ✅ (pasa) o ❌ (falla) y anotar observaciones.
+
+| Caso | Resultado | Notas / capturas |
+|------|-----------|------------------|
+| 1. Pago aprobado (flujo feliz) | | |
+| 2. Pago rechazado | | |
+| 3. Pago abandonado | | |
+| 4. Fallo al generar el pago | | |
+| 5. Transferencia sin Mercado Pago | | |
+| 6. Efectivo en el local sin Mercado Pago | | |
+| 7. Envío con costo | | |
+
+> **Nota:** el stock de los productos aún **no** se descuenta al confirmar la compra (pendiente de Fase 3). Los montos viajan en pesos argentinos (ARS) y las cuotas salen de la config global (`Configuracion`, default 3 sin interés).
