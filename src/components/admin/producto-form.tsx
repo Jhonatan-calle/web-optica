@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValueLabel,
 } from "@/components/ui/select";
-import { createClient } from "@/lib/supabase/client";
 import { generarSlug } from "@/lib/slug-utils";
 import {
   crearProductoFormSchema,
@@ -39,9 +38,12 @@ import {
   type VarianteFormValues,
 } from "@/lib/producto-schema";
 
-const BUCKET_PRODUCTOS = "productos";
-const MAX_ARCHIVO_MB = 2;
-const ARCHIVOS_ACEPTADOS = "image/jpeg,image/png,image/webp,image/avif";
+import {
+  ARCHIVOS_ACEPTADOS,
+  BUCKET_PRODUCTOS,
+  MAX_ARCHIVO_MB,
+  subirImagenSupabase,
+} from "@/lib/upload-utils";
 
 export interface LineaOption {
   id: string;
@@ -148,9 +150,19 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
       router.push("/admin/productos");
     } catch (error) {
       console.error("Error al crear producto:", error);
-      toast.error("Ocurrió un error", {
-        description: "No se pudo crear el producto. Probá de nuevo.",
-      });
+      if (
+        error instanceof Error &&
+        error.message.toLowerCase().includes("bucket not found")
+      ) {
+        toast.error("Falta configurar el almacenamiento", {
+          description:
+            "Ejecutá supabase/storage_bucket.sql en el SQL Editor de Supabase para crear el bucket de imágenes.",
+        });
+      } else {
+        toast.error("Ocurrió un error", {
+          description: "No se pudo crear el producto. Probá de nuevo.",
+        });
+      }
     } finally {
       setSubiendo(false);
     }
@@ -163,25 +175,13 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
   ) => {
     if (archivos.length === 0) return [];
 
-    const supabase = createClient();
     const urls: { url: string }[] = [];
 
     for (const archivo of archivos) {
       const extension = archivo.name.split(".").pop() ?? "jpg";
       const ruta = `${BUCKET_PRODUCTOS}/${slugProducto}/variante-${indiceVariante + 1}/${crypto.randomUUID()}.${extension}`;
-      const { error } = await supabase.storage
-        .from(BUCKET_PRODUCTOS)
-        .upload(ruta, archivo, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-      if (error) {
-        throw new Error(`${archivo.name}: ${error.message}`);
-      }
-      const { data } = supabase.storage
-        .from(BUCKET_PRODUCTOS)
-        .getPublicUrl(ruta);
-      urls.push({ url: data.publicUrl });
+      const url = await subirImagenSupabase(archivo, ruta);
+      urls.push({ url });
     }
 
     return urls;

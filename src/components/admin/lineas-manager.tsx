@@ -8,7 +8,7 @@ import { DndContext, PointerSensor, TouchSensor, closestCenter, useSensor, useSe
 import type { DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Loader2, Pencil, Plus, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -23,6 +23,13 @@ import {
   type LineaFormInput,
 } from "@/lib/linea-schema";
 import { cn } from "@/lib/utils";
+import {
+  ARCHIVOS_ACEPTADOS,
+  MAX_ARCHIVO_MB,
+  borrarImagenSupabase,
+  esImagenDelBucket,
+  subirImagenSupabase,
+} from "@/lib/upload-utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -136,6 +143,18 @@ export function LineasManager({ lineas, tipos }: LineasManagerProps) {
   const [moverA, setMoverA] = React.useState<string>("");
   const [guardando, setGuardando] = React.useState(false);
   const [reordenando, setReordenando] = React.useState(false);
+  const [archivoImagen, setArchivoImagen] = React.useState<File | null>(null);
+  const [previewImagen, setPreviewImagen] = React.useState<string | null>(null);
+  const [modoUrl, setModoUrl] = React.useState(false);
+  const [imagenUrlMostrada, setImagenUrlMostrada] = React.useState("");
+  const inputImagenRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (previewImagen) URL.revokeObjectURL(previewImagen);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -154,6 +173,36 @@ export function LineasManager({ lineas, tipos }: LineasManagerProps) {
   });
 
   const opcionesMarcas = items.filter((l) => l.id !== eliminando?.id);
+
+  const seleccionarImagen = (archivos: FileList | null) => {
+    if (!archivos?.length) return;
+    const archivo = Array.from(archivos)[0];
+    if (
+      !ARCHIVOS_ACEPTADOS.split(",").includes(archivo.type) ||
+      archivo.size > MAX_ARCHIVO_MB * 1024 * 1024
+    ) {
+      toast.error("Imagen inválida", {
+        description: `Solo imágenes JPG/PNG/WebP/AVIF de hasta ${MAX_ARCHIVO_MB} MB.`,
+      });
+      return;
+    }
+    if (previewImagen) URL.revokeObjectURL(previewImagen);
+    setArchivoImagen(archivo);
+    setPreviewImagen(URL.createObjectURL(archivo));
+    setModoUrl(false);
+  };
+
+  const quitarImagenElegida = () => {
+    if (previewImagen) URL.revokeObjectURL(previewImagen);
+    setArchivoImagen(null);
+    setPreviewImagen(null);
+  };
+
+  const quitarImagenExistente = () => {
+    form.setValue("imagenUrl", "");
+    setImagenUrlMostrada("");
+    setModoUrl(false);
+  };
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -192,6 +241,10 @@ export function LineasManager({ lineas, tipos }: LineasManagerProps) {
       descripcion: "",
       imagenUrl: "",
     });
+    setArchivoImagen(null);
+    setPreviewImagen(null);
+    setModoUrl(false);
+    setImagenUrlMostrada("");
     setMoverA("");
     setDialogAbierto(true);
   };
@@ -204,15 +257,28 @@ export function LineasManager({ lineas, tipos }: LineasManagerProps) {
       descripcion: linea.descripcion ?? "",
       imagenUrl: linea.imagenUrl ?? "",
     });
+    setArchivoImagen(null);
+    setPreviewImagen(null);
+    setModoUrl(false);
+    setImagenUrlMostrada(linea.imagenUrl ?? "");
     setDialogAbierto(true);
   };
 
   const onSubmit = async (values: LineaFormValues) => {
     setGuardando(true);
     try {
+      let imagenUrl = values.imagenUrl;
+
+      if (archivoImagen) {
+        const extension = archivoImagen.name.split(".").pop() ?? "jpg";
+        const ruta = `lineas/${crypto.randomUUID()}.${extension}`;
+        imagenUrl = await subirImagenSupabase(archivoImagen, ruta);
+      }
+
+      const datos = { ...values, imagenUrl };
       const resultado = editando
-        ? await actualizarLinea(editando.id, values)
-        : await crearLinea(values);
+        ? await actualizarLinea(editando.id, datos)
+        : await crearLinea(datos);
 
       if (!resultado.ok) {
         toast.error("No se pudo guardar la línea", {
@@ -221,14 +287,38 @@ export function LineasManager({ lineas, tipos }: LineasManagerProps) {
         return;
       }
 
+      if (
+        editando?.imagenUrl &&
+        esImagenDelBucket(editando.imagenUrl) &&
+        editando.imagenUrl !== imagenUrl
+      ) {
+        borrarImagenSupabase(editando.imagenUrl).catch((error) => {
+          console.error("No se pudo borrar la imagen anterior:", error);
+        });
+      }
+
       toast.success(editando ? "Línea actualizada" : "Línea creada");
       setDialogAbierto(false);
       router.refresh();
     } catch (error) {
       console.error("Error al guardar línea:", error);
-      toast.error("Ocurrió un error", {
-        description: "No se pudo guardar la línea.",
-      });
+      if (
+        error instanceof Error &&
+        error.message.toLowerCase().includes("bucket not found")
+      ) {
+        toast.error("Falta configurar el almacenamiento", {
+          description:
+            "Ejecutá supabase/storage_bucket.sql en el SQL Editor de Supabase para crear el bucket de imágenes.",
+        });
+      } else if (error instanceof Error && error.message.includes(":")) {
+        toast.error("No se pudo subir la imagen", {
+          description: error.message,
+        });
+      } else {
+        toast.error("Ocurrió un error", {
+          description: "No se pudo guardar la línea.",
+        });
+      }
     } finally {
       setGuardando(false);
     }
@@ -431,23 +521,100 @@ export function LineasManager({ lineas, tipos }: LineasManagerProps) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <Label htmlFor="linea-imagen">Imagen (URL)</Label>
-                <Input
-                  id="linea-imagen"
-                  placeholder="https://…/linea-sun.jpg"
-                  {...form.register("imagenUrl")}
-                  aria-invalid={!!form.formState.errors.imagenUrl}
-                />
-                {form.formState.errors.imagenUrl && (
-                  <p className="text-xs text-red-500">
-                    {form.formState.errors.imagenUrl.message}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Opcional. La línea se agrega automáticamente al final del
-                  orden y después podés reordenarla con el arrastre en la lista.
-                </p>
-              </div>
+              <Label>Imagen</Label>
+              <input
+                ref={inputImagenRef}
+                type="file"
+                accept={ARCHIVOS_ACEPTADOS}
+                className="hidden"
+                onChange={(e) => {
+                  seleccionarImagen(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+
+              {archivoImagen || imagenUrlMostrada ? (
+                <div className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={archivoImagen ? (previewImagen ?? undefined) : imagenUrlMostrada}
+                    alt=""
+                    className="size-20 rounded-md object-cover ring-1 ring-border"
+                  />
+                  <div className="flex flex-col gap-1.5">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => inputImagenRef.current?.click()}
+                    >
+                      Cambiar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() =>
+                        archivoImagen
+                          ? quitarImagenElegida()
+                          : quitarImagenExistente()
+                      }
+                    >
+                      Quitar
+                    </Button>
+                  </div>
+                </div>
+              ) : !modoUrl ? (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => inputImagenRef.current?.click()}
+                    className="flex w-full flex-col items-center gap-2 rounded-lg border border-dashed border-border px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-brand hover:text-brand"
+                  >
+                    <UploadCloud className="size-6" aria-hidden="true" />
+                    Subir imagen
+                    <span className="text-xs">
+                      JPG, PNG, WebP o AVIF · máx. {MAX_ARCHIVO_MB} MB
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModoUrl(true)}
+                    className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  >
+                    o pegá una URL
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <Input
+                    id="linea-imagen"
+                    placeholder="https://…/linea-sun.jpg"
+                    {...form.register("imagenUrl", {
+                      onChange: (e) => setImagenUrlMostrada(e.target.value),
+                    })}
+                    aria-invalid={!!form.formState.errors.imagenUrl}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setModoUrl(false)}
+                    className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  >
+                    o subir una imagen
+                  </button>
+                  {form.formState.errors.imagenUrl && (
+                    <p className="text-xs text-red-500">
+                      {form.formState.errors.imagenUrl.message}
+                    </p>
+                  )}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Opcional. La línea se agrega automáticamente al final del orden;
+                después podés reordenarla con el arrastre en la lista.
+              </p>
+            </div>
 
             <DialogFooter>
               <Button
