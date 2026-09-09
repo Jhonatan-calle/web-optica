@@ -12,6 +12,7 @@ import {
   type OrdenesSearchParams,
 } from "@/components/admin/ordenes-table";
 import { ESTADOS_ORDEN } from "@/lib/orden-utils";
+import { formatearFecha } from "@/lib/format-utils";
 import type { OrdenRow } from "@/components/admin/ordenes-columns";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -127,6 +128,7 @@ async function OrdenesSection({
     id: o.id,
     numero: o.numero,
     fecha: o.createdAt,
+    fechaLegible: formatearFecha(o.createdAt, "America/Argentina/Buenos_Aires"),
     nombre: o.nombreContacto,
     email: o.emailContacto,
     cantidadItems: o._count.items,

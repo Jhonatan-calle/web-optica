@@ -9,7 +9,7 @@ import {
   ETIQUETAS_ENVIO,
   ETIQUETAS_PAGO,
 } from "@/lib/orden-utils";
-import { formatearFecha, formatearPesos } from "@/lib/format-utils";
+import { formatearPesos } from "@/lib/format-utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ export interface OrdenRow {
   id: string;
   numero: number;
   fecha: Date;
+  fechaLegible: string;
   nombre: string | null;
   email: string;
   cantidadItems: number;
@@ -73,7 +74,7 @@ export const columnas: ColumnDef<OrdenRow>[] = [
     ),
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm tabular-nums">
-        {formatearFecha(row.original.fecha)}
+        {row.original.fechaLegible}
       </span>
     ),
     enableSorting: true,
