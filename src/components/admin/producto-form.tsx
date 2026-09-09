@@ -13,7 +13,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 
-import { crearProducto } from "@/app/admin/(panel)/productos/actions";
+import {
+  crearProducto,
+  editarProducto,
+  type ProductoAdmin,
+} from "@/app/admin/(panel)/productos/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,10 +36,11 @@ import {
 } from "@/components/ui/select";
 import { generarSlug } from "@/lib/slug-utils";
 import {
-  crearProductoFormSchema,
-  type CrearProductoFormValues,
-  type CrearProductoFormInput,
+  editarProductoFormSchema,
+  type EditarProductoFormValues,
+  type EditarProductoFormInput,
   type VarianteFormValues,
+  type ImagenEditableFormValues,
 } from "@/lib/producto-schema";
 
 import {
@@ -53,25 +58,28 @@ export interface LineaOption {
 
 interface ProductoFormProps {
   lineas: LineaOption[];
+  producto?: ProductoAdmin;
 }
 
 /**
- * Formulario de alta de producto (panel admin).
+ * Formulario de producto (panel admin).
  *
  * - Tab 1: datos básicos (nombre → slug autogenerado con override, línea, textos).
  * - Tab 2: variantes dinámicas (react-hook-form useFieldArray).
  * - Tab 3: imágenes por variante (subida a Supabase Storage, bucket 'productos').
  *
- * El submit valida con zod, sube las imágenes pendientes y llama a la server
- * action `crearProducto`, que persiste la jerarquía anidada en Prisma.
+ * Sin prop `producto` actúa como alta (crea); con `producto` actúa como edición:
+ * precarga los datos existentes y llama a la server action `editarProducto`,
+ * que sincroniza variantes/imágenes y limpia los archivos huérfanos de Storage.
  */
-export function ProductoForm({ lineas }: ProductoFormProps) {
+export function ProductoForm({ lineas, producto }: ProductoFormProps) {
   const router = useRouter();
   const [subiendo, setSubiendo] = React.useState(false);
+  const esEdicion = !!producto;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const form = useForm<CrearProductoFormInput, any, CrearProductoFormValues>({
-    resolver: zodResolver(crearProductoFormSchema),
+  const form = useForm<EditarProductoFormInput, any, EditarProductoFormValues>({
+    resolver: zodResolver(editarProductoFormSchema),
     defaultValues: {
       nombre: "",
       slug: "",
@@ -100,6 +108,7 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
     handleSubmit,
     control,
     watch,
+    getValues,
     setValue,
     formState: { errors, isSubmitting },
   } = form;
@@ -113,6 +122,38 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
   const slugEditado = React.useRef(false);
   const imagenesPorVariante = React.useRef<Record<number, File[]>>({});
 
+  // En modo edición precarga los datos existentes (variantes e imágenes con id).
+  React.useEffect(() => {
+    if (producto) {
+      slugEditado.current = true;
+      form.reset({
+        nombre: producto.nombre,
+        slug: producto.slug,
+        lineaId: producto.lineaId,
+        descripcion: producto.descripcion ?? "",
+        dimensiones: producto.dimensiones ?? "",
+        garantia: producto.garantia ?? "",
+        activo: producto.activo,
+        destacado: producto.destacado,
+        variantes: producto.variantes.map((v) => ({
+          id: v.id,
+          color: v.color ?? "",
+          material: v.material ?? "",
+          sku: v.sku ?? "",
+          precio: v.precio,
+          precioTransferencia: v.precioTransferencia ?? undefined,
+          stock: v.stock,
+          imagenes: v.imagenes.map((img) => ({
+            id: img.id,
+            url: img.url,
+            alt: img.alt,
+          })),
+        })),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [producto]);
+
   // Autogenera el slug desde el nombre mientras el usuario no lo edite a mano.
   const actualizarSlug = (valor: string) => {
     if (!slugEditado.current) {
@@ -120,7 +161,7 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
     }
   };
 
-  const onSubmit = async (values: CrearProductoFormValues) => {
+  const onSubmit = async (values: EditarProductoFormValues) => {
     setSubiendo(true);
     try {
       const variantesConImagenes = await Promise.all(
@@ -132,24 +173,37 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
       );
       imagenesPorVariante.current = {};
 
-      const resultado = await crearProducto({
-        ...values,
-        variantes: variantesConImagenes,
-      });
+      const resultado = esEdicion
+        ? await editarProducto(producto.id, {
+            ...values,
+            variantes: variantesConImagenes,
+          })
+        : await crearProducto({
+            ...values,
+            variantes: variantesConImagenes,
+          });
 
       if (!resultado.ok) {
-        toast.error("No se pudo crear el producto", {
-          description: resultado.error,
-        });
+        toast.error(
+          esEdicion
+            ? "No se pudo actualizar el producto"
+            : "No se pudo crear el producto",
+          { description: resultado.error },
+        );
         return;
       }
 
-      toast.success("Producto creado", {
-        description: "El producto se guardó correctamente.",
-      });
+      toast.success(
+        esEdicion ? "Producto actualizado" : "Producto creado",
+        {
+          description: esEdicion
+            ? "Los cambios se guardaron correctamente."
+            : "El producto se guardó correctamente.",
+        },
+      );
       router.push("/admin/productos");
     } catch (error) {
-      console.error("Error al crear producto:", error);
+      console.error("Error al guardar el producto:", error);
       if (
         error instanceof Error &&
         error.message.toLowerCase().includes("bucket not found")
@@ -160,7 +214,9 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
         });
       } else {
         toast.error("Ocurrió un error", {
-          description: "No se pudo crear el producto. Probá de nuevo.",
+          description: esEdicion
+            ? "No se pudieron guardar los cambios. Probá de nuevo."
+            : "No se pudo crear el producto. Probá de nuevo.",
         });
       }
     } finally {
@@ -438,8 +494,18 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
                 <p className="text-sm font-medium">Variante {index + 1}</p>
                 <SubirImagenes
                   slug={slug || "producto"}
-                  onArchivos={(archivos) => {
+                  existentes={
+                    watch(`variantes.${index}.imagenes`) ?? []
+                  }
+                  onAgregarArchivos={(archivos) => {
                     imagenesPorVariante.current[index] = archivos;
+                  }}
+                  onQuitarExistente={(id) => {
+                    const actuales = getValues(`variantes.${index}.imagenes`) ?? [];
+                    setValue(
+                      `variantes.${index}.imagenes`,
+                      actuales.filter((img) => img.id !== id),
+                    );
                   }}
                 />
               </CardContent>
@@ -455,7 +521,7 @@ export function ProductoForm({ lineas }: ProductoFormProps) {
             {subiendo ? "Subiendo imágenes…" : "Guardando…"}
           </>
         ) : (
-          <>Crear producto</>
+          <>{esEdicion ? "Guardar cambios" : "Crear producto"}</>
         )}
       </Button>
     </form>
@@ -498,7 +564,7 @@ function ToggleSwitch({
   label: string;
   descripcion: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<CrearProductoFormInput, any, CrearProductoFormValues>;
+  control: Control<EditarProductoFormInput, any, EditarProductoFormValues>;
   name: "activo" | "destacado";
 }) {
   return (
@@ -524,21 +590,25 @@ function ToggleSwitch({
 
 function SubirImagenes({
   slug,
-  onArchivos,
+  existentes,
+  onAgregarArchivos,
+  onQuitarExistente,
 }: {
   slug: string;
-  onArchivos: (archivos: File[]) => void;
+  existentes: ImagenEditableFormValues[];
+  onAgregarArchivos: (archivos: File[]) => void;
+  onQuitarExistente: (id: string) => void;
 }) {
-  const [items, setItems] = React.useState<
+  const [pendientes, setPendientes] = React.useState<
     { id: string; preview: string; file: File }[]
   >([]);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Sincroniza los archivos seleccionados con el estado del formulario padre.
   React.useEffect(() => {
-    onArchivos(items.map((item) => item.file));
+    onAgregarArchivos(pendientes.map((item) => item.file));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items]);
+  }, [pendientes]);
 
   const manejarArchivos = (archivos: FileList | null) => {
     if (!archivos?.length) return;
@@ -561,21 +631,24 @@ function SubirImagenes({
       preview: URL.createObjectURL(archivo),
       file: archivo,
     }));
-    setItems((prev) => [...prev, ...nuevos]);
+    setPendientes((prev) => [...prev, ...nuevos]);
   };
 
-  const quitar = (id: string) => {
-    const item = items.find((i) => i.id === id);
+  const quitarPendiente = (id: string) => {
+    const item = pendientes.find((i) => i.id === id);
     if (item) URL.revokeObjectURL(item.preview);
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    setPendientes((prev) => prev.filter((i) => i.id !== id));
   };
 
   React.useEffect(() => {
     return () => {
-      items.forEach((i) => URL.revokeObjectURL(i.preview));
+      pendientes.forEach((i) => URL.revokeObjectURL(i.preview));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const hayExistentes = existentes.length > 0;
+  const hayPendientes = pendientes.length > 0;
 
   return (
     <div className="space-y-3">
@@ -591,7 +664,7 @@ function SubirImagenes({
         }}
       />
 
-      {items.length === 0 ? (
+      {!hayExistentes && !hayPendientes ? (
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
@@ -605,7 +678,27 @@ function SubirImagenes({
         </button>
       ) : (
         <div className="flex flex-wrap gap-3">
-          {items.map((item) => (
+          {existentes.map((imagen) => (
+            <div key={imagen.id ?? imagen.url} className="group relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imagen.url}
+                alt={imagen.alt ?? ""}
+                className="size-20 rounded-md object-cover ring-1 ring-border"
+              />
+              {imagen.id && (
+                <button
+                  type="button"
+                  aria-label="Quitar imagen"
+                  onClick={() => onQuitarExistente(imagen.id!)}
+                  className="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-white shadow-sm"
+                >
+                  <X className="size-3" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          ))}
+          {pendientes.map((item) => (
             <div key={item.id} className="group relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -616,7 +709,7 @@ function SubirImagenes({
               <button
                 type="button"
                 aria-label="Quitar imagen"
-                onClick={() => quitar(item.id)}
+                onClick={() => quitarPendiente(item.id)}
                 className="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-white shadow-sm"
               >
                 <X className="size-3" aria-hidden="true" />
@@ -633,10 +726,11 @@ function SubirImagenes({
           </button>
         </div>
       )}
-      {items.length > 0 && (
+      {pendientes.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          Se subirán {items.length} imagen{items.length === 1 ? "" : "es"} al
-          guardar el producto (carpeta {slug}/).
+          Se subirán {pendientes.length} imagen
+          {pendientes.length === 1 ? "" : "es"} al guardar el producto (carpeta{" "}
+          {slug}/).
         </p>
       )}
     </div>
@@ -646,7 +740,7 @@ function SubirImagenes({
 /* ---------------------- UTILIDADES ---------------------- */
 
 function errorVariante(
-  errors: FieldErrors<CrearProductoFormInput>,
+  errors: FieldErrors<EditarProductoFormInput>,
   index: number,
   campo: keyof VarianteFormValues,
 ): string | undefined {

@@ -78,3 +78,31 @@ export type VarianteFormValues = z.output<typeof varianteFormSchema>;
 export type VarianteFormInput = z.input<typeof varianteFormSchema>;
 export type ImagenFormValues = z.output<typeof imagenFormSchema>;
 export type ImagenFormInput = z.input<typeof imagenFormSchema>;
+
+/** Variante con id existente (para edición). */
+export const varianteEditSchema = varianteFormSchema.extend({
+  id: z.string().min(1).optional(),
+});
+
+/** Imagen con id existente (para edición). */
+export const imagenEditSchema = imagenFormSchema.extend({
+  id: z.string().min(1).optional(),
+});
+
+/** Schema de edición: mismo que crear pero con ids opcionales en variantes/imagenes. */
+export const editarProductoFormSchema = crearProductoFormSchema.extend({
+  variantes: z
+    .array(
+      varianteEditSchema.extend({
+        imagenes: z.array(imagenEditSchema).default([]),
+      }),
+    )
+    .min(1, "Agregá al menos una variante"),
+});
+
+export type EditarProductoFormValues = z.output<
+  typeof editarProductoFormSchema
+>;
+export type EditarProductoFormInput = z.input<typeof editarProductoFormSchema>;
+export type VarianteEditableFormValues = z.output<typeof varianteEditSchema>;
+export type ImagenEditableFormValues = z.output<typeof imagenEditSchema>;

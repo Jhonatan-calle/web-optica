@@ -1,8 +1,38 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition, useState } from "react";
+import {
+  ArrowUpDown,
+  Loader2,
+  Package,
+  Pause,
+  Pencil,
+  Play,
+  Trash2,
+} from "lucide-react";
+import { toast } from "sonner";
 
+import {
+  eliminarProducto,
+  toggleEstadoProducto,
+} from "@/app/admin/(panel)/productos/actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 export interface ProductoRow {
@@ -162,17 +192,24 @@ export const columnas: ColumnDef<ProductoRow>[] = [
     id: "acciones",
     header: () => <span className="sr-only">Acciones</span>,
     cell: ({ row }) => (
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-1">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          nativeButton={false}
+          title="Editar producto"
+          aria-label="Editar producto"
+          render={<Link href={`/admin/productos/editar/${row.original.id}`} />}
+        >
+          <Pencil className="size-4" aria-hidden="true" />
+        </Button>
         <ToggleEstadoButton producto={row.original} />
+        <EliminarProductoButton producto={row.original} />
       </div>
     ),
     enableSorting: false,
   },
 ];
-
-import { Package, Pause, Play } from "lucide-react";
-import { useTransition } from "react";
-import { toggleEstadoProducto } from "@/app/admin/(panel)/productos/actions";
 
 function ToggleEstadoButton({ producto }: { producto: ProductoRow }) {
   const [pendiente, startTransition] = useTransition();
@@ -196,5 +233,90 @@ function ToggleEstadoButton({ producto }: { producto: ProductoRow }) {
         <Play className="size-4" aria-hidden="true" />
       )}
     </Button>
+  );
+}
+
+function EliminarProductoButton({ producto }: { producto: ProductoRow }) {
+  const router = useRouter();
+  const [abierto, setAbierto] = useState(false);
+  const [confirmacion, setConfirmacion] = useState("");
+  const [pendiente, startTransition] = useTransition();
+
+  const confirmado = confirmacion.trim() === producto.nombre;
+
+  const confirmarEliminacion = () => {
+    if (!confirmado) return;
+    startTransition(async () => {
+      const resultado = await eliminarProducto(producto.id);
+      if (!resultado.ok) {
+        toast.error("No se pudo eliminar el producto", {
+          description: resultado.error,
+        });
+        return;
+      }
+      toast.success("Producto eliminado", {
+        description: "El producto y sus imágenes se eliminaron.",
+      });
+      setAbierto(false);
+      setConfirmacion("");
+      router.refresh();
+    });
+  };
+
+  return (
+    <AlertDialog open={abierto} onOpenChange={setAbierto}>
+      <AlertDialogTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            title="Eliminar producto"
+            aria-label="Eliminar producto"
+          />
+        }
+      >
+        <Trash2 className="size-4" aria-hidden="true" />
+      </AlertDialogTrigger>
+
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive">
+            <Trash2 aria-hidden="true" />
+          </AlertDialogMedia>
+          <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Se eliminará permanentemente &quot;{producto.nombre}&quot; junto con
+            todas sus imágenes del catálogo y del almacenamiento. Esta acción no
+            se puede deshacer.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <div className="flex flex-col gap-2 px-1">
+          <Label htmlFor="confirmar-eliminacion" className="text-sm font-medium">
+            Escribí el nombre del producto para confirmar
+          </Label>
+          <Input
+            id="confirmar-eliminacion"
+            value={confirmacion}
+            onChange={(e) => setConfirmacion(e.target.value)}
+            placeholder={producto.nombre}
+            disabled={pendiente}
+            aria-invalid={confirmacion !== "" && !confirmado}
+          />
+        </div>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={pendiente}>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            disabled={!confirmado || pendiente}
+            onClick={confirmarEliminacion}
+          >
+            {pendiente && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+            Eliminar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
