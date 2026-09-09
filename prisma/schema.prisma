@@ -158,6 +158,7 @@ model Orden {
   subtotal   Decimal  @db.Decimal(10, 2)
   total      Decimal  @db.Decimal(10, 2)
   mpPaymentId String?
+  trackingNumber String?
 
   items      ItemOrden[]
   createdAt  DateTime   @default(now())

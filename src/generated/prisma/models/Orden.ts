@@ -61,6 +61,7 @@ export type OrdenMinAggregateOutputType = {
   subtotal: runtime.Decimal | null
   total: runtime.Decimal | null
   mpPaymentId: string | null
+  trackingNumber: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -86,6 +87,7 @@ export type OrdenMaxAggregateOutputType = {
   subtotal: runtime.Decimal | null
   total: runtime.Decimal | null
   mpPaymentId: string | null
+  trackingNumber: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -111,6 +113,7 @@ export type OrdenCountAggregateOutputType = {
   subtotal: number
   total: number
   mpPaymentId: number
+  trackingNumber: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -152,6 +155,7 @@ export type OrdenMinAggregateInputType = {
   subtotal?: true
   total?: true
   mpPaymentId?: true
+  trackingNumber?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -177,6 +181,7 @@ export type OrdenMaxAggregateInputType = {
   subtotal?: true
   total?: true
   mpPaymentId?: true
+  trackingNumber?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -202,6 +207,7 @@ export type OrdenCountAggregateInputType = {
   subtotal?: true
   total?: true
   mpPaymentId?: true
+  trackingNumber?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -314,6 +320,7 @@ export type OrdenGroupByOutputType = {
   subtotal: runtime.Decimal
   total: runtime.Decimal
   mpPaymentId: string | null
+  trackingNumber: string | null
   createdAt: Date
   updatedAt: Date
   _count: OrdenCountAggregateOutputType | null
@@ -362,6 +369,7 @@ export type OrdenWhereInput = {
   subtotal?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.StringNullableFilter<"Orden"> | string | null
+  trackingNumber?: Prisma.StringNullableFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   usuario?: Prisma.XOR<Prisma.UsuarioNullableScalarRelationFilter, Prisma.UsuarioWhereInput> | null
@@ -389,6 +397,7 @@ export type OrdenOrderByWithRelationInput = {
   subtotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
   mpPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   usuario?: Prisma.UsuarioOrderByWithRelationInput
@@ -419,6 +428,7 @@ export type OrdenWhereUniqueInput = Prisma.AtLeast<{
   subtotal?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.StringNullableFilter<"Orden"> | string | null
+  trackingNumber?: Prisma.StringNullableFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   usuario?: Prisma.XOR<Prisma.UsuarioNullableScalarRelationFilter, Prisma.UsuarioWhereInput> | null
@@ -446,6 +456,7 @@ export type OrdenOrderByWithAggregationInput = {
   subtotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
   mpPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrdenCountOrderByAggregateInput
@@ -479,6 +490,7 @@ export type OrdenScalarWhereWithAggregatesInput = {
   subtotal?: Prisma.DecimalWithAggregatesFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalWithAggregatesFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
+  trackingNumber?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Orden"> | Date | string
 }
@@ -503,6 +515,7 @@ export type OrdenCreateInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   usuario?: Prisma.UsuarioCreateNestedOneWithoutOrdenesInput
@@ -530,6 +543,7 @@ export type OrdenUncheckedCreateInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemOrdenUncheckedCreateNestedManyWithoutOrdenInput
@@ -554,6 +568,7 @@ export type OrdenUpdateInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneWithoutOrdenesNestedInput
@@ -581,6 +596,7 @@ export type OrdenUncheckedUpdateInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemOrdenUncheckedUpdateManyWithoutOrdenNestedInput
@@ -607,6 +623,7 @@ export type OrdenCreateManyInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -630,6 +647,7 @@ export type OrdenUpdateManyMutationInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -655,6 +673,7 @@ export type OrdenUncheckedUpdateManyInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -690,6 +709,7 @@ export type OrdenCountOrderByAggregateInput = {
   subtotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
   mpPaymentId?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -722,6 +742,7 @@ export type OrdenMaxOrderByAggregateInput = {
   subtotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
   mpPaymentId?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -747,6 +768,7 @@ export type OrdenMinOrderByAggregateInput = {
   subtotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
   mpPaymentId?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -851,6 +873,7 @@ export type OrdenCreateWithoutUsuarioInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemOrdenCreateNestedManyWithoutOrdenInput
@@ -876,6 +899,7 @@ export type OrdenUncheckedCreateWithoutUsuarioInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemOrdenUncheckedCreateNestedManyWithoutOrdenInput
@@ -931,6 +955,7 @@ export type OrdenScalarWhereInput = {
   subtotal?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.StringNullableFilter<"Orden"> | string | null
+  trackingNumber?: Prisma.StringNullableFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
 }
@@ -955,6 +980,7 @@ export type OrdenCreateWithoutItemsInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   usuario?: Prisma.UsuarioCreateNestedOneWithoutOrdenesInput
@@ -981,6 +1007,7 @@ export type OrdenUncheckedCreateWithoutItemsInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1020,6 +1047,7 @@ export type OrdenUpdateWithoutItemsInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneWithoutOrdenesNestedInput
@@ -1046,6 +1074,7 @@ export type OrdenUncheckedUpdateWithoutItemsInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1070,6 +1099,7 @@ export type OrdenCreateManyUsuarioInput = {
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: string | null
+  trackingNumber?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1093,6 +1123,7 @@ export type OrdenUpdateWithoutUsuarioInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemOrdenUpdateManyWithoutOrdenNestedInput
@@ -1118,6 +1149,7 @@ export type OrdenUncheckedUpdateWithoutUsuarioInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemOrdenUncheckedUpdateManyWithoutOrdenNestedInput
@@ -1143,6 +1175,7 @@ export type OrdenUncheckedUpdateManyWithoutUsuarioInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1199,6 +1232,7 @@ export type OrdenSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   subtotal?: boolean
   total?: boolean
   mpPaymentId?: boolean
+  trackingNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
@@ -1227,6 +1261,7 @@ export type OrdenSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   subtotal?: boolean
   total?: boolean
   mpPaymentId?: boolean
+  trackingNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
@@ -1253,6 +1288,7 @@ export type OrdenSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   subtotal?: boolean
   total?: boolean
   mpPaymentId?: boolean
+  trackingNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
@@ -1279,11 +1315,12 @@ export type OrdenSelectScalar = {
   subtotal?: boolean
   total?: boolean
   mpPaymentId?: boolean
+  trackingNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrdenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "numero" | "usuarioId" | "emailContacto" | "nombreContacto" | "telefonoContacto" | "dniContacto" | "estado" | "metodoPago" | "metodoEnvio" | "dirCalle" | "dirNumero" | "dirDepartamento" | "dirCiudad" | "dirProvincia" | "dirCodigoPostal" | "costoEnvio" | "subtotal" | "total" | "mpPaymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["orden"]>
+export type OrdenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "numero" | "usuarioId" | "emailContacto" | "nombreContacto" | "telefonoContacto" | "dniContacto" | "estado" | "metodoPago" | "metodoEnvio" | "dirCalle" | "dirNumero" | "dirDepartamento" | "dirCiudad" | "dirProvincia" | "dirCodigoPostal" | "costoEnvio" | "subtotal" | "total" | "mpPaymentId" | "trackingNumber" | "createdAt" | "updatedAt", ExtArgs["result"]["orden"]>
 export type OrdenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
   items?: boolean | Prisma.Orden$itemsArgs<ExtArgs>
@@ -1323,6 +1360,7 @@ export type $OrdenPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     subtotal: runtime.Decimal
     total: runtime.Decimal
     mpPaymentId: string | null
+    trackingNumber: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["orden"]>
@@ -1770,6 +1808,7 @@ export interface OrdenFieldRefs {
   readonly subtotal: Prisma.FieldRef<"Orden", 'Decimal'>
   readonly total: Prisma.FieldRef<"Orden", 'Decimal'>
   readonly mpPaymentId: Prisma.FieldRef<"Orden", 'String'>
+  readonly trackingNumber: Prisma.FieldRef<"Orden", 'String'>
   readonly createdAt: Prisma.FieldRef<"Orden", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Orden", 'DateTime'>
 }
