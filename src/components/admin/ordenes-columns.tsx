@@ -26,6 +26,7 @@ export interface OrdenRow {
   metodoPago: MetodoPago;
   metodoEnvio: MetodoEnvio;
   estado: EstadoOrden;
+  alertaStock: boolean;
 }
 
 /** Encabezado con control de ordenamiento (sorting). */
@@ -146,15 +147,26 @@ export const columnas: ColumnDef<OrdenRow>[] = [
     accessorKey: "estado",
     header: "Estado",
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className={cn(
-          "whitespace-nowrap border-transparent",
-          CLASES_COLOR_ESTADO[row.original.estado],
+      <div className="flex flex-col items-start gap-1">
+        <Badge
+          variant="outline"
+          className={cn(
+            "whitespace-nowrap border-transparent",
+            CLASES_COLOR_ESTADO[row.original.estado],
+          )}
+        >
+          {ETIQUETAS_ESTADO[row.original.estado]}
+        </Badge>
+        {row.original.alertaStock && (
+          <Badge
+            variant="outline"
+            className="whitespace-nowrap border-transparent bg-amber-500/10 text-amber-700 dark:text-amber-400"
+            title="Faltó stock para completar este pedido"
+          >
+            Sin stock
+          </Badge>
         )}
-      >
-        {ETIQUETAS_ESTADO[row.original.estado]}
-      </Badge>
+      </div>
     ),
     enableSorting: false,
   },

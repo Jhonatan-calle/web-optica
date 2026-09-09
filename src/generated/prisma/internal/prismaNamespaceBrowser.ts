@@ -190,6 +190,7 @@ export const OrdenScalarFieldEnum = {
   subtotal: 'subtotal',
   total: 'total',
   mpPaymentId: 'mpPaymentId',
+  alertaStock: 'alertaStock',
   trackingNumber: 'trackingNumber',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

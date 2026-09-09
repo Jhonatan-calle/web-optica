@@ -106,6 +106,7 @@ async function OrdenesSection({
         metodoPago: true,
         metodoEnvio: true,
         estado: true,
+        alertaStock: true,
         _count: { select: { items: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -136,6 +137,7 @@ async function OrdenesSection({
     metodoPago: o.metodoPago,
     metodoEnvio: o.metodoEnvio,
     estado: o.estado,
+    alertaStock: o.alertaStock,
   }));
 
   return (

@@ -173,21 +173,21 @@ Todo implementado y verificado (tsc + lint OK). Falta el build de producción y 
   * [x] Instalación de `mercadopago` (Node.js SDK, v3.x) en el backend de Next.js (+ `server-only` para que el access token nunca llegue al bundle del cliente). Wrapper `src/lib/mercadopago.ts` con `getMercadoPagoConfig()` / `getMercadoPagoPublicKey()` (estilo `supabase/server.ts`: lanza error claro si falta el token).
   * [x] Configuración de variables de entorno privadas (`MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_PUBLIC_KEY`) documentadas en `.env.example` con placeholders; credenciales locales pendientes (completar con valores `TEST-...` en desarrollo).
 
-* [ ] **Generación de Preferencias de Pago:**
-  * [ ] Creación de Server Action / API Route `/api/checkout/preference` que recibe la `Orden` creada en la Fase 2.
-  * [ ] Mapeo de items, precios reales consultados en la BD (validación backend contra manipulaciones del cliente) y datos del comprador.
-  * [ ] Redirección del usuario al checkout seguro de Mercado Pago (*Redirect* o *Modal Overlay*).
+* [x] **Generación de Preferencias de Pago:**
+  * [x] API Route `POST /api/checkout/preference` (`src/app/api/checkout/preference/route.ts`) que recibe `{ ordenId }` y carga la `Orden` con sus `items` + `variante`.
+  * [x] Mapeo de items, precios reales consultados en la BD (validación backend anti-manipulación: compara `ItemOrden.precioUnitario` vs `Variante.precio` real, rechaza ítems inexistentes/borrados y verifica que el total recalculado coincida con `Orden.total`). Payer con email/nombre/DNI/teléfono de la orden, `external_reference = orden.id`, `back_urls` → `/orden/[id]`, `auto_return: "approved"`, `notification_url` → `/api/webhooks/mercadopago`. Envío agregado como ítem extra si `costoEnvio > 0`.
+  * [x] Redirección al checkout seguro de Mercado Pago (*Redirect* vía `init_point`). **Flujo directo:** el checkout (`src/app/checkout/page.tsx`, `confirmarPedido`) genera la preferencia tras crear la orden y redirige a Mercado Pago con pago online; se muestra "Gracias" recién cuando el cliente vuelve pagando. Fallback: si la pasarela falla, va a `/orden/[id]` con el botón `<BotonMercadoPago>` (`src/components/checkout/boton-mercado-pago.tsx`) para reintentar. Helper cliente compartido: `src/lib/mercadopago-cliente.ts` (`generarPreferenciaPago`). Contexto externo: el `costoEnvio` usado en la preferencia es el guardado de la orden (estimado mock, ver B5).
 
-* [ ] **Procesamiento de Webhooks & Confirmación de Pagos (`/api/webhooks/mercadopago`):**
-  * [ ] Endpoint seguro (API Route) preparado para recibir las notificaciones push de Mercado Pago (`payment.created`, `payment.updated`).
-  * [ ] Validación de firmas / tokens de seguridad para evitar peticiones maliciosas.
-  * [ ] **Lógica de negocio post-pago:**
-    * [ ] Actualizar el estado de la `Orden` en Supabase de `PENDIENTE` a `PAGADO`.
-    * [ ] **Descontar automáticamente el stock** de las `Variantes` compradas.
-    * [ ] Enviar e-mail de confirmación de compra al cliente (vía Resend / SendGrid / Nodemailer).
+* [x] **Procesamiento de Webhooks & Confirmación de Pagos (`/api/webhooks/mercadopago`):**
+  * [x] Endpoint seguro (API Route) preparado para recibir las notificaciones push de Mercado Pago (formato `{ data: { id } }` y `{ topic, id }`).
+  * [x] Validación anti-falsificación: como Mercado Pago no firma el payload, se consulta el pago contra la API (`Payment.get` con el access token) y se valida `status = approved`, `external_reference = orden.id` y que `transaction_amount` coincida con `Orden.total`.
+  * [x] **Lógica de negocio post-pago (transacción interactiva `prisma.$transaction` atómica e idempotente):**
+    * [x] Actualizar el estado de la `Orden` de `PENDIENTE` a `PAGADO` (setea `mpPaymentId`, transición condicional: solo si seguía `PENDIENTE`; si ya estaba pagada, lanza el error controlado `orden_ya_procesada` que hace **rollback** de los descuentos).
+    * [x] **Descontar automáticamente el stock** de las `Variantes` compradas con `updateMany` condicional (`stock >= cantidad`); si una variante no alcanza, no se descuenta y se marca `Orden.alertaStock = true` (badge "Sin stock" + aviso en el detalle del panel admin).
+    * [x] E-mail de confirmación de compra al cliente vía **Resend** (`src/lib/email.ts`, server-only, fire-and-forget: un fallo del e-mail no revierte el pago). Requiere `RESEND_API_KEY`; `from` con placeholder `no-reply@tudominio.com` hasta verificar dominio en Fase 4.
 
 > ⚠️ **Requisito de idempotencia en el pago:** Mercado Pago reenvía notificaciones (retries) y puede llegar duplicada la misma; el flujo post-pago debe ser **idempotente** para garantizar que un pago jamás se registre dos veces (ni se descuente stock dos veces, ni se dupliquen e-mails):
->   * Guardar `mpPaymentId` en la `Orden` (ya existe en el modelo, `schema.prisma`) con **`@unique`** y validar con `findUnique` antes de aplicar la actualización.
+>   * Guardar `mpPaymentId` en la `Orden` con **`@unique`** (migración `agregar_idempotencia_y_alerta_stock` aplicada) — un `mpPaymentId` jamás puede repetirse en dos órdenes.
 >   * Transición de estado **guardada**: solo `PENDIENTE → PAGADO` (transacción condicional); si ya está `PAGADO`, ignorar la notificación.
 >   * Confirmar el pago contra la API de Mercado Pago (no confiar solo en el payload del webhook) y descontar stock con `updateMany` condicional (stock ≥ cantidad).
 

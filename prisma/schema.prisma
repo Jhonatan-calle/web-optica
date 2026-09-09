@@ -157,7 +157,13 @@ model Orden {
   costoEnvio Decimal? @db.Decimal(10, 2)
   subtotal   Decimal  @db.Decimal(10, 2)
   total      Decimal  @db.Decimal(10, 2)
-  mpPaymentId String?
+  // ID del pago en Mercado Pago (único: un mpPaymentId jamás puede pagar dos
+  // órdenes — idempotencia ante reintentos del webhook).
+  mpPaymentId String?   @unique
+  // Alerta de stock insuficiente: true si al confirmar el pago alguna variante
+  // no tenía stock suficiente para completar el pedido (requiere intervención
+  // del admin).
+  alertaStock Boolean   @default(false)
   trackingNumber String?
 
   items      ItemOrden[]

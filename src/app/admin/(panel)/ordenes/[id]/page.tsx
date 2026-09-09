@@ -126,6 +126,17 @@ export default async function DetalleOrdenPage({
         </p>
       </header>
 
+      {orden.alertaStock && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+          <span aria-hidden="true">⚠️</span>
+          <p>
+            <span className="font-semibold">Faltó stock</span> para completar
+            este pedido al momento de la confirmación del pago. Revisá la
+            variante y regularizá el stock o contactá al cliente.
+          </p>
+        </div>
+      )}
+
       <OrdenEstadoForm
         ordenId={orden.id}
         numero={orden.numero}

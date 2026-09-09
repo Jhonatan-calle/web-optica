@@ -10,6 +10,7 @@ import { CheckoutForm, CheckoutVacio } from "@/components/checkout/checkout-form
 import { EntregaForm } from "@/components/checkout/entrega-form";
 import { PagoForm } from "@/components/checkout/pago-form";
 import { ResumenOrden } from "@/components/checkout/resumen-orden";
+import { generarPreferenciaPago } from "@/lib/mercadopago-cliente";
 import { useCartStore, selectTotalCount } from "@/lib/cart-store";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { calcularTotales } from "@/lib/pago-utils";
@@ -61,7 +62,31 @@ export default function CheckoutPage() {
       }
       clearCarrito();
       clearDatos();
-      router.push(`/orden/${resultado.ordenId}`);
+      clearEntrega();
+      clearPago();
+
+      const ordenId = resultado.ordenId!;
+
+      // Pago online: redirigir directo a Mercado Pago. Recién cuando el cliente
+      // vuelve (o el webhook confirma) se muestra la pantalla de "Gracias".
+      if (pago.tipo === "online") {
+        const preferencia = await generarPreferenciaPago(ordenId);
+
+        if (!preferencia.ok || !preferencia.initPoint) {
+          toast.error("Tu pedido se guardó, pero no se pudo generar el pago", {
+            description:
+              preferencia.error ??
+              "Intentalo de nuevo en unos minutos desde tu pedido.",
+          });
+          router.replace(`/orden/${ordenId}`);
+          return;
+        }
+
+        window.location.href = preferencia.initPoint;
+        return;
+      }
+
+      router.push(`/orden/${ordenId}`);
     } catch {
       toast.error("No se pudo crear el pedido", {
         description: "Ocurrió un error inesperado. Intentá de nuevo.",

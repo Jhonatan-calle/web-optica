@@ -8,7 +8,9 @@ import {
   type ResumenEntrega,
 } from "@/components/checkout/resumen-orden";
 import { buttonVariants } from "@/components/ui/button";
+import { BotonMercadoPago } from "@/components/checkout/boton-mercado-pago";
 import { prisma } from "@/lib/prisma";
+import { cn } from "@/lib/utils";
 import {
   ALIAS_LA_OPTICA,
   CBU_LA_OPTICA,
@@ -16,13 +18,20 @@ import {
   HORARIO_LOCAL,
   TITULAR_CUENTA,
 } from "@/lib/tienda-info";
+import { CLASES_COLOR_ESTADO, ETIQUETAS_ESTADO } from "@/lib/orden-utils";
+import { EstadoOrden } from "@/generated/prisma/enums";
 
 interface OrdenPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function OrdenPage({ params }: OrdenPageProps) {
+export default async function OrdenPage({
+  params,
+  searchParams,
+}: OrdenPageProps) {
   const { id } = await params;
+  const { status } = await searchParams;
 
   const orden = await prisma.orden.findUnique({
     where: { id },
@@ -30,6 +39,23 @@ export default async function OrdenPage({ params }: OrdenPageProps) {
   });
 
   if (!orden) notFound();
+
+  const estadoPagoMp = typeof status === "string" ? status : undefined;
+  const esOnline = orden.metodoPago === "MERCADO_PAGO";
+  const estaPagada = orden.estado === EstadoOrden.PAGADO;
+  const pagoAprobado = estaPagada || estadoPagoMp === "approved";
+  const pagoPendiente =
+    !pagoAprobado &&
+    (estadoPagoMp === "pending" || estadoPagoMp === "in_process");
+  const pagoRechazado =
+    !pagoAprobado &&
+    (estadoPagoMp === "failure" ||
+      estadoPagoMp === "rejected" ||
+      estadoPagoMp === "cancelled" ||
+      estadoPagoMp === "nulled");
+
+  const puedeReintentar =
+    esOnline && !pagoAprobado && !pagoPendiente && !pagoRechazado;
 
   const entrega: ResumenEntrega =
     orden.metodoEnvio === "RETIRO_LOCAL"
@@ -71,18 +97,27 @@ export default async function OrdenPage({ params }: OrdenPageProps) {
         </span>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            ¡Gracias por tu compra!
+            {esOnline && !pagoAprobado
+              ? "Tu pedido se registró correctamente"
+              : "¡Gracias por tu compra!"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Tu pedido{" "}
             <span className="font-semibold text-foreground">
               #{orden.numero}
             </span>{" "}
-            se registró correctamente.
+            {esOnline && !pagoAprobado
+              ? "está pendiente de pago."
+              : "fue confirmado."}
           </p>
         </div>
-        <span className="rounded-full border border-[#00848C]/30 bg-[#00848C]/10 px-3 py-1 text-xs font-medium text-[#00848C]">
-          Pendiente de pago
+        <span
+          className={cn(
+            "rounded-full border px-3 py-1 text-xs font-medium",
+            CLASES_COLOR_ESTADO[orden.estado],
+          )}
+        >
+          {ETIQUETAS_ESTADO[orden.estado]}
         </span>
       </div>
 
@@ -151,13 +186,56 @@ export default async function OrdenPage({ params }: OrdenPageProps) {
 
         {pago.tipo === "online" && (
           <div className="rounded-xl border border-border p-4 text-sm">
-            <h2 className="mb-1 text-sm font-semibold">
-              El pago online llega en la Fase 3
-            </h2>
-            <p className="text-muted-foreground">
-              Por ahora tu pedido queda confirmado y te contactamos por WhatsApp
-              para coordinar el pago.
-            </p>
+            {pagoAprobado ? (
+              <>
+                <h2 className="mb-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                  ¡Pago aprobado!
+                </h2>
+                <p className="text-muted-foreground">
+                  Gracias por tu compra. Vamos a preparar tu pedido para el
+                  envío o retiro.
+                </p>
+              </>
+            ) : pagoPendiente ? (
+              <>
+                <h2 className="mb-1 text-sm font-semibold">
+                  Estamos esperando la confirmación del pago
+                </h2>
+                <p className="text-muted-foreground">
+                  Con Mercado Pago puede tardar unos minutos. Te avisamos
+                  apenas se confirme.
+                </p>
+              </>
+            ) : pagoRechazado ? (
+              <>
+                <h2 className="mb-1 text-sm font-semibold">
+                  El pago no se pudo completar
+                </h2>
+                <p className="mb-4 text-muted-foreground">
+                  Podés volver a intentarlo con otro medio de pago.
+                </p>
+                <BotonMercadoPago
+                  ordenId={orden.id}
+                  total={Number(orden.total)}
+                />
+              </>
+            ) : (
+              <>
+                <h2 className="mb-2 text-sm font-semibold">
+                  Pagá online con Mercado Pago
+                </h2>
+                <p className="mb-4 text-muted-foreground">
+                  Te redirigimos al checkout seguro para completar el pago. Al
+                  confirmarlo, tu pedido pasa al siguiente estado.
+                </p>
+                {puedeReintentar && (
+                  <BotonMercadoPago
+                    ordenId={orden.id}
+                    total={Number(orden.total)}
+                  />
+                )}
+              </>
+            )}
           </div>
         )}
 
