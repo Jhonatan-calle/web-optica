@@ -57,3 +57,25 @@ Marcar cada caso con ✅ (pasa) o ❌ (falla) y anotar observaciones.
 | 5. Roles en `app_metadata` + `public."Usuario"` | | |
 | 6. `/auth/*` con sesión → `/` | | |
 | 7. Errores de login | | |
+
+---
+
+## Configurar credenciales de Mercado Pago (Fase 3)
+
+### Prerequisitos
+
+- [ ] Tener acceso a una cuenta de Mercado Pago (idealmente la cuenta oficial del negocio).
+
+### Pasos
+
+- [ ] **1. Iniciar sesión en Mercado Pago Developers:** Entrar a [Mercado Pago Developers (Panel)](https://www.mercadopago.com.ar/developers/panel/app) e iniciar sesión.
+- [ ] **2. Crear una Aplicación:** Hacer clic en "Crear aplicación". Elegir "Pagos online", en e-commerce elegir "No" (es a medida). Nombrarla, por ejemplo: `La Óptica Web`.
+- [ ] **3. Obtener credenciales de prueba:** Dentro de la app creada, en el menú izquierdo ir a **Credenciales de prueba**. Copiar `Access Token` y `Public Key` (ambas empiezan con `TEST-...`).
+- [ ] **4. Configurar variables de entorno:** En el repositorio local (tu PC), abrir o crear el archivo `.env.local` e insertar:
+  ```env
+  MERCADOPAGO_ACCESS_TOKEN="TEST-AcaPonesTuAccessTokenDePrueba"
+  MERCADOPAGO_PUBLIC_KEY="TEST-AcaPonesTuPublicKeyDePrueba"
+  ```
+- [ ] **5. Probar con usuarios/tarjetas de prueba:** Podés usar las [Tarjetas de prueba de Mercado Pago](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/additional-content/test-cards) para simular compras sin gastar plata real.
+
+> **Nota:** Las credenciales de producción (que empiezan con `APP_USR-...` y mueven plata de verdad) se habilitan recién cuando completás el formulario de homologación de Mercado Pago (CUIT, rubro, etc.), y las configuraremos antes del lanzamiento oficial.
