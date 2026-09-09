@@ -13,7 +13,7 @@ import {
   type OpcionesFiltros,
 } from "@/lib/catalog-utils";
 import type { ProductoPublico } from "@/lib/catalog-types";
-import { obtenerConfigCuotas } from "@/lib/config-utils";
+import { obtenerConfigGlobal } from "@/lib/config-utils";
 import type { ConfigCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
 
@@ -41,7 +41,7 @@ export default async function CatalogoPage({
   ).toString();
 
   const opciones: OpcionesFiltros = await obtenerOpcionesFiltros();
-  const configCuotas: ConfigCuotas = await obtenerConfigCuotas();
+  const config = await obtenerConfigGlobal();
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
@@ -57,7 +57,11 @@ export default async function CatalogoPage({
       </Suspense>
 
       <Suspense key={clave} fallback={<CatalogoGridSkeleton />}>
-        <Resultados params={params} configCuotas={configCuotas} />
+        <Resultados
+          params={params}
+          configCuotas={config.cuotas}
+          diasNuevo={config.diasNuevo}
+        />
       </Suspense>
     </main>
   );
@@ -66,9 +70,11 @@ export default async function CatalogoPage({
 async function Resultados({
   params,
   configCuotas,
+  diasNuevo,
 }: {
   params: CatalogoParams;
   configCuotas: ConfigCuotas;
+  diasNuevo: number;
 }) {
   let productos: ProductoPublico[];
   try {
@@ -125,6 +131,7 @@ async function Resultados({
           key={producto.id}
           producto={producto}
           configCuotas={configCuotas}
+          diasNuevo={diasNuevo}
         />
       ))}
     </div>

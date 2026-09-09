@@ -9,6 +9,7 @@ import {
   LogOut,
   Package,
   PackageSearch,
+  Settings,
   Store,
 } from "lucide-react";
 
@@ -39,6 +40,12 @@ const NAV_ITEMS = [
     label: "Líneas",
     href: "/admin/lineas",
     icono: Layers,
+    proximamente: false,
+  },
+  {
+    label: "Configuración",
+    href: "/admin/configuracion",
+    icono: Settings,
     proximamente: false,
   },
 ];

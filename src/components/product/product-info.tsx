@@ -21,9 +21,11 @@ import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 export function ProductInfo({
   producto,
   configCuotas,
+  diasNuevo,
 }: {
   producto: ProductoPublico;
   configCuotas: ConfigCuotas;
+  diasNuevo: number;
 }) {
   const addItem = useCartStore((state) => state.addItem);
   const setOpen = useCartStore((state) => state.setOpen);
@@ -45,6 +47,19 @@ export function ProductInfo({
     varianteActiva.precio,
     varianteActiva.precioTransferencia,
     producto.createdAt,
+    diasNuevo,
+  );
+
+  const materiales = useMemo(
+    () =>
+      [
+        ...new Set(
+          producto.variantes
+            .map((variante) => variante.material)
+            .filter((m): m is string => Boolean(m)),
+        ),
+      ],
+    [producto],
   );
 
   const calcularEnvio = () => {
@@ -189,10 +204,18 @@ export function ProductInfo({
         <AccordionItem value="materiales">
           <AccordionTrigger>Materiales</AccordionTrigger>
           <AccordionContent>
-            <p>
-              Armazón fabricado en {varianteActiva.material.toLowerCase()} de
-              alta calidad. Cristales con protección UV según línea.
-            </p>
+            {materiales.length > 0 ? (
+              <ul className="list-inside list-disc space-y-1">
+                {materiales.map((material) => (
+                  <li key={material}>{material}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground">
+                No especificamos los materiales de este producto. Consultanos
+                por WhatsApp.
+              </p>
+            )}
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="garantia">

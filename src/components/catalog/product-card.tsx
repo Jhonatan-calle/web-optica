@@ -13,9 +13,11 @@ import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 export function ProductCard({
   producto,
   configCuotas,
+  diasNuevo,
 }: {
   producto: ProductoPublico;
   configCuotas: ConfigCuotas;
+  diasNuevo: number;
 }) {
   const addItem = useCartStore((state) => state.addItem);
   const variante = producto.variantes[0]!;
@@ -24,6 +26,7 @@ export function ProductCard({
     variante.precio,
     variante.precioTransferencia,
     producto.createdAt,
+    diasNuevo,
   );
 
   return (

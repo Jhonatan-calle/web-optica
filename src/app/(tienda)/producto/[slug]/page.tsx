@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductInfo } from "@/components/product/product-info";
 import { obtenerProductoPublicoPorSlug } from "@/lib/catalog-utils";
-import { obtenerConfigCuotas } from "@/lib/config-utils";
+import { obtenerConfigGlobal } from "@/lib/config-utils";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +15,11 @@ export default async function ProductoPage({
   const { slug } = await params;
 
   let producto;
-  let configCuotas;
+  let config;
   try {
-    [producto, configCuotas] = await Promise.all([
+    [producto, config] = await Promise.all([
       obtenerProductoPublicoPorSlug(slug),
-      obtenerConfigCuotas(),
+      obtenerConfigGlobal(),
     ]);
   } catch (error) {
     console.error("No se pudo cargar el producto:", error);
@@ -48,7 +48,11 @@ export default async function ProductoPage({
           imagenes={producto.variantes[0].imagenes}
           nombre={producto.nombre}
         />
-        <ProductInfo producto={producto} configCuotas={configCuotas} />
+        <ProductInfo
+          producto={producto}
+          configCuotas={config.cuotas}
+          diasNuevo={config.diasNuevo}
+        />
       </div>
     </main>
   );

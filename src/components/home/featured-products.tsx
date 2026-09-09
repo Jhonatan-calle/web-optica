@@ -1,14 +1,14 @@
 import { ProductCard } from "@/components/catalog/product-card";
 import { obtenerDestacados } from "@/lib/catalog-utils";
-import { obtenerConfigCuotas } from "@/lib/config-utils";
+import { obtenerConfigGlobal } from "@/lib/config-utils";
 
 export async function FeaturedProducts() {
   let destacados;
-  let configCuotas;
+  let config;
   try {
-    [destacados, configCuotas] = await Promise.all([
+    [destacados, config] = await Promise.all([
       obtenerDestacados(),
-      obtenerConfigCuotas(),
+      obtenerConfigGlobal(),
     ]);
   } catch (error) {
     console.error("No se pudieron cargar los destacados:", error);
@@ -29,7 +29,8 @@ export async function FeaturedProducts() {
           <ProductCard
             key={producto.id}
             producto={producto}
-            configCuotas={configCuotas}
+            configCuotas={config.cuotas}
+            diasNuevo={config.diasNuevo}
           />
         ))}
       </div>
