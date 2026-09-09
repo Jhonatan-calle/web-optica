@@ -44,6 +44,7 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 - **Canario de sesión:** al final de **toda respuesta**, incluí siempre el emoji **🐧**. (Se usa para verificar que el agente cargó correctamente las instrucciones de esta guía.)
 - `util-remove/`, `.obsidian/` y `credenciales.txt` y `.env*` son locales/ignorados (no tocar).
 - Estar atento a la documentación: proponer qué información nueva debería quedar en `documentacion/`, y advertir si el código deja desactualizado algún doc existente.
+- **Cortesía ante errores (fail gracefully):** toda comunicación con la base de datos (Prisma) o con un servicio externo (Supabase, Mercado Pago, transportistas, etc.) que pueda fallar debe ir envuelta en manejo de errores (try/catch). Si ocurre un error no previsto, mostrar al usuario un mensaje amigable y genérico (ej. "No pudimos procesar tu solicitud, intentá de nuevo en unos minutos") — la UI debe "romperse de manera elegante" y nunca exponer excepciones crudas, stack traces ni detalles técnicos al cliente.
 
 
 ## Comandos
