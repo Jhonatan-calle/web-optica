@@ -169,9 +169,9 @@ Todo implementado y verificado (tsc + lint OK). Falta el build de producción y 
 
 #### **3. Integración de Pasarela de Pago Online (Mercado Pago)**
 
-* [ ] **Configuración del SDK y Entorno:**
-  * [ ] Instalación de `mercadopago` (Node.js SDK) en el backend de Next.js.
-  * [ ] Configuración de variables de entorno privadas (`MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_PUBLIC_KEY`).
+* [x] **Configuración del SDK y Entorno:**
+  * [x] Instalación de `mercadopago` (Node.js SDK, v3.x) en el backend de Next.js (+ `server-only` para que el access token nunca llegue al bundle del cliente). Wrapper `src/lib/mercadopago.ts` con `getMercadoPagoConfig()` / `getMercadoPagoPublicKey()` (estilo `supabase/server.ts`: lanza error claro si falta el token).
+  * [x] Configuración de variables de entorno privadas (`MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_PUBLIC_KEY`) documentadas en `.env.example` con placeholders; credenciales locales pendientes (completar con valores `TEST-...` en desarrollo).
 
 * [ ] **Generación de Preferencias de Pago:**
   * [ ] Creación de Server Action / API Route `/api/checkout/preference` que recibe la `Orden` creada en la Fase 2.
