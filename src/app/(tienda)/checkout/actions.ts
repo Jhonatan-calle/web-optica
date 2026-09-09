@@ -2,12 +2,22 @@
 
 import { crearOrdenSchema, mapMetodoEnvio, mapMetodoPago } from "@/lib/orden-utils";
 import { calcularTotales } from "@/lib/pago-utils";
+import { obtenerConfigCuotas } from "@/lib/config-utils";
 import { prisma } from "@/lib/prisma";
 
 export interface CrearOrdenResultado {
   ok: boolean;
   ordenId?: string;
   error?: string;
+}
+
+/**
+ * Expone la configuración de cuotas (leída de la tabla `Configuracion`) para
+ * que los componentes cliente del checkout puedan mostrar el texto de cuotas
+ * real. Devuelve la config por defecto si no hay datos o hay un error.
+ */
+export async function obtenerConfigCuotasPublica() {
+  return obtenerConfigCuotas();
 }
 
 /**

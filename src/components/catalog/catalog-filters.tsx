@@ -1,19 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { MOCK_PRODUCTOS } from "@/lib/mock-products";
-
-export type Filtros = {
-  linea: string;
-  material: string;
-  tipo: string;
-  orden: string;
-};
+import type { OpcionesFiltros } from "@/lib/catalog-utils";
 
 const TODAS = "Todas";
+const ORDEN_DEFAULT = "relevancia";
+
+type CampoFiltro = "linea" | "material" | "tipo";
 
 function Chip({
   active,
@@ -40,43 +37,89 @@ function Chip({
   );
 }
 
-export function CatalogFilters({
-  filtros,
-  onChange,
-  busqueda,
-  onBusquedaChange,
-}: {
-  filtros: Filtros;
-  onChange: (filtros: Filtros) => void;
-  busqueda: string;
-  onBusquedaChange: (valor: string) => void;
-}) {
-  const opciones = useMemo(
-    () => ({
-      lineas: [...new Set(MOCK_PRODUCTOS.map((p) => p.linea.nombre))],
-      materiales: [
-        ...new Set(
-          MOCK_PRODUCTOS.flatMap((p) => p.variantes.map((v) => v.material)),
-        ),
-      ].filter(Boolean) as string[],
-      tipos: [...new Set(MOCK_PRODUCTOS.map((p) => p.linea.tipo.nombre))],
-    }),
-    []
-  );
+export function CatalogFilters({ opciones }: { opciones: OpcionesFiltros }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [busqueda, setBusqueda] = useState(searchParams.get("q") ?? "");
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const set = (campo: keyof Filtros, valor: string) => {
-    if (campo === "orden") {
-      onChange({ ...filtros, orden: valor });
-      return;
-    }
-    onChange({ ...filtros, [campo]: valor === TODAS ? TODAS : valor });
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const filtros = {
+    linea: searchParams.get("linea") ?? TODAS,
+    material: searchParams.get("material") ?? TODAS,
+    tipo: searchParams.get("tipo") ?? TODAS,
+    orden: searchParams.get("orden") ?? ORDEN_DEFAULT,
   };
 
-  const isActive = (campo: keyof Filtros, valor: string) =>
+  const navegar = (params: URLSearchParams) => {
+    const qs = params.toString();
+    startTransition(() => {
+      router.replace(qs ? `/catalogo?${qs}` : "/catalogo");
+    });
+  };
+
+  const set = (campo: CampoFiltro, valor: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (valor === TODAS) {
+      params.delete(campo);
+    } else {
+      params.set(campo, valor);
+    }
+    navegar(params);
+  };
+
+  const setOrden = (valor: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (valor === ORDEN_DEFAULT) {
+      params.delete("orden");
+    } else {
+      params.set("orden", valor);
+    }
+    navegar(params);
+  };
+
+  const onBusquedaChange = (valor: string) => {
+    setBusqueda(valor);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (valor.trim()) {
+        params.set("q", valor.trim());
+      } else {
+        params.delete("q");
+      }
+      navegar(params);
+    }, 350);
+  };
+
+  const limpiar = () => {
+    setBusqueda("");
+    navegar(new URLSearchParams());
+  };
+
+  const hayFiltrosActivos =
+    filtros.linea !== TODAS ||
+    filtros.material !== TODAS ||
+    filtros.tipo !== TODAS ||
+    busqueda.trim() !== "";
+
+  const isActive = (campo: CampoFiltro, valor: string) =>
     filtros[campo] === valor;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div
+      className={cn(
+        "flex flex-col gap-3 transition-opacity",
+        isPending && "pointer-events-none opacity-50",
+      )}
+      aria-busy={isPending}
+    >
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
@@ -147,19 +190,28 @@ export function CatalogFilters({
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold text-muted-foreground">
           Ordenar
         </span>
         <select
           value={filtros.orden}
-          onChange={(e) => set("orden", e.target.value)}
+          onChange={(e) => setOrden(e.target.value)}
           className="h-8 rounded-lg border border-input bg-background px-2 text-xs font-medium text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <option value="relevancia">Relevancia</option>
           <option value="precio-asc">Precio: menor a mayor</option>
           <option value="precio-desc">Precio: mayor a menor</option>
         </select>
+        {hayFiltrosActivos && (
+          <button
+            type="button"
+            onClick={limpiar}
+            className="text-xs font-medium text-[#00848C] hover:underline"
+          >
+            Limpiar filtros
+          </button>
+        )}
       </div>
     </div>
   );

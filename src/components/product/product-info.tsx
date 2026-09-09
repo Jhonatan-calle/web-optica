@@ -5,7 +5,8 @@ import { Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
-import type { MockProducto, MockVariante } from "@/lib/mock-products";
+import type { ProductoPublico, VariantePublica } from "@/lib/catalog-types";
+import type { ConfigCuotas } from "@/lib/product-utils";
 import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
 import { calcularTarifaEnvio } from "@/lib/envio-utils";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,13 @@ import {
 } from "@/components/ui/accordion";
 import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 
-export function ProductInfo({ producto }: { producto: MockProducto }) {
+export function ProductInfo({
+  producto,
+  configCuotas,
+}: {
+  producto: ProductoPublico;
+  configCuotas: ConfigCuotas;
+}) {
   const addItem = useCartStore((state) => state.addItem);
   const setOpen = useCartStore((state) => state.setOpen);
 
@@ -27,7 +34,7 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
   const [cp, setCp] = useState("");
   const [cotizado, setCotizado] = useState<number | null>(null);
 
-  const varianteActiva = useMemo<MockVariante>(
+  const varianteActiva = useMemo<VariantePublica>(
     () =>
       producto.variantes.find((v) => v.id === varianteActivaId) ??
       producto.variantes[0],
@@ -77,7 +84,7 @@ export function ProductInfo({ producto }: { producto: MockProducto }) {
           )}
         </div>
         <span className="text-sm text-muted-foreground">
-          {calcularCuotas(varianteActiva.precio)}
+          {calcularCuotas(varianteActiva.precio, configCuotas)}
         </span>
       </div>
 

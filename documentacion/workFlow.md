@@ -5,7 +5,7 @@
 * **Fase 3: Panel Administrativo & Integraciones (Pagos/Envíos)**
 * **Fase 4: Pruebas, Despliegue & Entrega**
 
-> ✅ **Los mocks y la UI ya están reformateados a la forma del modelo de datos** (jerarquía `Tipo → Linea → Producto → Variante → Imagen`). Los helpers de cuotas/badges ya existen en `src/lib/product-utils.ts`: `calcularCuotas`, `calcularBadge` y `MOCK_CONFIG`. *No hay que reimplementarlos.*
+> ✅ **La tienda pública ya lee de la base de datos** (jerarquía `Tipo → Linea → Producto → Variante → Imagen`) vía `src/lib/catalog-utils.ts`; los mocks fueron eliminados (`src/lib/mock-products.ts` no existe). Helpers de cuotas/badges en `src/lib/product-utils.ts`: `calcularCuotas` (recibe la config real de cuotas de la tabla `Configuracion`, `src/lib/config-utils.ts`) y `calcularBadge`. *No hay que reimplementarlos.*
 >
 > ⚠️ **Única decisión de datos pendiente — B5 (envío):** decidir si las **tarifas de envío por código postal** salen de una **tabla propia en la base de datos** o de una **API de transportista externa**. Afecta solo cuando se integre el envío real (Fase 3); por ahora el estimado mock alcanza.
 
@@ -69,26 +69,26 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
 * [x] **Home / Landing Page (`/`):**
   * [x] *Hero Section:* Banner principal con mensaje de marca ("Encontrá tu marco ideal") y CTA "Ver Catálogo".
   * [ ] Reemplazar el placeholder del hero (isologo sobre fondo `#F9FAFB`) por la **foto lifestyle real** con modelos de marca, en alta resolución. Por ahora el hero usa un placeholder visual a la espera del asset.
-  * [x] *Carousel/Grid de Colecciones:* Acceso directo a las líneas destacadas.
-  * [ ] Conectar las colecciones y productos destacados de la home a la base de datos (en Supabase/Prisma) cuando exista el catálogo. Por ahora usan datos/imágenes mock.
+  * [x] *Carousel/Grid de Colecciones:* Acceso directo a las líneas destacadas (`obtenerColecciones`, Server Component).
+  * [x] Conectar colecciones y productos destacados de la home a la base de datos: `src/components/home/collections.tsx` y `featured-products.tsx` son Server Components que consultan Prisma (`obtenerColecciones`/`obtenerDestacados` y config de cuotas). Si falla la BD o no hay datos, la sección no se renderiza.
     * Las etiquetas de las cards se **calculan** (Opción A), NO se guardan como texto:
       * **"10% OFF" / descuento** = derivado de la diferencia entre `Variante.precio` y `Variante.precioTransferencia` (ej. `100 * (1 - precioTransferencia / precio)`).
       * **"NUEVO"** = derivado de la antigüedad del `Producto.createdAt`. Umbral de días **por definir (N)** — ⚠️ *queda pendiente fijar N y anotarlo acá.*
   * [ ] Reemplazar los placeholders de imagen (isologo sobre `#F9FAFB`) de las cards por las **imágenes reales de cada línea/colección**.
-  * [x] *Grid de Productos Destacados:* Cards de productos más vendidos, con "Agregar al Carrito" (datos mock por ahora).
+  * [x] *Grid de Productos Destacados:* Cards de productos más vendidos, con "Agregar al Carrito" (datos reales desde BD).
   * [x] *Banner de Valor:* Bloque con beneficios ("Envío Nacional", "3 Cuotas Sin Interés", "Retiro Gratis en Local").
 * [ ] **Catálogo Completo / Colecciones (`/catalogo` o `/aros`):**
-  * [x] Filtros horizontales por Línea/Colección, Material y Tipo de Producto (+ orden por precio). Con datos mock y estado local.
+  * [x] Filtros horizontales por Línea/Colección, Material y Tipo de Producto (+ orden por precio). Datos reales desde BD; los filtros viven en la URL (`searchParams`) y se aplican en el servidor (`catalog-filters.tsx` navega con `router.replace`).
   * [x] Grid responsivo (2 columnas en Mobile, 3-4 en Desktop).
   * [x] Cards de Producto (componente `ProductCard` reutilizable) con contenedor `bg-[#F9FAFB]`, badges ("10% OFF", "NUEVO"), stack de precios (Lista vs. Transferencia) y desglose de cuotas.
-  * [ ] Conectar el catálogo a la base de datos (Línea/Variante reales en Supabase/Prisma) y reemplazar los datos/imágenes mock. Implementar también el cálculo real de etiquetas (Opción A: descuento desde `precio`/`precioTransferencia`, "NUEVO" desde `createdAt` con umbral N por definir).
+  * [x] Conectar el catálogo a la base de datos: `src/app/(tienda)/catalogo/page.tsx` es Server Component que lee los `searchParams` (`q`, `linea`, `material`, `tipo`, `orden`), filtra/ordena en el servidor (`obtenerCatalogoPublico`) y renderiza el grid con `ProductCard`. Las etiquetas se **calculan** (Opción A) con `calcularBadge` desde `precio`/`precioTransferencia` y `createdAt` (umbral N por definir). Si la BD falla, muestra mensaje amigable.
 * [ ] **Página de Detalle de Producto - PDP (`/producto/[slug]`):**
   * [x] Galería de fotos con imágenes en alta resolución (placeholders / isologo por ahora).
   * [x] Selector de variantes por color/material mediante *swatches* / pills de color (con variantes mock).
-  * [x] Calculador interactivo de envíos por Código Postal (tabla de tarifas mock por rango de CP; pendiente API real/transportistas).
+  * [x] Calculador interactivo de envíos por Código Postal (tabla de tarifas mock por rango de CP; pendiente API real/transportistas — ver B5).
   * [x] Acordeones colapsables (Shadcn Accordion) para dimensiones de los armazones, materiales y garantía (contenido placeholder por ahora).
   * [x] Botón principal "Agregar al Carrito" (usa `useCartStore`; sin toast aún, queda para la fase de carrito).
-  * [ ] Reemplazar imágenes placeholder (isologo) por las **fotos reales** de cada producto/variante y conectar a la BD cuando exista el catálogo real.
+  * [x] Conectar el PDP a la BD y mostrar las fotos reales: `src/app/(tienda)/producto/[slug]/page.tsx` es Server Component `force-dynamic` que busca con `obtenerProductoPublicoPorSlug` (devuelve `notFound()` si no existe/inactivo). `ProductGallery` ahora muestra **todas las imágenes** de la variante activa (thumbnails) y `ProductInfo` recibe la config de cuotas real.
 
 #### **3. Carrito de Compras & Estado Global (Zustand)**
 
@@ -100,8 +100,7 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * [x] **Toasts de notificación (Sonner):** `<Toaster />` montado en `src/app/layout.tsx`; helper `showAddToCartToast` en `src/components/cart/add-to-cart-toast.tsx`. Se dispara al agregar desde `ProductCard` y `ProductInfo`.
   * [x] **Estados vacíos (*Empty States*):** carrito sin ítems (`cart-drawer.tsx`) y catálogo sin resultados de filtros/búsqueda (`catalogo/page.tsx`, distingue búsqueda vs. filtros).
   * [x] **Búsqueda en catálogo:** campo de búsqueda en `catalog-filters.tsx` filtrando por nombre en `catalogo/page.tsx`.
-  * [x] **Skeletons de carga:** componentes `src/components/ui/skeleton.tsx` y `src/components/catalog/product-card-skeleton.tsx` creados. 
-	  * [ ] ⚠️ **Pendiente de testear**: aún NO se renderizan en ningún lado porque la UI usa mocks síncronos. Al conectar la UI a la BD (reemplazar `MOCK_PRODUCTOS`), usar `ProductCardSkeleton` en el grid del catálogo mientras se consultan los productos.
+  * [x] **Skeletons de carga:** `ProductCardSkeleton` se usa en el catálogo a través de `CatalogoGridSkeleton`/`FiltrosSkeleton` (`src/components/catalog/catalogo-skeleton.tsx`), envueltos en `<Suspense>` con `key` por `searchParams`: al cambiar un filtro en la URL el usuario ve el esqueleto mientras el servidor obtiene los nuevos resultados. (El filtro activo atenúa los chips mientras navega).
 
 #### **4. Flujo de Checkout sin Registro (Guest Checkout) (`/checkout`)**
 
@@ -114,8 +113,8 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
   * Opción 1: Pago Online (preparado para conectar el SDK de Mercado Pago en la Fase 3).
   * Opción 2: Transferencia Bancaria (muestra datos CBU/Alias y aplica descuento automático).
   * Opción 3: Pago en Efectivo al Retirar en el Local.
-  * Implementado en `src/components/checkout/pago-form.tsx` + paso 3 del stepper en `src/app/checkout/page.tsx`. Los datos se persisten en `src/lib/checkout-store.ts` (`pago`, localStorage). Los totales (subtotal/descuento por transferencia/envío/total) se calculan con `src/lib/pago-utils.ts` (`calcularTotales`); el descuento por transferencia usa el snapshot `precioTransferencia` del carrito (`src/lib/cart-store.ts`), las cuotas (3 sin interés) solo aplican a Pago Online (`calcularCuotas`). El CBU/Alias/titular viven (placeholder `EDITAR`) en `src/lib/tienda-info.ts`. Efectivo en local solo disponible si la entrega es retiro (RF-11). Enum `MetodoPago` extendido con `TRANSFERENCIA` en `prisma/schema.prisma` (migración `agregar-transferencia-metodo-pago`), listo para mapear la orden.
-* [ ] ⚠️ **Pendiente (dato real):** completar `ALIAS_LA_OPTICA`, `CBU_LA_OPTICA` y `TITULAR_CUENTA` en `src/lib/tienda-info.ts` — hoy son placeholders `EDITAR` y son necesarios para que la opción "Transferencia Bancaria" funcione de verdad.
+  * Implementado en `src/components/checkout/pago-form.tsx` + paso 3 del stepper en `src/app/checkout/page.tsx`. Los datos se persisten en `src/lib/checkout-store.ts` (`pago`, localStorage). Los totales (subtotal/descuento por transferencia/envío/total) se calculan con `src/lib/pago-utils.ts` (`calcularTotales`); el descuento por transferencia usa el snapshot `precioTransferencia` del carrito (`src/lib/cart-store.ts`), las cuotas se leen de la tabla `Configuracion` vía la server action `obtenerConfigCuotasPublica` (`checkout/actions.ts`, default 3 sin interés) y solo aplican a Pago Online (`calcularCuotas`, `pago-form.tsx`). El CBU/Alias/titular viven (placeholder `EDITAR`) en `src/lib/tienda-info.ts`. Efectivo en local solo disponible si la entrega es retiro (RF-11). Enum `MetodoPago` extendido con `TRANSFERENCIA` en `prisma/schema.prisma` (migración `agregar-transferencia-metodo-pago`), listo para mapear la orden.
+* [ ] ⚠️ **Pendiente (dato real):** completar `ALIAS_LA_OPTICA`, `CBU_LA_OPTICA` y `TITULAR_CUENTA` en `src/lib/tienda-info.ts` — hoy son placeholders `EDITAR` y son necesarios para que la opción "Transferencia Bancaria" funcione de verdad. **Checkbox futuro ➕:** evaluar migrar estos datos (y el announcement "10% OFF") a la tabla `Configuracion` para editarlos sin tocar código.
 * [x] **Página de Confirmación de Pedido (`/orden/[id]`):**
   * Resumen del pedido generado en la base de datos (PostgreSQL/Prisma) con estado "Pendiente de Pago".
   * Implementado con la Server Action `crearOrden` en `src/app/checkout/actions.ts` (valida el payload con zod, recalcula totales con `calcularTotales` en el servidor y crea `Orden` + `ItemOrden` con estado `PENDIENTE`). El mapping de métodos vive en `src/lib/orden-utils.ts` (`METODO_PAGO`/`METODO_ENVIO`: envío a domicilio → `ENVIO_PROPIO` por decisión de logística local, B5; retiro → `RETIRO_LOCAL`). La página `src/app/orden/[id]/page.tsx` muestra número, datos de contacto y totales vía el componente compartido `src/components/checkout/resumen-orden.tsx`, más instrucciones por método (transferencia: CBU/Alias/titular; retiro: dirección y horario; online: aviso de Fase 3). El botón "Confirmar pedido" del paso 4 crea la orden, limpia carrito y checkout y redirige. El modelo `Orden` se extendió con `nombreContacto`/`telefonoContacto`/`dniContacto` (migración `agregar-contacto-orden`).

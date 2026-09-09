@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Banknote, CreditCard, Landmark } from "lucide-react";
 import { toast } from "sonner";
 
 import { pagoSchema, type PagoFormValues } from "@/lib/checkout-schema";
+import { obtenerConfigCuotasPublica } from "@/app/(tienda)/checkout/actions";
 import { calcularTotales } from "@/lib/pago-utils";
-import { calcularCuotas } from "@/lib/product-utils";
+import { calcularCuotas, type ConfigCuotas } from "@/lib/product-utils";
 import { useCartStore } from "@/lib/cart-store";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import {
@@ -24,6 +25,22 @@ export function PagoForm() {
   const setPago = useCheckoutStore((state) => state.setPago);
   const entrega = useCheckoutStore((state) => state.entrega);
   const items = useCartStore((state) => state.items);
+  const [configCuotas, setConfigCuotas] = useState<ConfigCuotas | null>(null);
+
+  useEffect(() => {
+    let activo = true;
+    obtenerConfigCuotasPublica()
+      .then((config) => {
+        if (activo) setConfigCuotas(config);
+      })
+      .catch((error) => {
+        console.error("No se pudo leer la configuración de cuotas:", error);
+        if (activo) setConfigCuotas(null);
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   const {
     register,
@@ -96,7 +113,10 @@ export function PagoForm() {
             Mercado Pago para finalizar.
           </span>
           <span className="text-xs font-medium text-foreground">
-            {calcularCuotas(totalesOnline.total)}
+            {calcularCuotas(
+              totalesOnline.total,
+              configCuotas ?? { cantidad: 3, conInteres: false },
+            )}
           </span>
         </RadioGroupItem>
 

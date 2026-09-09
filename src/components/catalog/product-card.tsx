@@ -1,15 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { useCartStore } from "@/lib/cart-store";
-import type { MockProducto } from "@/lib/mock-products";
+import type { ProductoPublico } from "@/lib/catalog-types";
+import type { ConfigCuotas } from "@/lib/product-utils";
 import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
 import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 
-export function ProductCard({ producto }: { producto: MockProducto }) {
+export function ProductCard({
+  producto,
+  configCuotas,
+}: {
+  producto: ProductoPublico;
+  configCuotas: ConfigCuotas;
+}) {
   const addItem = useCartStore((state) => state.addItem);
-  const variante = producto.variantes[0];
+  const variante = producto.variantes[0]!;
+  const imagenUrl = variante.imagenes[0]?.url ?? "/isologo.svg";
   const badge = calcularBadge(
     variante.precio,
     variante.precioTransferencia,
@@ -24,7 +34,7 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
       >
         <div className="flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
           <img
-            src={variante.imagenes[0].url}
+            src={imagenUrl}
             alt={producto.nombre}
             className="h-16 w-auto opacity-80"
           />
@@ -54,7 +64,7 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
         )}
       </div>
       <span className="mt-0.5 text-xs text-muted-foreground">
-        {calcularCuotas(variante.precio)}
+        {calcularCuotas(variante.precio, configCuotas)}
       </span>
 
       <Button
@@ -69,7 +79,7 @@ export function ProductCard({ producto }: { producto: MockProducto }) {
             color: variante.color,
             material: variante.material,
             precio: variante.precio,
-            imagen: variante.imagenes[0].url,
+            imagen: imagenUrl,
             cantidad: 1,
           });
           showAddToCartToast(producto.nombre);

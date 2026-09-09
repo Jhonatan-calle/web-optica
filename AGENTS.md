@@ -35,7 +35,7 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 - **Los mocks y la UI ya están reformateados a la forma del modelo** (chy: los datos de prueba imitan la jerarquía real). Helpers ya implementados en `src/lib/product-utils.ts`: `calcularCuotas`, `calcularBadge` y `MOCK_CONFIG`. **No reimplementarlos.**
 - **Etiquetas de las cards SE CALCULAN, no se guardan:** "10% OFF" desde `Variante.precio` vs `precioTransferencia`; "NUEVO" desde `Producto.createdAt` (umbral de días *por definir*). No guardarlas como texto.
 - **Pendiente — B5 (envío):** decidir si las tarifas de envío por CP salen de una tabla propia en BD o de una API de transportista (afecta en Fase 3; hoy hay tabla mock en `src/lib/envio-utils.ts`, usada por el PDP y el checkout).
-- **Estado actual (Fase 2):** la UI funciona con mocks (`src/lib/mock-products.ts`). Próximo paso: **conectar la UI a la base de datos** (reemplazar `MOCK_PRODUCTOS`) + imágenes reales + carrito/checkout.
+- **Estado actual (Fase 2):** la tienda pública (home, catálogo, PDP) ya lee de la **base de datos** vía Prisma (Server Components + `searchParams` en el catálogo; `src/lib/catalog-utils.ts`). Los mocks fueron eliminados (`src/lib/mock-products.ts` no existe). La config de cuotas se lee de la tabla `Configuracion` (`src/lib/config-utils.ts`). **Pendientes:** envío real (decisión B5: tabla propia vs API; hoy `src/lib/envio-utils.ts` es mock) y datos del local (alias/CBU/titular en `src/lib/tienda-info.ts`, placeholders `EDITAR`).
 
 ## Convenciones
 - Proyecto colaborativo (2 personas); `src/generated/` se versiona para que clonar funcionar sin `prisma generate`.

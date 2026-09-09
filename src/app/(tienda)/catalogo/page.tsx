@@ -1,62 +1,47 @@
-"use client";
+import Link from "next/link";
+import { Suspense } from "react";
 
-import { useMemo, useState } from "react";
-
-import { CatalogFilters, type Filtros } from "@/components/catalog/catalog-filters";
+import {
+  CatalogoGridSkeleton,
+  FiltrosSkeleton,
+} from "@/components/catalog/catalogo-skeleton";
+import { CatalogFilters } from "@/components/catalog/catalog-filters";
 import { ProductCard } from "@/components/catalog/product-card";
+import {
+  obtenerCatalogoPublico,
+  obtenerOpcionesFiltros,
+  type OpcionesFiltros,
+} from "@/lib/catalog-utils";
+import type { ProductoPublico } from "@/lib/catalog-types";
+import { obtenerConfigCuotas } from "@/lib/config-utils";
+import type { ConfigCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
-import { MOCK_PRODUCTOS } from "@/lib/mock-products";
 
-const TODAS = "Todas";
+export const dynamic = "force-dynamic";
 
-const FILTROS_INICIALES: Filtros = {
-  linea: TODAS,
-  material: TODAS,
-  tipo: TODAS,
-  orden: "relevancia",
-};
+interface CatalogoParams {
+  q?: string;
+  linea?: string;
+  material?: string;
+  tipo?: string;
+  orden?: string;
+}
 
-export default function CatalogoPage() {
-  const [filtros, setFiltros] = useState<Filtros>(FILTROS_INICIALES);
-  const [busqueda, setBusqueda] = useState("");
+export default async function CatalogoPage({
+  searchParams,
+}: {
+  searchParams: Promise<CatalogoParams>;
+}) {
+  const params = await searchParams;
 
-  const productos = useMemo(() => {
-    let lista = MOCK_PRODUCTOS;
+  const clave = new URLSearchParams(
+    Object.entries(params)
+      .filter(([, v]) => typeof v === "string" && v.length > 0)
+      .map(([k, v]) => [k, v as string]),
+  ).toString();
 
-    const termino = busqueda.trim().toLowerCase();
-    if (termino) {
-      lista = lista.filter((p) =>
-        p.nombre.toLowerCase().includes(termino),
-      );
-    }
-
-    if (filtros.linea !== TODAS) {
-      lista = lista.filter((p) => p.linea.nombre === filtros.linea);
-    }
-    if (filtros.material !== TODAS) {
-      lista = lista.filter((p) =>
-        p.variantes.some((v) => v.material === filtros.material),
-      );
-    }
-    if (filtros.tipo !== TODAS) {
-      lista = lista.filter((p) => p.linea.tipo.nombre === filtros.tipo);
-    }
-
-    if (filtros.orden === "precio-asc") {
-      lista = [...lista].sort((a, b) => a.variantes[0].precio - b.variantes[0].precio);
-    } else if (filtros.orden === "precio-desc") {
-      lista = [...lista].sort((a, b) => b.variantes[0].precio - a.variantes[0].precio);
-    }
-
-    return lista;
-  }, [filtros, busqueda]);
-
-  const hayTerminoBusqueda = busqueda.trim() !== "";
-
-  const hayFiltrosActivos =
-    filtros.linea !== TODAS ||
-    filtros.material !== TODAS ||
-    filtros.tipo !== TODAS;
+  const opciones: OpcionesFiltros = await obtenerOpcionesFiltros();
+  const configCuotas: ConfigCuotas = await obtenerConfigCuotas();
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
@@ -67,45 +52,81 @@ export default function CatalogoPage() {
         Nuestras líneas de anteojos y accesorios.
       </p>
 
-      <CatalogFilters
-        filtros={filtros}
-        onChange={setFiltros}
-        busqueda={busqueda}
-        onBusquedaChange={setBusqueda}
-      />
+      <Suspense fallback={<FiltrosSkeleton />}>
+        <CatalogFilters opciones={opciones} />
+      </Suspense>
 
-      {productos.length > 0 ? (
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-          {productos.map((producto) => (
-            <ProductCard key={producto.id} producto={producto} />
-          ))}
-        </div>
-      ) : (
-        <div className="mt-16 flex flex-col items-center gap-3 text-center">
-          <p className="text-sm font-medium text-foreground">
-            {hayTerminoBusqueda
-              ? "No encontramos productos que coincidan con tu búsqueda"
-              : "No encontramos productos con esos filtros."}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {hayTerminoBusqueda
-              ? "Probá con otro término o limpiá los filtros."
-              : "Probá ajustando o limpiando los filtros."}
-          </p>
-          {(hayFiltrosActivos || hayTerminoBusqueda) && (
-            <Button
-              variant="outline"
-              className="mt-2"
-              onClick={() => {
-                setFiltros(FILTROS_INICIALES);
-                setBusqueda("");
-              }}
-            >
-              Limpiar filtros
-            </Button>
-          )}
-        </div>
-      )}
+      <Suspense key={clave} fallback={<CatalogoGridSkeleton />}>
+        <Resultados params={params} configCuotas={configCuotas} />
+      </Suspense>
     </main>
+  );
+}
+
+async function Resultados({
+  params,
+  configCuotas,
+}: {
+  params: CatalogoParams;
+  configCuotas: ConfigCuotas;
+}) {
+  let productos: ProductoPublico[];
+  try {
+    productos = await obtenerCatalogoPublico(params);
+  } catch (error) {
+    console.error("No se pudo cargar el catálogo:", error);
+    return (
+      <div className="mt-16 flex flex-col items-center gap-3 text-center">
+        <p className="text-sm font-medium text-foreground">
+          No pudimos cargar los productos.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Intentá de nuevo en unos minutos.
+        </p>
+      </div>
+    );
+  }
+
+  const hayTerminoBusqueda = Boolean(params.q?.trim());
+  const hayFiltrosActivos = Boolean(
+    params.linea || params.material || params.tipo,
+  );
+
+  if (productos.length === 0) {
+    return (
+      <div className="mt-16 flex flex-col items-center gap-3 text-center">
+        <p className="text-sm font-medium text-foreground">
+          {hayTerminoBusqueda
+            ? "No encontramos productos que coincidan con tu búsqueda"
+            : "No encontramos productos con esos filtros."}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {hayTerminoBusqueda
+            ? "Probá con otro término o limpiá los filtros."
+            : "Probá ajustando o limpiando los filtros."}
+        </p>
+        {(hayFiltrosActivos || hayTerminoBusqueda) && (
+          <Button
+            variant="outline"
+            render={<Link href="/catalogo" />}
+            nativeButton={false}
+          >
+            Limpiar filtros
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+      {productos.map((producto) => (
+        <ProductCard
+          key={producto.id}
+          producto={producto}
+          configCuotas={configCuotas}
+        />
+      ))}
+    </div>
   );
 }

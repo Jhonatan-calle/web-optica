@@ -3,15 +3,7 @@ export interface ConfigCuotas {
   conInteres: boolean;
 }
 
-export const MOCK_CONFIG: ConfigCuotas = {
-  cantidad: 3,
-  conInteres: false,
-};
-
-export function calcularCuotas(
-  precio: number,
-  config: ConfigCuotas = MOCK_CONFIG,
-): string {
+export function calcularCuotas(precio: number, config: ConfigCuotas): string {
   const valorCuota = Math.round(precio / config.cantidad);
   const interes = config.conInteres ? "con interés" : "sin interés";
   return `${config.cantidad} cuotas ${interes} de $${valorCuota.toLocaleString("es-AR")}`;

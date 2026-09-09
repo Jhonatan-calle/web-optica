@@ -2,11 +2,10 @@ import { notFound } from "next/navigation";
 
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductInfo } from "@/components/product/product-info";
-import { MOCK_PRODUCTOS } from "@/lib/mock-products";
+import { obtenerProductoPublicoPorSlug } from "@/lib/catalog-utils";
+import { obtenerConfigCuotas } from "@/lib/config-utils";
 
-export function generateStaticParams() {
-  return MOCK_PRODUCTOS.map((producto) => ({ slug: producto.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function ProductoPage({
   params,
@@ -14,7 +13,29 @@ export default async function ProductoPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const producto = MOCK_PRODUCTOS.find((p) => p.slug === slug);
+
+  let producto;
+  let configCuotas;
+  try {
+    [producto, configCuotas] = await Promise.all([
+      obtenerProductoPublicoPorSlug(slug),
+      obtenerConfigCuotas(),
+    ]);
+  } catch (error) {
+    console.error("No se pudo cargar el producto:", error);
+    return (
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mt-16 flex flex-col items-center gap-3 text-center">
+          <p className="text-sm font-medium text-foreground">
+            No pudimos cargar el producto.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Intentá de nuevo en unos minutos.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   if (!producto) {
     notFound();
@@ -24,10 +45,10 @@ export default async function ProductoPage({
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2 md:gap-12">
         <ProductGallery
-          imagen={producto.variantes[0].imagenes[0].url}
+          imagenes={producto.variantes[0].imagenes}
           nombre={producto.nombre}
         />
-        <ProductInfo producto={producto} />
+        <ProductInfo producto={producto} configCuotas={configCuotas} />
       </div>
     </main>
   );
