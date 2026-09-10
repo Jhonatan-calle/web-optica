@@ -95,7 +95,7 @@ export function ResumenOrden({
         {entrega.tipo === "envio" ? (
           <div className="flex flex-col gap-1 text-sm">
             <p className="font-medium">
-              Envío a domicilio · {entrega.calle} {entrega.numero}
+              Envío a domicilio · Shipnow · {entrega.calle} {entrega.numero}
               {entrega.departamento ? `, ${entrega.departamento}` : ""}
             </p>
             <p className="text-muted-foreground">

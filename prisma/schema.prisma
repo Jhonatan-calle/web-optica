@@ -40,27 +40,27 @@ enum MetodoPago {
 
 // ---------- USUARIOS ----------
 model Usuario {
-  id          String       @id @default(cuid())
-  email       String       @unique
+  id          String      @id @default(cuid())
+  email       String      @unique
   password    String?
   nombre      String?
   telefono    String?
-  rol         Rol          @default(CLIENT)
+  rol         Rol         @default(CLIENT)
   direcciones Direccion[]
   ordenes     Orden[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Direccion {
-  id          String   @id @default(cuid())
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId   String
-  calle       String
-  numero      String?
+  id           String  @id @default(cuid())
+  usuario      Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId    String
+  calle        String
+  numero       String?
   departamento String?
-  ciudad      String
-  provincia   String
+  ciudad       String
+  provincia    String
   codigoPostal String
 }
 
@@ -75,8 +75,8 @@ model Tipo {
 }
 
 model Linea {
-  id          String    @id @default(cuid())
-  tipo        Tipo      @relation(fields: [tipoId], references: [id])
+  id          String     @id @default(cuid())
+  tipo        Tipo       @relation(fields: [tipoId], references: [id])
   tipoId      String
   nombre      String
   descripcion String?
@@ -87,11 +87,11 @@ model Linea {
 }
 
 model Producto {
-  id          String    @id @default(cuid())
-  linea       Linea     @relation(fields: [lineaId], references: [id], onDelete: Cascade)
+  id          String     @id @default(cuid())
+  linea       Linea      @relation(fields: [lineaId], references: [id], onDelete: Cascade)
   lineaId     String
   nombre      String
-  slug        String    @unique
+  slug        String     @unique
   descripcion String?
   // Nota (Fase 2): textos que se muestran en los acordeones "Dimensiones" y
   // "Garantía" del detalle de producto (PDP).
@@ -99,29 +99,29 @@ model Producto {
   garantia    String?
   // Nota (Fase 2): los productos con destacado = true alimentan el bloque
   // "Productos Destacados" de la Home.
-  destacado   Boolean   @default(false)
-  activo      Boolean   @default(true)
+  destacado   Boolean    @default(false)
+  activo      Boolean    @default(true)
   variantes   Variante[]
   // Nota (Fase 2): la etiqueta "NUEVO" de las cards se CALCULA a partir de este
   // campo (producto nuevo si createdAt es reciente). Umbral de días (N) por definir.
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Variante {
-  id                 String     @id @default(cuid())
-  producto           Producto   @relation(fields: [productoId], references: [id], onDelete: Cascade)
-  productoId         String
-  sku                String?    @unique
-  color              String?
-  material           String?
-  precio             Decimal    @db.Decimal(10, 2)
+  id                  String      @id @default(cuid())
+  producto            Producto    @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  productoId          String
+  sku                 String?     @unique
+  color               String?
+  material            String?
+  precio              Decimal     @db.Decimal(10, 2)
   // Nota (Fase 2): la etiqueta de descuento ("10% OFF") de las cards está
   // calculada a partir de la diferencia entre precio y precioTransferencia.
-  precioTransferencia Decimal?  @db.Decimal(10, 2)
-  stock              Int        @default(0)
-  imagenes           Imagen[]
-  items              ItemOrden[]
+  precioTransferencia Decimal?    @db.Decimal(10, 2)
+  stock               Int         @default(0)
+  imagenes            Imagen[]
+  items               ItemOrden[]
 }
 
 model Imagen {
@@ -135,54 +135,57 @@ model Imagen {
 
 // ---------- ÓRDENES ----------
 model Orden {
-  id         String       @id @default(cuid())
-  numero     Int          @unique @default(autoincrement())
-  usuario    Usuario?     @relation(fields: [usuarioId], references: [id])
-  usuarioId  String?
-  emailContacto  String
-  nombreContacto String?
+  id               String      @id @default(cuid())
+  numero           Int         @unique @default(autoincrement())
+  usuario          Usuario?    @relation(fields: [usuarioId], references: [id])
+  usuarioId        String?
+  emailContacto    String
+  nombreContacto   String?
   telefonoContacto String?
-  dniContacto    String?
-  estado     EstadoOrden  @default(PENDIENTE)
-  metodoPago MetodoPago
-  metodoEnvio MetodoEnvio
+  dniContacto      String?
+  estado           EstadoOrden @default(PENDIENTE)
+  metodoPago       MetodoPago
+  metodoEnvio      MetodoEnvio
 
-  dirCalle      String?
-  dirNumero     String?
+  dirCalle        String?
+  dirNumero       String?
   dirDepartamento String?
-  dirCiudad     String?
-  dirProvincia  String?
+  dirCiudad       String?
+  dirProvincia    String?
   dirCodigoPostal String?
 
-  costoEnvio Decimal? @db.Decimal(10, 2)
-  subtotal   Decimal  @db.Decimal(10, 2)
-  total      Decimal  @db.Decimal(10, 2)
+  costoEnvio     Decimal? @db.Decimal(10, 2)
+  subtotal       Decimal  @db.Decimal(10, 2)
+  total          Decimal  @db.Decimal(10, 2)
   // ID del pago en Mercado Pago (único: un mpPaymentId jamás puede pagar dos
   // órdenes — idempotencia ante reintentos del webhook).
-  mpPaymentId String?   @unique
+  mpPaymentId    String?  @unique
   // Alerta de stock insuficiente: true si al confirmar el pago alguna variante
   // no tenía stock suficiente para completar el pedido (requiere intervención
   // del admin).
-  alertaStock Boolean   @default(false)
+  alertaStock    Boolean  @default(false)
   trackingNumber String?
+  // URL del PDF/etiqueta de despacho devuelta por Shipnow (permite reimprimir).
+  // Permanece null en modo Shipnow Mock (se usa la etiqueta imprimible local).
+  etiquetaUrl    String?
 
-  items      ItemOrden[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  items     ItemOrden[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model ItemOrden {
-  id             String    @id @default(cuid())
-  orden          Orden     @relation(fields: [ordenId], references: [id], onDelete: Cascade)
-  ordenId        String
-  variante       Variante? @relation(fields: [varianteId], references: [id])
-  varianteId     String?
+  id         String    @id @default(cuid())
+  orden      Orden     @relation(fields: [ordenId], references: [id], onDelete: Cascade)
+  ordenId    String
+  variante   Variante? @relation(fields: [varianteId], references: [id])
+  varianteId String?
 
-  nombreSnapshot String    @db.VarChar(255)
+  nombreSnapshot String  @db.VarChar(255)
   colorSnapshot  String?
-  precioUnitario Decimal   @db.Decimal(10, 2)
+  precioUnitario Decimal @db.Decimal(10, 2)
   cantidad       Int
-  subtotal       Decimal   @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
 }
 
 // ---------- CONFIGURACIÓN ----------

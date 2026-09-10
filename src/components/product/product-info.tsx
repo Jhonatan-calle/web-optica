@@ -1,14 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
 import type { ProductoPublico, VariantePublica } from "@/lib/catalog-types";
 import type { ConfigCuotas } from "@/lib/product-utils";
 import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
-import { calcularTarifaEnvio } from "@/lib/envio-utils";
+import { cotizarEnvioPublico } from "@/app/(tienda)/checkout/actions";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -34,7 +34,13 @@ export function ProductInfo({
     producto.variantes[0]?.id,
   );
   const [cp, setCp] = useState("");
-  const [cotizado, setCotizado] = useState<number | null>(null);
+  const [cotizado, setCotizado] = useState<
+    | { estado: "invalido" }
+    | { estado: "ok"; precio: number; dias: number | null }
+    | { estado: "contingencia"; precio: number }
+    | null
+  >(null);
+  const [cotizando, setCotizando] = useState(false);
 
   const varianteActiva = useMemo<VariantePublica>(
     () =>
@@ -62,13 +68,24 @@ export function ProductInfo({
     [producto],
   );
 
-  const calcularEnvio = () => {
-    const resultado = calcularTarifaEnvio(cp);
-    if (resultado.estado === "invalido") {
-      setCotizado(-1);
-      return;
+  const calcularEnvio = async () => {
+    setCotizando(true);
+    try {
+      const resultado = await cotizarEnvioPublico(cp, 1);
+      if (resultado.estado === "invalido") {
+        setCotizado({ estado: "invalido" });
+        return;
+      }
+      setCotizado({
+        estado: resultado.estado,
+        precio: resultado.precio ?? 0,
+        dias: resultado.dias ?? null,
+      });
+    } catch {
+      setCotizado({ estado: "invalido" });
+    } finally {
+      setCotizando(false);
     }
-    setCotizado(resultado.estado === "ok" ? resultado.precio : 0);
   };
 
   return (
@@ -144,28 +161,35 @@ export function ProductInfo({
             }}
             className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           />
-          <Button type="button" onClick={calcularEnvio}>
-            Calcular
+          <Button type="button" onClick={calcularEnvio} disabled={cotizando}>
+            {cotizando && <Loader2 className="animate-spin" />}
+            {cotizando ? "Cotizando…" : "Calcular"}
           </Button>
         </div>
         <div className="mt-3 min-h-6 text-sm">
-          {cotizado === -1 && (
+          {cotizado?.estado === "invalido" && (
             <p className="text-[#B91C1C]">
               Ingresá un código postal válido de 4 dígitos.
             </p>
           )}
-          {cotizado === 0 && (
-            <p className="text-muted-foreground">
-              No encontramos envío para ese código postal. Consultanos por
-              WhatsApp.
-            </p>
-          )}
-          {cotizado && cotizado > 0 && (
+          {cotizado?.estado === "ok" && (
             <p className="text-muted-foreground">
               Envío estimado a todo el país:{" "}
               <span className="font-semibold text-foreground">
-                ${cotizado.toLocaleString("es-AR")}
+                ${cotizado.precio.toLocaleString("es-AR")}
               </span>
+              {cotizado.dias != null
+                ? ` · ${cotizado.dias} día${cotizado.dias === 1 ? "" : "s"} hábiles`
+                : ""}
+            </p>
+          )}
+          {cotizado?.estado === "contingencia" && (
+            <p className="text-muted-foreground">
+              Envío Nacional Estándar:{" "}
+              <span className="font-semibold text-foreground">
+                ${cotizado.precio.toLocaleString("es-AR")}
+              </span>{" "}
+              <span className="text-xs">(tarifa provisional)</span>
             </p>
           )}
         </div>

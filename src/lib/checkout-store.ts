@@ -3,7 +3,13 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 import type { CheckoutDatos, EntregaDatos, PagoDatos } from "@/lib/checkout-schema";
 
-export type EntregaPersistida = EntregaDatos & { costoEnvio?: number };
+export type EntregaPersistida = EntregaDatos & {
+  costoEnvio?: number;
+  envioInfo?: {
+    origen: "shipnow" | "contingencia";
+    dias?: number | null;
+  };
+};
 
 /** Paso actual del checkout: 0 Datos, 1 Entrega, 2 Pago, 3 Confirmar. */
 export type PasoCheckout = 0 | 1 | 2 | 3;

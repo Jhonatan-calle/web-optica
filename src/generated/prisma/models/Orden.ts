@@ -63,6 +63,7 @@ export type OrdenMinAggregateOutputType = {
   mpPaymentId: string | null
   alertaStock: boolean | null
   trackingNumber: string | null
+  etiquetaUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -90,6 +91,7 @@ export type OrdenMaxAggregateOutputType = {
   mpPaymentId: string | null
   alertaStock: boolean | null
   trackingNumber: string | null
+  etiquetaUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -117,6 +119,7 @@ export type OrdenCountAggregateOutputType = {
   mpPaymentId: number
   alertaStock: number
   trackingNumber: number
+  etiquetaUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -160,6 +163,7 @@ export type OrdenMinAggregateInputType = {
   mpPaymentId?: true
   alertaStock?: true
   trackingNumber?: true
+  etiquetaUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -187,6 +191,7 @@ export type OrdenMaxAggregateInputType = {
   mpPaymentId?: true
   alertaStock?: true
   trackingNumber?: true
+  etiquetaUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -214,6 +219,7 @@ export type OrdenCountAggregateInputType = {
   mpPaymentId?: true
   alertaStock?: true
   trackingNumber?: true
+  etiquetaUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -328,6 +334,7 @@ export type OrdenGroupByOutputType = {
   mpPaymentId: string | null
   alertaStock: boolean
   trackingNumber: string | null
+  etiquetaUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: OrdenCountAggregateOutputType | null
@@ -378,6 +385,7 @@ export type OrdenWhereInput = {
   mpPaymentId?: Prisma.StringNullableFilter<"Orden"> | string | null
   alertaStock?: Prisma.BoolFilter<"Orden"> | boolean
   trackingNumber?: Prisma.StringNullableFilter<"Orden"> | string | null
+  etiquetaUrl?: Prisma.StringNullableFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   usuario?: Prisma.XOR<Prisma.UsuarioNullableScalarRelationFilter, Prisma.UsuarioWhereInput> | null
@@ -407,6 +415,7 @@ export type OrdenOrderByWithRelationInput = {
   mpPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   alertaStock?: Prisma.SortOrder
   trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  etiquetaUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   usuario?: Prisma.UsuarioOrderByWithRelationInput
@@ -439,6 +448,7 @@ export type OrdenWhereUniqueInput = Prisma.AtLeast<{
   total?: Prisma.DecimalFilter<"Orden"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   alertaStock?: Prisma.BoolFilter<"Orden"> | boolean
   trackingNumber?: Prisma.StringNullableFilter<"Orden"> | string | null
+  etiquetaUrl?: Prisma.StringNullableFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   usuario?: Prisma.XOR<Prisma.UsuarioNullableScalarRelationFilter, Prisma.UsuarioWhereInput> | null
@@ -468,6 +478,7 @@ export type OrdenOrderByWithAggregationInput = {
   mpPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   alertaStock?: Prisma.SortOrder
   trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  etiquetaUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrdenCountOrderByAggregateInput
@@ -503,6 +514,7 @@ export type OrdenScalarWhereWithAggregatesInput = {
   mpPaymentId?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
   alertaStock?: Prisma.BoolWithAggregatesFilter<"Orden"> | boolean
   trackingNumber?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
+  etiquetaUrl?: Prisma.StringNullableWithAggregatesFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Orden"> | Date | string
 }
@@ -529,6 +541,7 @@ export type OrdenCreateInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   usuario?: Prisma.UsuarioCreateNestedOneWithoutOrdenesInput
@@ -558,6 +571,7 @@ export type OrdenUncheckedCreateInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemOrdenUncheckedCreateNestedManyWithoutOrdenInput
@@ -584,6 +598,7 @@ export type OrdenUpdateInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneWithoutOrdenesNestedInput
@@ -613,6 +628,7 @@ export type OrdenUncheckedUpdateInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemOrdenUncheckedUpdateManyWithoutOrdenNestedInput
@@ -641,6 +657,7 @@ export type OrdenCreateManyInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -666,6 +683,7 @@ export type OrdenUpdateManyMutationInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -693,6 +711,7 @@ export type OrdenUncheckedUpdateManyInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -730,6 +749,7 @@ export type OrdenCountOrderByAggregateInput = {
   mpPaymentId?: Prisma.SortOrder
   alertaStock?: Prisma.SortOrder
   trackingNumber?: Prisma.SortOrder
+  etiquetaUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -764,6 +784,7 @@ export type OrdenMaxOrderByAggregateInput = {
   mpPaymentId?: Prisma.SortOrder
   alertaStock?: Prisma.SortOrder
   trackingNumber?: Prisma.SortOrder
+  etiquetaUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -791,6 +812,7 @@ export type OrdenMinOrderByAggregateInput = {
   mpPaymentId?: Prisma.SortOrder
   alertaStock?: Prisma.SortOrder
   trackingNumber?: Prisma.SortOrder
+  etiquetaUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -897,6 +919,7 @@ export type OrdenCreateWithoutUsuarioInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemOrdenCreateNestedManyWithoutOrdenInput
@@ -924,6 +947,7 @@ export type OrdenUncheckedCreateWithoutUsuarioInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.ItemOrdenUncheckedCreateNestedManyWithoutOrdenInput
@@ -981,6 +1005,7 @@ export type OrdenScalarWhereInput = {
   mpPaymentId?: Prisma.StringNullableFilter<"Orden"> | string | null
   alertaStock?: Prisma.BoolFilter<"Orden"> | boolean
   trackingNumber?: Prisma.StringNullableFilter<"Orden"> | string | null
+  etiquetaUrl?: Prisma.StringNullableFilter<"Orden"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Orden"> | Date | string
 }
@@ -1007,6 +1032,7 @@ export type OrdenCreateWithoutItemsInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   usuario?: Prisma.UsuarioCreateNestedOneWithoutOrdenesInput
@@ -1035,6 +1061,7 @@ export type OrdenUncheckedCreateWithoutItemsInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1076,6 +1103,7 @@ export type OrdenUpdateWithoutItemsInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuario?: Prisma.UsuarioUpdateOneWithoutOrdenesNestedInput
@@ -1104,6 +1132,7 @@ export type OrdenUncheckedUpdateWithoutItemsInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1130,6 +1159,7 @@ export type OrdenCreateManyUsuarioInput = {
   mpPaymentId?: string | null
   alertaStock?: boolean
   trackingNumber?: string | null
+  etiquetaUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1155,6 +1185,7 @@ export type OrdenUpdateWithoutUsuarioInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemOrdenUpdateManyWithoutOrdenNestedInput
@@ -1182,6 +1213,7 @@ export type OrdenUncheckedUpdateWithoutUsuarioInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.ItemOrdenUncheckedUpdateManyWithoutOrdenNestedInput
@@ -1209,6 +1241,7 @@ export type OrdenUncheckedUpdateManyWithoutUsuarioInput = {
   mpPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   alertaStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  etiquetaUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1267,6 +1300,7 @@ export type OrdenSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   mpPaymentId?: boolean
   alertaStock?: boolean
   trackingNumber?: boolean
+  etiquetaUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
@@ -1297,6 +1331,7 @@ export type OrdenSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   mpPaymentId?: boolean
   alertaStock?: boolean
   trackingNumber?: boolean
+  etiquetaUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
@@ -1325,6 +1360,7 @@ export type OrdenSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   mpPaymentId?: boolean
   alertaStock?: boolean
   trackingNumber?: boolean
+  etiquetaUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
@@ -1353,11 +1389,12 @@ export type OrdenSelectScalar = {
   mpPaymentId?: boolean
   alertaStock?: boolean
   trackingNumber?: boolean
+  etiquetaUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrdenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "numero" | "usuarioId" | "emailContacto" | "nombreContacto" | "telefonoContacto" | "dniContacto" | "estado" | "metodoPago" | "metodoEnvio" | "dirCalle" | "dirNumero" | "dirDepartamento" | "dirCiudad" | "dirProvincia" | "dirCodigoPostal" | "costoEnvio" | "subtotal" | "total" | "mpPaymentId" | "alertaStock" | "trackingNumber" | "createdAt" | "updatedAt", ExtArgs["result"]["orden"]>
+export type OrdenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "numero" | "usuarioId" | "emailContacto" | "nombreContacto" | "telefonoContacto" | "dniContacto" | "estado" | "metodoPago" | "metodoEnvio" | "dirCalle" | "dirNumero" | "dirDepartamento" | "dirCiudad" | "dirProvincia" | "dirCodigoPostal" | "costoEnvio" | "subtotal" | "total" | "mpPaymentId" | "alertaStock" | "trackingNumber" | "etiquetaUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["orden"]>
 export type OrdenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuario?: boolean | Prisma.Orden$usuarioArgs<ExtArgs>
   items?: boolean | Prisma.Orden$itemsArgs<ExtArgs>
@@ -1399,6 +1436,7 @@ export type $OrdenPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     mpPaymentId: string | null
     alertaStock: boolean
     trackingNumber: string | null
+    etiquetaUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["orden"]>
@@ -1848,6 +1886,7 @@ export interface OrdenFieldRefs {
   readonly mpPaymentId: Prisma.FieldRef<"Orden", 'String'>
   readonly alertaStock: Prisma.FieldRef<"Orden", 'Boolean'>
   readonly trackingNumber: Prisma.FieldRef<"Orden", 'String'>
+  readonly etiquetaUrl: Prisma.FieldRef<"Orden", 'String'>
   readonly createdAt: Prisma.FieldRef<"Orden", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Orden", 'DateTime'>
 }

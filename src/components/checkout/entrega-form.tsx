@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Store, Truck } from "lucide-react";
+import { Loader2, Store, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 import { entregaSchema, type EntregaFormValues } from "@/lib/checkout-schema";
-import { calcularTarifaEnvio } from "@/lib/envio-utils";
 import { useCheckoutStore, type EntregaPersistida } from "@/lib/checkout-store";
+import { useCartStore } from "@/lib/cart-store";
 import { DIRECCION_LOCAL, HORARIO_LOCAL } from "@/lib/tienda-info";
+import { cotizarEnvioPublico } from "@/app/(tienda)/checkout/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,11 +18,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type EstadoCotizacion =
   | { estado: "invalido" }
-  | { estado: "sin_cobertura" }
-  | { estado: "ok"; precio: number };
+  | {
+      estado: "ok" | "contingencia";
+      precio: number;
+      dias: number | null;
+      origen: "shipnow" | "contingencia";
+    };
 
 export function EntregaForm() {
   const setEntrega = useCheckoutStore((state) => state.setEntrega);
+  const items = useCartStore((state) => state.items);
 
   const {
     register,
@@ -36,16 +42,41 @@ export function EntregaForm() {
   const tipo = watch("tipo");
   const cp = watch("codigoPostal");
   const [cotizado, setCotizado] = useState<EstadoCotizacion | null>(null);
+  const [cotizando, setCotizando] = useState(false);
 
   useEffect(() => {
     setCotizado(null);
   }, [tipo]);
 
-  const calcularEnvio = () => {
-    setCotizado(calcularTarifaEnvio(cp ?? ""));
+  const cantidadTotal = items.reduce((acc, item) => acc + item.cantidad, 0);
+
+  const realizarCotizacion = async (
+    codigoPostal: string,
+  ): Promise<EstadoCotizacion> => {
+    const resultado = await cotizarEnvioPublico(codigoPostal, cantidadTotal);
+    if (resultado.estado === "invalido") {
+      return { estado: "invalido" };
+    }
+    return {
+      estado: resultado.estado,
+      precio: resultado.precio ?? 0,
+      dias: resultado.dias ?? null,
+      origen: resultado.origen ?? "contingencia",
+    };
   };
 
-  const onSubmit = (values: EntregaFormValues) => {
+  const calcularEnvio = async () => {
+    setCotizando(true);
+    try {
+      setCotizado(await realizarCotizacion(cp ?? ""));
+    } catch {
+      setCotizado({ estado: "invalido" });
+    } finally {
+      setCotizando(false);
+    }
+  };
+
+  const onSubmit = async (values: EntregaFormValues) => {
     if (values.tipo === "retiro") {
       setEntrega({ tipo: "retiro" });
       toast.success("Retiro en el local seleccionado", {
@@ -54,12 +85,15 @@ export function EntregaForm() {
       return;
     }
 
+    // Re-cotiza en el servidor si el usuario no tocó "Calcular" (o si la
+    // cotización previa falló). El servidor nunca bloquea: si Shipnow no
+    // responde devuelve la tarifa de contingencia.
     const tarifa =
-      cotizado?.estado === "ok"
+      cotizado?.estado === "ok" || cotizado?.estado === "contingencia"
         ? cotizado
-        : calcularTarifaEnvio(values.codigoPostal);
+        : await realizarCotizacion(values.codigoPostal);
 
-    if (tarifa.estado !== "ok") {
+    if (tarifa.estado === "invalido") {
       toast.error("Calculá tu envío primero", {
         description: "Ingresá tu código postal y tocá Calcular.",
       });
@@ -75,6 +109,10 @@ export function EntregaForm() {
       provincia: values.provincia.trim(),
       codigoPostal: values.codigoPostal.trim(),
       costoEnvio: tarifa.precio,
+      envioInfo: {
+        origen: tarifa.origen,
+        dias: tarifa.dias,
+      },
     };
     setEntrega(entrega);
     toast.success("Datos de entrega guardados", {
@@ -231,8 +269,14 @@ export function EntregaForm() {
                 }
                 {...register("codigoPostal")}
               />
-              <Button type="button" variant="outline" onClick={calcularEnvio}>
-                Calcular
+              <Button
+                type="button"
+                variant="outline"
+                onClick={calcularEnvio}
+                disabled={cotizando}
+              >
+                {cotizando && <Loader2 className="animate-spin" />}
+                {cotizando ? "Cotizando…" : "Calcular"}
               </Button>
             </div>
             {errors.codigoPostal?.message && (
@@ -246,18 +290,24 @@ export function EntregaForm() {
                   Ingresá un código postal válido de 4 dígitos.
                 </p>
               )}
-              {cotizado?.estado === "sin_cobertura" && (
-                <p className="text-muted-foreground">
-                  No encontramos envío para ese código postal. Consultanos por
-                  WhatsApp.
-                </p>
-              )}
               {cotizado?.estado === "ok" && (
                 <p className="text-muted-foreground">
-                  Envío estimado:{" "}
+                  Envío Shipnow:{" "}
                   <span className="font-semibold text-foreground">
                     ${cotizado.precio.toLocaleString("es-AR")}
                   </span>
+                  {cotizado.dias != null
+                    ? ` · ${cotizado.dias} día${cotizado.dias === 1 ? "" : "s"} hábiles`
+                    : ""}
+                </p>
+              )}
+              {cotizado?.estado === "contingencia" && (
+                <p className="text-muted-foreground">
+                  Envío Nacional Estándar:{" "}
+                  <span className="font-semibold text-foreground">
+                    ${cotizado.precio.toLocaleString("es-AR")}
+                  </span>{" "}
+                  <span className="text-xs">(tarifa provisional)</span>
                 </p>
               )}
             </div>

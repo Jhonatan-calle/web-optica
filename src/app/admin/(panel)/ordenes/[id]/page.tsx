@@ -16,6 +16,7 @@ import {
 } from "@/lib/orden-utils";
 import { DIRECCION_LOCAL } from "@/lib/tienda-info";
 import { OrdenEstadoForm } from "@/components/admin/orden-estado-form";
+import { EtiquetaShipnowCard } from "@/components/admin/etiqueta-shipnow-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -144,6 +145,15 @@ export default async function DetalleOrdenPage({
         trackingActual={orden.trackingNumber}
         metodoEnvio={orden.metodoEnvio}
       />
+
+      {!esRetiro && (
+        <EtiquetaShipnowCard
+          ordenId={orden.id}
+          numero={orden.numero}
+          tracking={orden.trackingNumber}
+          etiquetaUrl={orden.etiquetaUrl}
+        />
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

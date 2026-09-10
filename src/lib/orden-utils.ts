@@ -81,13 +81,14 @@ export function mapMetodoPago(
 /**
  * Mapea el método de entrega de la UI al enum de la base de datos.
  *
- * El envío a domicilio se guarda como `ENVIO_PROPIO` (logística local de La
- * Óptica) hasta que la tarea B5 defina el transportista/API de tarifas real.
+ * El envío a domicilio se guarda como `SHIPNOW` (decisión B5: Shipnow es el
+ * agregador logístico que cotiza y despacha los envíos). El retiro en el local
+ * no genera envío.
  */
 export function mapMetodoEnvio(
   tipo: z.infer<typeof entregaSchema>["tipo"],
 ): (typeof MetodoEnvio)[keyof typeof MetodoEnvio] {
-  return tipo === "retiro" ? MetodoEnvio.RETIRO_LOCAL : MetodoEnvio.ENVIO_PROPIO;
+  return tipo === "retiro" ? MetodoEnvio.RETIRO_LOCAL : MetodoEnvio.SHIPNOW;
 }
 
 /** Ítem del carrito tal como viaja al servidor al confirmar el pedido. */

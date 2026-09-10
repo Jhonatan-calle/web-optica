@@ -1318,6 +1318,7 @@ export const OrdenScalarFieldEnum = {
   mpPaymentId: 'mpPaymentId',
   alertaStock: 'alertaStock',
   trackingNumber: 'trackingNumber',
+  etiquetaUrl: 'etiquetaUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -4,6 +4,11 @@ import { crearOrdenSchema, mapMetodoEnvio, mapMetodoPago } from "@/lib/orden-uti
 import { calcularTotales } from "@/lib/pago-utils";
 import { obtenerConfigCuotas } from "@/lib/config-utils";
 import { prisma } from "@/lib/prisma";
+import {
+  calcularPesoKg,
+  cotizarShipnowServidor,
+  TARIFA_CONTINGENCIA,
+} from "@/lib/shipnow";
 
 export interface CrearOrdenResultado {
   ok: boolean;
@@ -18,6 +23,53 @@ export interface CrearOrdenResultado {
  */
 export async function obtenerConfigCuotasPublica() {
   return obtenerConfigCuotas();
+}
+
+export interface CotizarEnvioResultado {
+  estado: "invalido" | "ok" | "contingencia";
+  origen?: "shipnow" | "contingencia";
+  precio?: number;
+  dias?: number | null;
+}
+
+/**
+ * Cotiza el envío contra Shipnow para un código postal y una cantidad de ítems
+ * (peso estimado fijo de 0.5 kg por ítem). Usada por el checkout y el PDP.
+ * Nunca expone errores crudos: si la API falla devuelve la tarifa de
+ * contingencia para no bloquear la compra.
+ */
+export async function cotizarEnvioPublico(
+  codigoPostal: string,
+  cantidadTotal: number,
+): Promise<CotizarEnvioResultado> {
+  const cp = codigoPostal?.trim() ?? "";
+  if (!/^\d{4}$/.test(cp)) {
+    return { estado: "invalido" };
+  }
+
+  const cantidad = Math.min(Math.max(Math.round(cantidadTotal || 1), 1), 999);
+
+  try {
+    const cotizacion = await cotizarShipnowServidor({
+      codigoPostal: cp,
+      pesoKg: calcularPesoKg(cantidad),
+      cantidadTotal: cantidad,
+    });
+    return {
+      estado: cotizacion.origen === "shipnow" ? "ok" : "contingencia",
+      origen: cotizacion.origen,
+      precio: cotizacion.precio,
+      dias: cotizacion.dias,
+    };
+  } catch (error) {
+    console.error("Error al cotizar el envío:", error);
+    return {
+      estado: "contingencia",
+      origen: "contingencia",
+      precio: TARIFA_CONTINGENCIA,
+      dias: null,
+    };
+  }
 }
 
 /**
@@ -38,10 +90,26 @@ export async function crearOrden(input: unknown): Promise<CrearOrdenResultado> {
   }
 
   const { datos, entrega, pago, items } = parsed.data;
-  const costoEnvio = entrega.tipo === "envio" ? (entrega.costoEnvio ?? 0) : 0;
-  const totales = calcularTotales(items, costoEnvio, pago.tipo);
 
   try {
+    // El costo de envío se RE-COTIZA en el servidor (anti-manipulación): no se
+    // confía en el `costoEnvio` que mandó el cliente. Si Shipnow falla, se usa
+    // la tarifa de contingencia y el checkout nunca se bloquea.
+    let costoEnvio = 0;
+    if (entrega.tipo === "envio") {
+      const cantidadTotal = items.reduce(
+        (acc, item) => acc + item.cantidad,
+        0,
+      );
+      const cotizacion = await cotizarShipnowServidor({
+        codigoPostal: entrega.codigoPostal,
+        pesoKg: calcularPesoKg(cantidadTotal),
+        cantidadTotal,
+      });
+      costoEnvio = cotizacion.precio;
+    }
+    const totales = calcularTotales(items, costoEnvio, pago.tipo);
+
     const orden = await prisma.orden.create({
       data: {
         emailContacto: datos.email,
