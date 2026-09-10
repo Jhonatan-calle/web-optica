@@ -45,6 +45,7 @@ model Usuario {
   password    String?
   nombre      String?
   telefono    String?
+  dni         String?
   rol         Rol         @default(CLIENT)
   direcciones Direccion[]
   ordenes     Orden[]

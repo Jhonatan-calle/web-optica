@@ -54,9 +54,14 @@ const CAMPOS: {
   },
 ];
 
-export function CheckoutForm() {
+interface CheckoutFormProps {
+  datosUsuario: CheckoutDatos | null;
+}
+
+export function CheckoutForm({ datosUsuario }: CheckoutFormProps) {
   const setDatos = useCheckoutStore((state) => state.setDatos);
   const count = useCartStore(selectTotalCount);
+  const esLogueado = !!datosUsuario?.email;
 
   const {
     register,
@@ -64,7 +69,9 @@ export function CheckoutForm() {
     formState: { errors, isSubmitting },
   } = useForm<CheckoutDatos>({
     resolver: zodResolver(checkoutSchema),
-    defaultValues: {
+    // Si el usuario está logueado y tiene perfil, sus datos llegan precargados
+    // desde el servidor (prop) y el HTML ya se renderiza completo: sin flicker.
+    defaultValues: datosUsuario ?? {
       email: "",
       nombre: "",
       telefono: "",
@@ -91,33 +98,46 @@ export function CheckoutForm() {
       className="flex flex-col gap-5"
       noValidate
     >
-      {CAMPOS.map((campo) => (
-        <div key={campo.name} className="flex flex-col gap-1.5">
-          <Label htmlFor={`checkout-${campo.name}`}>{campo.label}</Label>
-          <Input
-            id={`checkout-${campo.name}`}
-            type={campo.type}
-            inputMode={campo.inputMode}
-            placeholder={campo.placeholder}
-            autoComplete={campo.autoComplete}
-            aria-invalid={!!errors[campo.name]}
-            aria-describedby={
-              errors[campo.name]
-                ? `checkout-${campo.name}-error`
-                : undefined
-            }
-            {...register(campo.name)}
-          />
-          {errors[campo.name]?.message && (
-            <p
-              id={`checkout-${campo.name}-error`}
-              className="text-xs text-red-500"
-            >
-              {errors[campo.name]!.message}
-            </p>
-          )}
-        </div>
-      ))}
+      {esLogueado && (
+        <p className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
+          Te enviaremos el detalle a{" "}
+          <span className="font-medium text-foreground">
+            {datosUsuario.email}
+          </span>{" "}
+          (email de tu cuenta)
+        </p>
+      )}
+      {esLogueado && <input type="hidden" {...register("email")} />}
+
+      {CAMPOS.filter((campo) => !(esLogueado && campo.name === "email")).map(
+        (campo) => (
+          <div key={campo.name} className="flex flex-col gap-1.5">
+            <Label htmlFor={`checkout-${campo.name}`}>{campo.label}</Label>
+            <Input
+              id={`checkout-${campo.name}`}
+              type={campo.type}
+              inputMode={campo.inputMode}
+              placeholder={campo.placeholder}
+              autoComplete={campo.autoComplete}
+              aria-invalid={!!errors[campo.name]}
+              aria-describedby={
+                errors[campo.name]
+                  ? `checkout-${campo.name}-error`
+                  : undefined
+              }
+              {...register(campo.name)}
+            />
+            {errors[campo.name]?.message && (
+              <p
+                id={`checkout-${campo.name}-error`}
+                className="text-xs text-red-500"
+              >
+                {errors[campo.name]!.message}
+              </p>
+            )}
+          </div>
+        ),
+      )}
 
       <Button
         type="submit"
