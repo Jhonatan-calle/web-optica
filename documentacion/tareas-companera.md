@@ -82,6 +82,44 @@ Marcar cada caso con ✅ (pasa) o ❌ (falla) y anotar observaciones.
 
 ---
 
+## Configurar credenciales de Shipnow (Fase 3 — envíos)
+
+> **Contexto:** la tienda cotiza los envíos contra la API de **Shipnow** (agregador logístico que consolida múltiples transportistas). El cliente ya queda implementado en `src/lib/shipnow.ts`; **falta conseguir la API key y validar el contrato exacto de la API**, que hoy está centralizado en ese archivo con valores tentativos.
+
+### Prerequisitos
+
+- [ ] Crear una cuenta en [Shipnow](https://shipnow.com.ar/) (botón "Registrar mi negocio") con los datos de **La Óptica**.
+- [ ] Completar el alta/onboarding comercial (contacto comercial, datos del negocio y, según el servicio, cuenta corriente para el pago de los envíos).
+
+### Pasos
+
+- [ ] **1. Obtener la API key:** dentro del panel de Shipnow, ir a la sección **API** y generar/copiar la API key de la cuenta.
+- [ ] **2. Validar el contrato de la API:** confirmar en la [documentación oficial de Shipnow (Stoplight)](https://shipnow.stoplight.io/docs/shipnow-api) los siguientes puntos para ajustarlos en `src/lib/shipnow.ts`:
+  - Ruta/endpoint de **cotización** (hoy `ENDPOINT_COTIZACION = "/v1/quotes"` tentativo).
+  - Ruta/endpoint de **etiquetas/shipments** (hoy `ENDPOINT_SHIPMENTS = "/v1/shipments"` tentativo) y formato de la respuesta (código de seguimiento + URL del PDF de la etiqueta).
+  - Header de **autenticación** (hoy `Authorization: Bearer <api-key>` tentativo).
+  - Campos del **payload** de cotización y de despacho (hoy: `addressTo.postalCode` / `addressFrom` + `packages[]` con peso/dimensiones tentativos).
+  - Campos de la **respuesta** para precio y días estimados (hoy se aceptan varios nombres candidatos).
+- [ ] **3. Configurar variables de entorno:** en el `.env` (o `.env.local`) del repositorio:
+  ```env
+  SHIPNOW_API_KEY="<api-key-de-shipnow>"
+  SHIPNOW_MOCK="false"
+  ```
+  > Mientras no haya credenciales, dejá `SHIPNOW_MOCK="true"` para que el flujo de cotización funcione con tarifas de ejemplo.
+
+### Resultados
+
+| Ítem | Estado | Observaciones |
+|---|---|---|
+| Cuenta Shipnow creada | | |
+| API key en el `.env` | | |
+| Contrato de API validado (cotización) | | |
+| Contrato de API validado (etiquetas/shipments: tracking + URL del PDF) | | |
+| Cotización real (precio y días) verificada en `/producto/[slug]` y `/checkout` | | |
+| Etiqueta real (PDF) verificada en `/admin/ordenes/[id]` | | Con la key configurada, "Generar etiqueta" debe devolver `etiquetaUrl` y el enlace abrir el PDF de Shipnow. |
+
+---
+
 ## Probar el pago online en la web (Mercado Pago)
 
 > Requiere haber completado la sección anterior (credenciales configuradas en el `.env`). El objetivo es validar el flujo completo de pago online simulando los escenarios reales, y verificar que los métodos de pago sin conexión (transferencia y efectivo en local) **no** pasan por Mercado Pago.

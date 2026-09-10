@@ -7,7 +7,7 @@
 
 > ✅ **La tienda pública ya lee de la base de datos** (jerarquía `Tipo → Linea → Producto → Variante → Imagen`) vía `src/lib/catalog-utils.ts`; los mocks fueron eliminados (`src/lib/mock-products.ts` no existe). Helpers de cuotas/badges en `src/lib/product-utils.ts`: `calcularCuotas` (recibe la config real de cuotas de la tabla `Configuracion`) y `calcularBadge` (recibe el umbral de días "NUEVO", también de `Configuracion`). La lectura se hace con `obtenerConfigGlobal` (`src/lib/config-utils.ts`, defaults: 3 cuotas sin interés + 21 días) y se edita desde `/admin/configuracion`. *No hay que reimplementarlos.*
 >
-> ⚠️ **Única decisión de datos pendiente — B5 (envío):** decidir si las **tarifas de envío por código postal** salen de una **tabla propia en la base de datos** o de una **API de transportista externa**. Afecta solo cuando se integre el envío real (Fase 3); por ahora el estimado mock alcanza.
+> ✅ **Decisión B5 resuelta (envío):** las tarifas de envío se cotizan en tiempo real contra la **API de Shipnow** (agregador logístico que consolida múltiples transportistas). Peso asumido: **0,5 kg por ítem** (anteojos/estuche) + dimensiones fijas **20×15×5 cm**; sin credenciales o ante falla de la API se usa una **tarifa de contingencia** ($7.500) para nunca bloquear la compra. Despacho: etiqueta imprimible scaffold (mock) desde el panel admin — ver `src/lib/shipnow.ts`.
 
 ---
 
@@ -85,7 +85,7 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
 * [ ] **Página de Detalle de Producto - PDP (`/producto/[slug]`):**
   * [x] Galería de fotos con imágenes en alta resolución (placeholders / isologo por ahora).
   * [x] Selector de variantes por color/material mediante *swatches* / pills de color (con variantes mock).
-  * [x] Calculador interactivo de envíos por Código Postal (tabla de tarifas mock por rango de CP; pendiente API real/transportistas — ver B5).
+  * [x] Calculador interactivo de envíos por Código Postal conectado a la API real de Shipnow (`src/lib/shipnow.ts` vía la server action `cotizarEnvioPublico`; peso estimado 0.5 kg/ítem + dimensiones 20×15×5 cm; tarifa de contingencia si la API falla).
   * [x] Acordeones colapsables (Shadcn Accordion) para dimensiones de los armazones, materiales y garantía. **Materiales** muestra los valores reales de las variantes del producto (lista de materiales únicos) con fallback amigable si no hay material cargado (fue texto hardcodeado; se eliminó por riesgo de crash con `material` vacío).
   * [x] Botón principal "Agregar al Carrito" (usa `useCartStore`; sin toast aún, queda para la fase de carrito).
   * [x] Conectar el PDP a la BD y mostrar las fotos reales: `src/app/(tienda)/producto/[slug]/page.tsx` es Server Component `force-dynamic` que busca con `obtenerProductoPublicoPorSlug` (devuelve `notFound()` si no existe/inactivo). `ProductGallery` ahora muestra **todas las imágenes** de la variante activa (thumbnails) y `ProductInfo` recibe la config real (cuotas + días "NUEVO").
@@ -108,7 +108,7 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
 * [x] **Selección de Método de Entrega:**
   * Opción 1: Envío a Domicilio (solicita dirección completa y CP).
   * Opción 2: Retiro Gratis en el Local Físico de La Óptica.
-  * Implementado en `src/components/checkout/entrega-form.tsx` + stepper en `src/app/checkout/page.tsx` (Paso 1 Datos → Paso 2 Entrega → Paso 3 Pago). Los datos se persisten en `src/lib/checkout-store.ts` (`entrega`, localStorage). El costo de envío se estima con el util compartido `src/lib/envio-utils.ts` (`calcularTarifaEnvio`, reutiliza la tabla mock de tarifas por CP; pendiente API real/transportistas — ver B5). La dirección y horario del local para retiro viven en `src/lib/tienda-info.ts`.
+  * Implementado en `src/components/checkout/entrega-form.tsx` + stepper en `src/app/checkout/page.tsx` (Paso 1 Datos → Paso 2 Entrega → Paso 3 Pago). Los datos se persisten en `src/lib/checkout-store.ts` (`entrega`, localStorage). El costo de envío se cotiza contra la API real de **Shipnow** (`cotizarEnvioPublico` en `checkout/actions.ts`, `src/lib/shipnow.ts`; peso 0.5 kg/ítem, fallback de contingencia si la API falla) y se **re-cotiza en el servidor** al crear la orden (anti-manipulación). La dirección y horario del local para retiro viven en `src/lib/tienda-info.ts`.
 * [x] **Selección de Método de Pago:**
   * Opción 1: Pago Online (preparado para conectar el SDK de Mercado Pago en la Fase 3).
   * Opción 2: Transferencia Bancaria (muestra datos CBU/Alias y aplica descuento automático).
@@ -117,7 +117,7 @@ El objetivo de esta fase es dejar la tienda pública 100% navegable, responsiva,
 * [ ] ⚠️ **Pendiente (dato real):** completar `ALIAS_LA_OPTICA`, `CBU_LA_OPTICA` y `TITULAR_CUENTA` en `src/lib/tienda-info.ts` — hoy son placeholders `EDITAR` y son necesarios para que la opción "Transferencia Bancaria" funcione de verdad. **Checkbox futuro ➕:** evaluar migrar estos datos (y el announcement "10% OFF") a la tabla `Configuracion` para editarlos sin tocar código.
 * [x] **Página de Confirmación de Pedido (`/orden/[id]`):**
   * Resumen del pedido generado en la base de datos (PostgreSQL/Prisma) con estado "Pendiente de Pago".
-  * Implementado con la Server Action `crearOrden` en `src/app/checkout/actions.ts` (valida el payload con zod, recalcula totales con `calcularTotales` en el servidor y crea `Orden` + `ItemOrden` con estado `PENDIENTE`). El mapping de métodos vive en `src/lib/orden-utils.ts` (`METODO_PAGO`/`METODO_ENVIO`: envío a domicilio → `ENVIO_PROPIO` por decisión de logística local, B5; retiro → `RETIRO_LOCAL`). La página `src/app/orden/[id]/page.tsx` muestra número, datos de contacto y totales vía el componente compartido `src/components/checkout/resumen-orden.tsx`, más instrucciones por método (transferencia: CBU/Alias/titular; retiro: dirección y horario; online: aviso de Fase 3). El botón "Confirmar pedido" del paso 4 crea la orden, limpia carrito y checkout y redirige. El modelo `Orden` se extendió con `nombreContacto`/`telefonoContacto`/`dniContacto` (migración `agregar-contacto-orden`).
+  * Implementado con la Server Action `crearOrden` en `src/app/checkout/actions.ts` (valida el payload con zod, recalcula totales con `calcularTotales` en el servidor y crea `Orden` + `ItemOrden` con estado `PENDIENTE`). El mapping de métodos vive en `src/lib/orden-utils.ts` (`METODO_PAGO`/`METODO_ENVIO`: envío a domicilio → `SHIPNOW` vía la decisión B5; retiro → `RETIRO_LOCAL`). El `costoEnvio` se **re-cotiza en el servidor** contra Shipnow (anti-manipulación, ver B5). La página `src/app/orden/[id]/page.tsx` muestra número, datos de contacto y totales vía el componente compartido `src/components/checkout/resumen-orden.tsx`, más instrucciones por método (transferencia: CBU/Alias/titular; retiro: dirección y horario; online: aviso de Fase 3). El botón "Confirmar pedido" del paso 4 crea la orden, limpia carrito y checkout y redirige. El modelo `Orden` se extendió con `nombreContacto`/`telefonoContacto`/`dniContacto` (migración `agregar-contacto-orden`).
 
 ---
 
@@ -176,7 +176,7 @@ Todo implementado y verificado (tsc + lint OK). Falta el build de producción y 
 * [x] **Generación de Preferencias de Pago:**
   * [x] API Route `POST /api/checkout/preference` (`src/app/api/checkout/preference/route.ts`) que recibe `{ ordenId }` y carga la `Orden` con sus `items` + `variante`.
   * [x] Mapeo de items, precios reales consultados en la BD (validación backend anti-manipulación: compara `ItemOrden.precioUnitario` vs `Variante.precio` real, rechaza ítems inexistentes/borrados y verifica que el total recalculado coincida con `Orden.total`). Payer con email/nombre/DNI/teléfono de la orden, `external_reference = orden.id`, `back_urls` → `/orden/[id]`, `auto_return: "approved"`, `notification_url` → `/api/webhooks/mercadopago`. Envío agregado como ítem extra si `costoEnvio > 0`.
-  * [x] Redirección al checkout seguro de Mercado Pago (*Redirect* vía `init_point`). **Flujo directo:** el checkout (`src/app/checkout/page.tsx`, `confirmarPedido`) genera la preferencia tras crear la orden y redirige a Mercado Pago con pago online; se muestra "Gracias" recién cuando el cliente vuelve pagando. Fallback: si la pasarela falla, va a `/orden/[id]` con el botón `<BotonMercadoPago>` (`src/components/checkout/boton-mercado-pago.tsx`) para reintentar. Helper cliente compartido: `src/lib/mercadopago-cliente.ts` (`generarPreferenciaPago`). Contexto externo: el `costoEnvio` usado en la preferencia es el guardado de la orden (estimado mock, ver B5).
+  * [x] Redirección al checkout seguro de Mercado Pago (*Redirect* vía `init_point`). **Flujo directo:** el checkout (`src/app/checkout/page.tsx`, `confirmarPedido`) genera la preferencia tras crear la orden y redirige a Mercado Pago con pago online; se muestra "Gracias" recién cuando el cliente vuelve pagando. Fallback: si la pasarela falla, va a `/orden/[id]` con el botón `<BotonMercadoPago>` (`src/components/checkout/boton-mercado-pago.tsx`) para reintentar. Helper cliente compartido: `src/lib/mercadopago-cliente.ts` (`generarPreferenciaPago`). Contexto externo: el `costoEnvio` usado en la preferencia es el guardado en la orden (cotizado con Shipnow, ver B5).
 
 * [x] **Procesamiento de Webhooks & Confirmación de Pagos (`/api/webhooks/mercadopago`):**
   * [x] Endpoint seguro (API Route) preparado para recibir las notificaciones push de Mercado Pago (formato `{ data: { id } }` y `{ topic, id }`).
@@ -193,12 +193,17 @@ Todo implementado y verificado (tsc + lint OK). Falta el build de producción y 
 
 #### **4. Resolución de Logística y Envíos Nacionales (Decisión B5)**
 
-* [ ] **Integración de Cotización Real:**
-  * [ ] Conectar el calculador de envíos (PDP/Checkout) a la API del proveedor seleccionado (ej. **Shipnow**, **Andreani** o **Correo Argentino**).
-  * [ ] Reemplazar la función de tarifas mock (`envio-utils.ts`) por una llamada al servidor que consulte la tarifa en tiempo real según el Código Postal y el peso/volumen estimado del paquete.
+* [x] **Integración de Cotización Real (Shipnow):**
+  * [x] Conectar el calculador de envíos (PDP/Checkout) a la API de **Shipnow** (agregador logístico que consolida múltiples transportistas; único integrador, sin clientes separados por correo).
+  * [x] Reemplazar la tabla mock (`envio-utils.ts`, eliminada) por la llamada al servidor `cotizarEnvioPublico` (`src/app/(tienda)/checkout/actions.ts`) que consulta la tarifa en tiempo real vía `src/lib/shipnow.ts` (server-only, cache en memoria 5 min, timeout 6 s, modo `SHIPNOW_MOCK` para pruebas sin credenciales).
+  * [x] **Peso/dimensiones:** peso asumido **0,5 kg por ítem** + dimensiones fijas **20×15×5 cm** (estuche de anteojos) — no se modifica el schema. Constantes documentadas en `src/lib/shipnow.ts`.
+  * [x] **Fallback (nunca bloquea el checkout):** si la API falla/timeout/faltan credenciales → tarifa plana de contingencia **"Envío Nacional Estándar — $7.500"** (constante `TARIFA_CONTINGENCIA`).
+  * [x] **Anti-manipulación:** `crearOrden` **re-cotiza en el servidor** (ignora el `costoEnvio` del cliente) y guarda `metodoEnvio = SHIPNOW` en la orden.
 
-* [ ] **Generación de Etiquetas y Despacho:**
-  * [ ] Al marcar una orden como `EN_PREPARACION` en el panel admin, invocar la API del transportista para generar la etiqueta de despacho imprimible (*Shipping Label*) y obtener la URL/Código de seguimiento.
+* [x] **Generación de Etiquetas y Despacho (scaffold + mock):**
+  * [x] Card "**Etiqueta de despacho (Shipnow)**" en `/admin/ordenes/[id]` (`src/components/admin/etiqueta-shipnow-card.tsx`) con botón **dedicado** (desacoplado del cambio de estado): genera el envío vía la Server Action `generarEtiquetaOrden` (`src/app/admin/(panel)/ordenes/actions.ts`) → `generarEtiquetaShipnowServidor` (`src/lib/shipnow.ts`, nunca lanza; idempotente si la orden ya tiene tracking) y guarda `Orden.trackingNumber` + `Orden.etiquetaUrl` (migración `agregar-etiqueta-orden`).
+  * [x] En modo `SHIPNOW_MOCK` se genera un tracking de ejemplo (`SHIP-MOCK-###-XXXX`) y la etiqueta imprimible **local** (`/admin/shipnow/etiqueta/[ordenId]`, route handler standalone con CSS de impresión: remitente `DIRECCION_LOCAL`, destinatario, peso/Cantidad de ítems). Con `etiquetaUrl` (API real) el enlace "Imprimir etiqueta" abre el PDF externo de Shipnow.
+  * [ ] ⏳ **Pendiente (dato real):** validar el **contrato de la API de etiquetas/shipments** de Shipnow contra la doc oficial (endpoint `ENDPOINT_SHIPMENTS`, header auth, payload y formato de respuesta con tracking + URL del PDF) — task de la compañera (ver `documentacion/tareas-companera.md`). Todo centralizado en `src/lib/shipnow.ts`.
 
 ---
 

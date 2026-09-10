@@ -6,7 +6,7 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 ## Stack
 - Next.js 16 (App Router) + TypeScript
 - Tailwind CSS v4 + Shadcn UI
-- Zustand (carrito) + TanStack Query (datos del servidor)
+- Zustand (carrito) + Server Components / Server Actions (datos de BD vía Prisma)
 - Tablas admin (backoffice): `@tanstack/react-table@^8` (API v8: `useReactTable`/`ColumnDef`, el patrón estándar de Shadcn Data Table). ⚠️ **NO** usar `^9`: su API cambió (`useTable` + features, `createCoreRowModel`), incompatible con el patrón.
 - Supabase (PostgreSQL) + Prisma 7 (adapter-pg, `prisma.config.ts`)
 - Supabase Auth (roles CLIENT / ADMIN)
@@ -16,8 +16,8 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 ## Documentación de referencia (fuente de verdad)
 - `documentacion/srs-beta.md` — requisitos funcionales (RF), legales (RL), no funcionales (RNF) y roles.
 - `documentacion/guiaEstetica.md` — guía de diseño UI/UX (paleta, tipografía, páginas, estados).
-- `documentacion/workFlow.md` — road map de fases y checklist de Fase 1.
-- `documentacion/stack-propuesta.md` — propuesta de stack y decisiones.
+- `documentacion/workFlow.md` — road map de fases con checklists de implementación (detalle y estado de cada módulo).
+- `documentacion/stack-propuesta.md` — propuesta histórica (⚠️ desactualizada: dice NextAuth.js y TanStack Query; lo vigente es este AGENTS → Supabase Auth + Server Actions).
 
 ## Assets
 - Logo: `assets/logo/` (SVG + PNG). Acento de marca: teal `#00848C`.
@@ -32,19 +32,24 @@ E-commerce para **"La Óptica"** (venta hoy por Instagram `@_laoptica`): catálo
 
 ## Estado de datos y reglas de negocio
 - **Modelo de datos (fuente de verdad):** `prisma/schema.prisma`. Jerarquía del catálogo: `Tipo (1) → Linea (N) → Producto (N) → Variante (N) → Imagen (N)`, más tablas de órdenes y `Configuracion` (clave-valor, config global: cuotas y etiquetas de catálogo).
-- **Los mocks y la UI ya están reformateados a la forma del modelo** (chy: los datos de prueba imitan la jerarquía real). Helpers ya implementados en `src/lib/product-utils.ts`: `calcularCuotas`, `calcularBadge` y `MOCK_CONFIG`. **No reimplementarlos.**
-- **Etiquetas de las cards SE CALCULAN, no se guardan:** "10% OFF" desde `Variante.precio` vs `precioTransferencia`; "NUEVO" desde `Producto.createdAt` con umbral configurable `dias_producto_nuevo` (default 21 días) en la tabla `Configuracion`. No guardarlas como texto.
-- **Pendiente — B5 (envío):** decidir si las tarifas de envío por CP salen de una tabla propia en BD o de una API de transportista (afecta en Fase 3; hoy hay tabla mock en `src/lib/envio-utils.ts`, usada por el PDP y el checkout).
-- **Estado actual (Fase 2):** la tienda pública (home, catálogo, PDP) ya lee de la **base de datos** vía Prisma (Server Components + `searchParams` en el catálogo; `src/lib/catalog-utils.ts`). Los mocks fueron eliminados (`src/lib/mock-products.ts` no existe). La config global (cuotas `cuotas_cantidad`/`cuotas_con_interes` y días del badge "NUEVO" `dias_producto_nuevo`) se lee de la tabla `Configuracion` con `obtenerConfigGlobal()` (`src/lib/config-utils.ts`, defaults: 3 cuotas sin interés, 21 días) y se edita desde el panel admin (`/admin/configuracion`, `src/app/admin/(panel)/configuracion/`, form `src/components/admin/configuracion-form.tsx`; seed inicial en `supabase/configuracion_defaults.sql`). Módulo de órdenes admin completo: lista `/admin/ordenes` (filtros por URL: buscador + estado) y detalle `/admin/ordenes/[id]` (desglose de ítems, contacto/DNI, dirección, resumen y form de estado + `Orden.trackingNumber`, migración `agregar_tracking_orden`). **Pendientes:** envío real (decisión B5: tabla propia vs API; hoy `src/lib/envio-utils.ts` es mock) y datos del local (alias/CBU/titular en `src/lib/tienda-info.ts`, placeholders `EDITAR`). **Fase 3 iniciada:** SDK de Mercado Pago instalado (`mercadopago` v3 + `server-only`) con wrapper `src/lib/mercadopago.ts` (`getMercadoPagoConfig()`, server-only); env vars `MERCADOPAGO_ACCESS_TOKEN`/`MERCADOPAGO_PUBLIC_KEY` documentadas en `.env.example` (usar credenciales `TEST-...` en dev; pendientes de completar). Pendiente: generación de preferencias, botón/redirect de pago y webhooks.
+- **Etiquetas de las cards SE CALCULAN, no se guardan:** "10% OFF" desde `Variante.precio` vs `precioTransferencia`; "NUEVO" desde `Producto.createdAt` con umbral configurable `dias_producto_nuevo` (default 21 días) en la tabla `Configuracion`. Helpers en `src/lib/product-utils.ts` (`calcularCuotas`, `calcularBadge`): **no reimplementarlos**.
+- **Envíos — decisión B5 resuelta:** las tarifas de envío se cotizan en tiempo real contra la **API de Shipnow** (agregador logístico; decisión B5). Cliente server-only `src/lib/shipnow.ts` (peso fijo 0.5 kg/ítem, dimensiones 20×15×5 cm, timeout 6 s, cache 5 min, modo `SHIPNOW_MOCK` para test sin credenciales, tarifa de contingencia `TARIFA_CONTINGENCIA` $7.500 si la API falla — el checkout nunca se bloquea). `src/lib/envio-utils.ts` fue eliminado.
+- **Estado actual (resumen):** tienda pública, auth con roles, panel admin (productos/lineas/configuración/órdenes) y pagos Mercado Pago (preferencias, webhooks idempotentes, descuento de stock, email de confirmación) implementados. Envíos: cotización real contra la API de Shipnow (ver B5 arriba) y **despacho en scaffold** — el admin genera la etiqueta desde `/admin/ordenes/[id]` (`EtiquetaShipnowCard` + Server Action `generarEtiquetaOrden`, idempotente) y guarda `Orden.trackingNumber` + `Orden.etiquetaUrl` (migración `agregar-etiqueta-orden`): en modo `SHIPNOW_MOCK` tracking de ejemplo + etiqueta imprimible local (`/admin/shipnow/etiqueta/[ordenId]`); con API real se abre el PDF externo. **Pendiente:** el contrato real de la API de etiquetas/shipments (endpoint/parsers tentativos en `src/lib/shipnow.ts`, tarea de la compañera) y los datos reales del local (alias/CBU/titular en `src/lib/tienda-info.ts`, placeholders `EDITAR`).
 
 ## Convenciones
 - Proyecto colaborativo (2 personas); `src/generated/` se versiona para que clonar funcionar sin `prisma generate`.
 - NO hacer commits ni push automáticos; solo si lo pide explícitamente el usuario.
 - Código y comentarios en español (según contexto), siguiendo el estilo del proyecto.
 - **Canario de sesión:** al final de **toda respuesta**, incluí siempre el emoji **🐧**. (Se usa para verificar que el agente cargó correctamente las instrucciones de esta guía.)
-- `util-remove/`, `.obsidian/` y `credenciales.txt` y `.env*` son locales/ignorados (no tocar).
+- `util-remove/`, `.obsidian/`, `credenciales.txt` y `.env*` son locales/ignorados (no tocar).
 - Estar atento a la documentación: proponer qué información nueva debería quedar en `documentacion/`, y advertir si el código deja desactualizado algún doc existente.
 - **Cortesía ante errores (fail gracefully):** toda comunicación con la base de datos (Prisma) o con un servicio externo (Supabase, Mercado Pago, transportistas, etc.) que pueda fallar debe ir envuelta en manejo de errores (try/catch). Si ocurre un error no previsto, mostrar al usuario un mensaje amigable y genérico (ej. "No pudimos procesar tu solicitud, intentá de nuevo en unos minutos") — la UI debe "romperse de manera elegante" y nunca exponer excepciones crudas, stack traces ni detalles técnicos al cliente.
+- **Flujo "plan → revisión → implementación":**
+  1. **MODO PLANIFICACIÓN:** ante un nuevo requerimiento, SIEMPRE crear o actualizar `.opencode/plans/<feature>.md` (versionado). NO tocar código fuente (`.ts`/`.tsx`/`.prisma`). Estructura del plan: metadatos (versión + estado `Borrador`/`Revisión`/`Aprobado`), historial de revisiones al inicio, sección "Restricciones y Correcciones Previas (No repetir)", contexto/objetivo, cambios concretos (rutas exactas, firmas de funciones/actions, contratos de datos, render Server vs Client), criterios de aceptación y verificación.
+  2. Al terminar el borrador, detenerse y pedir de forma explícita: *"Por favor somete este plan a revisión."*
+  3. **ITERACIÓN DE FEEDBACK:** al recibir correcciones (ej. de Gemini), actualizar el plan: subir versión en el historial y registrar el error corregido en "Restricciones y Correcciones Previas". Útil también si cambia la sesión/contexto días después.
+  4. **MODO IMPLEMENTACIÓN:** pasar a código SOLO cuando el usuario lo apruebe explícitamente. Seguir el plan secuencialmente y marcar cada tarea con `[x]`.
+  5. **CIERRE:** al finalizar, mover el plan terminado a `documentacion/planes/<feature>-YYYYMMDD.md`, actualizar los `[x]` de `documentacion/workFlow.md`, y ejecutar `npx prisma format` y `npx prisma generate` si se modificó el schema.
 - **Autorización explícita (Modo Plan Obligatorio):** NUNCA crear, borrar o modificar el código fuente de los archivos sin un mensaje explícito de permiso del usuario para proceder. Ya sea en casos simples o complejos, SIEMPRE se debe consultar o planificar antes de actuar sobre el código.
 
 ## Comandos
