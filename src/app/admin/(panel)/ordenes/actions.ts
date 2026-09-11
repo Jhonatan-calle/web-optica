@@ -10,6 +10,7 @@ import {
   calcularPesoKg,
   generarEtiquetaShipnowServidor,
 } from "@/lib/shipnow";
+import { descontarStock, restaurarStock } from "@/lib/stock-utils";
 import { esAdmin } from "@/lib/supabase/roles";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,6 +34,13 @@ async function esUsuarioAdmin(): Promise<boolean> {
  * cliente):
  * - Si el estado pasa a DESPACHADO, la orden es de envío (no RETIRO_LOCAL) y
  *   el tracking está vacío/nulo, se rechaza la petición.
+ *
+ * Gestión de stock (dentro de una transacción atómica, fuente de verdad por
+ * ítem `ItemOrden.stockDescontado`):
+ * - Al pasar PENDIENTE → PAGADO se descuenta stock de las variantes (cubre
+ *   transferencias, efectivo en local y webhooks MP que nunca llegaron).
+ * - Al pasar a CANCELADO se restaura el stock descontado y se limpia la
+ *   alerta de stock residual.
  */
 export async function actualizarEstadoOrden(
   ordenId: string,
@@ -55,7 +63,11 @@ export async function actualizarEstadoOrden(
   try {
     const orden = await prisma.orden.findUnique({
       where: { id: ordenId },
-      select: { id: true, metodoEnvio: true },
+      select: {
+        id: true,
+        metodoEnvio: true,
+        items: { select: { id: true, varianteId: true, cantidad: true } },
+      },
     });
 
     if (!orden) {
@@ -73,9 +85,30 @@ export async function actualizarEstadoOrden(
       };
     }
 
-    await prisma.orden.update({
-      where: { id: ordenId },
-      data: { estado, trackingNumber },
+    await prisma.$transaction(async (tx) => {
+      const data: {
+        estado: EstadoOrden;
+        trackingNumber: string | null;
+        alertaStock?: boolean;
+      } = { estado, trackingNumber };
+
+      if (estado === EstadoOrden.PAGADO) {
+        const actual = await tx.orden.findUnique({
+          where: { id: ordenId },
+          select: { estado: true },
+        });
+        if (actual?.estado === EstadoOrden.PENDIENTE) {
+          data.alertaStock = await descontarStock(tx, orden.items);
+        }
+      } else if (estado === EstadoOrden.CANCELADO) {
+        await restaurarStock(tx, orden.items);
+        data.alertaStock = false;
+      }
+
+      await tx.orden.update({
+        where: { id: ordenId },
+        data,
+      });
     });
   } catch (error) {
     console.error("Error al actualizar la orden:", error);

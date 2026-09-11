@@ -5,6 +5,7 @@ import { Payment } from "mercadopago";
 
 import { getMercadoPagoConfig } from "@/lib/mercadopago";
 import { prisma } from "@/lib/prisma";
+import { descontarStock } from "@/lib/stock-utils";
 import { enviarEmailConfirmacion } from "@/lib/email";
 import { EstadoOrden, MetodoPago } from "@/generated/prisma/enums";
 
@@ -107,26 +108,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Transacción atómica e idempotente:
-  //  1) Descuenta stock por ítem solo si alcanza (updateMany condicional).
+  //  1) Descuenta stock por ítem solo si alcanza (`descontarStock` marca cada
+  //     ItemOrden con `stockDescontado`; los reintentos del webhook ya no
+  //     descuentan dos veces).
   //  2) Marca la orden PAGADO únicamente si seguía PENDIENTE; si ya estaba
   //     procesada, lanza el error controlado y hace ROLLBACK de los descuentos
   //     (el pago jamás se registra/descuenta dos veces).
   let stockFaltante = false;
   try {
     await prisma.$transaction(async (tx) => {
-      for (const item of orden.items) {
-        if (!item.varianteId) continue;
-        const resultado = await tx.variante.updateMany({
-          where: {
-            id: item.varianteId,
-            stock: { gte: item.cantidad },
-          },
-          data: { stock: { decrement: item.cantidad } },
-        });
-        if (resultado.count === 0) {
-          stockFaltante = true;
-        }
-      }
+      stockFaltante = await descontarStock(tx, orden.items);
 
       const resultado = await tx.orden.updateMany({
         where: { id: orden.id, estado: EstadoOrden.PENDIENTE },

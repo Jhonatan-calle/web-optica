@@ -1331,6 +1331,7 @@ export const ItemOrdenScalarFieldEnum = {
   id: 'id',
   ordenId: 'ordenId',
   varianteId: 'varianteId',
+  stockDescontado: 'stockDescontado',
   nombreSnapshot: 'nombreSnapshot',
   colorSnapshot: 'colorSnapshot',
   precioUnitario: 'precioUnitario',

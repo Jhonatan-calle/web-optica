@@ -176,11 +176,15 @@ model Orden {
 }
 
 model ItemOrden {
-  id         String    @id @default(cuid())
-  orden      Orden     @relation(fields: [ordenId], references: [id], onDelete: Cascade)
-  ordenId    String
-  variante   Variante? @relation(fields: [varianteId], references: [id])
-  varianteId String?
+  id              String    @id @default(cuid())
+  orden           Orden     @relation(fields: [ordenId], references: [id], onDelete: Cascade)
+  ordenId         String
+  variante        Variante? @relation(fields: [varianteId], references: [id])
+  varianteId      String?
+  // Fuente de verdad de si el stock de la variante ya fue descontado por este
+  // ítem. Hace idempotente el descuento (webhook y aprobación manual) y permite
+  // restaurar stock con precisión al cancelar (aun con alertaStock).
+  stockDescontado Boolean   @default(false)
 
   nombreSnapshot String  @db.VarChar(255)
   colorSnapshot  String?
