@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { prisma } from "@/lib/prisma";
 import { esAdmin } from "@/lib/supabase/roles";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { ProductoForm } from "@/components/admin/producto-form";
+import { AdminFormSkeleton } from "@/components/admin/admin-page-skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -22,21 +24,7 @@ export interface LineaOption {
  * Alta de producto. Server Component: verifica el rol admin, carga las líneas
  * (agrupadas por Tipo para el selector) y renderiza el formulario.
  */
-export default async function NuevoProductoPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!esAdmin(user)) {
-    redirect("/");
-  }
-
-  const lineas = await prisma.linea.findMany({
-    select: { id: true, nombre: true, tipo: { select: { id: true, nombre: true } } },
-    orderBy: { nombre: "asc" },
-  });
-
+export default function NuevoProductoPage() {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <header>
@@ -48,7 +36,41 @@ export default async function NuevoProductoPage() {
         </p>
       </header>
 
-      <ProductoForm lineas={lineas} />
+      <Suspense fallback={<AdminFormSkeleton />}>
+        <NuevoProductoSection />
+      </Suspense>
     </div>
   );
+}
+
+async function NuevoProductoSection() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!esAdmin(user)) {
+    redirect("/");
+  }
+
+  let lineas;
+  try {
+    lineas = await prisma.linea.findMany({
+      select: {
+        id: true,
+        nombre: true,
+        tipo: { select: { id: true, nombre: true } },
+      },
+      orderBy: { nombre: "asc" },
+    });
+  } catch (error) {
+    console.error("No se pudieron cargar las líneas:", error);
+    return (
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-10 text-center text-sm text-destructive">
+        No se pudieron cargar las líneas. Intentá de nuevo en unos minutos.
+      </div>
+    );
+  }
+
+  return <ProductoForm lineas={lineas} />;
 }

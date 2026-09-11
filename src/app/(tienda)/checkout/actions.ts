@@ -117,7 +117,8 @@ export async function cotizarEnvioPublico(
  *
  * Los totales se recalculan acá en el servidor con los snapshots del carrito
  * (no se confía en el total enviado por el cliente). La orden queda en estado
- * `PENDIENTE`; el pago real se conecta en la Fase 3.
+ * `PENDIENTE`; si el pago es online, la preferencia de Mercado Pago se crea en
+ * el momento de confirmar el checkout y el estado pasa a PAGADO al webhook.
  */
 export async function crearOrden(input: unknown): Promise<CrearOrdenResultado> {
   const parsed = crearOrdenSchema.safeParse(input);

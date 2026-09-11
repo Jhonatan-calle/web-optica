@@ -79,7 +79,7 @@ export function PagoForm() {
     setPago(values);
     if (values.tipo === "online") {
       toast.success("Pago online seleccionado", {
-        description: "La conexión con Mercado Pago llega en la Fase 3.",
+        description: "Al confirmar la compra te redirigimos al checkout de Mercado Pago.",
       });
     } else if (values.tipo === "transferencia") {
       toast.success("Transferencia seleccionada", {
@@ -87,7 +87,7 @@ export function PagoForm() {
       });
     } else {
       toast.success("Pago en el local seleccionado", {
-        description: "La confirmación del pedido llega pronto.",
+        description: "Abonás en efectivo al retirar tu pedido.",
       });
     }
   };

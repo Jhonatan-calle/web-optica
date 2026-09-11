@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { ImagenPublica } from "@/lib/catalog-types";
+import { ImagenStore } from "@/components/ui/imagen-store";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({
@@ -19,11 +20,13 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-3 md:sticky md:top-24">
-      <div className="flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB]">
-        <img
+      <div className="relative flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB]">
+        <ImagenStore
           src={imagenActiva.url}
           alt={imagenActiva.alt ?? nombre}
-          className="h-32 w-auto opacity-80"
+          priority={indice === 0}
+          sizes="(max-width: 767px) 100vw, 50vw"
+          className="object-contain opacity-80"
         />
       </div>
 
@@ -36,16 +39,19 @@ export function ProductGallery({
               onClick={() => setActiva(i)}
               aria-label={`Imagen ${i + 1} de ${imagen.alt ?? nombre}`}
               className={cn(
-                "flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-[#F9FAFB] transition-colors",
+                "relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-[#F9FAFB] transition-colors",
                 i === indice
                   ? "ring-2 ring-[#00848C]"
                   : "opacity-70 hover:opacity-100",
               )}
             >
-              <img
+              <ImagenStore
                 src={imagen.url}
                 alt={imagen.alt ?? nombre}
-                className="h-10 w-auto"
+                sizes="64px"
+                className="object-contain"
+                width={40}
+                height={40}
               />
             </button>
           ))}

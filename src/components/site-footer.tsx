@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { ImagenStore } from "@/components/ui/imagen-store";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 
 const INSTAGRAM_HANDLE = "@_laoptica";
@@ -19,7 +20,13 @@ export function SiteFooter({ className }: { className?: string }) {
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
         <div className="flex flex-col gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/isologo.svg" alt="La Óptica" className="h-8 w-auto" />
+            <ImagenStore
+              src="/isologo.svg"
+              alt="La Óptica"
+              className="h-8 w-auto object-contain"
+              width={218}
+              height={40}
+            />
           </Link>
           <p className="max-w-xs text-sm text-muted-foreground">
             Anteojos de sol, clip-ons, armazones y accesorios. Calidad y diseño
@@ -27,22 +34,31 @@ export function SiteFooter({ className }: { className?: string }) {
           </p>
         </div>
 
-        <nav aria-label="La Óptica">
-          <h3 className="mb-3 text-sm font-semibold">La Óptica</h3>
+        <nav aria-label="Legales">
+          <h3 className="mb-3 text-sm font-semibold">Legales</h3>
           <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
             <li>
-              <Link href="/catalogo" className="hover:text-foreground">
-                Líneas
+              <Link
+                href="/terminos-y-condiciones"
+                className="hover:text-foreground"
+              >
+                Términos y condiciones
               </Link>
             </li>
             <li>
-              <Link href="/carrito" className="hover:text-foreground">
-                Carrito
+              <Link
+                href="/politicas-de-privacidad"
+                className="hover:text-foreground"
+              >
+                Política de privacidad
               </Link>
             </li>
             <li>
-              <Link href="/contacto" className="hover:text-foreground">
-                Contacto
+              <Link
+                href="/boton-de-arrepentimiento"
+                className="hover:text-foreground"
+              >
+                Botón de arrepentimiento
               </Link>
             </li>
           </ul>

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { prisma } from "@/lib/prisma";
 import { esAdmin } from "@/lib/supabase/roles";
 import { createClient } from "@/lib/supabase/server";
 import { ProductoForm } from "@/components/admin/producto-form";
+import { AdminFormSkeleton } from "@/components/admin/admin-page-skeleton";
 import { obtenerProductoAdmin } from "@/app/admin/(panel)/productos/actions";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +20,30 @@ export const metadata: Metadata = {
  * producto completo (variantes + imágenes) y las líneas, y renderiza el
  * formulario en modo edición.
  */
-export default async function EditarProductoPage({
+export default function EditarProductoPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-3xl space-y-6">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+          Editar producto
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Modificá los datos, las variantes y sus imágenes.
+        </p>
+      </header>
+
+      <Suspense fallback={<AdminFormSkeleton />}>
+        <EditarProductoSection params={params} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function EditarProductoSection({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -34,34 +59,32 @@ export default async function EditarProductoPage({
     redirect("/");
   }
 
-  const [producto, lineas] = await Promise.all([
-    obtenerProductoAdmin(id),
-    prisma.linea.findMany({
-      select: {
-        id: true,
-        nombre: true,
-        tipo: { select: { id: true, nombre: true } },
-      },
-      orderBy: { nombre: "asc" },
-    }),
-  ]);
+  let producto;
+  let lineas;
+  try {
+    [producto, lineas] = await Promise.all([
+      obtenerProductoAdmin(id),
+      prisma.linea.findMany({
+        select: {
+          id: true,
+          nombre: true,
+          tipo: { select: { id: true, nombre: true } },
+        },
+        orderBy: { nombre: "asc" },
+      }),
+    ]);
+  } catch (error) {
+    console.error("No se pudo cargar el producto a editar:", error);
+    return (
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-10 text-center text-sm text-destructive">
+        No se pudo cargar el producto. Intentá de nuevo en unos minutos.
+      </div>
+    );
+  }
 
   if (!producto) {
     notFound();
   }
 
-  return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-          Editar producto
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Modificá los datos, las variantes y sus imágenes.
-        </p>
-      </header>
-
-      <ProductoForm lineas={lineas} producto={producto} />
-    </div>
-  );
+  return <ProductoForm lineas={lineas} producto={producto} />;
 }

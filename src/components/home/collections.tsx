@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ImagenStore } from "@/components/ui/imagen-store";
 import { obtenerColecciones } from "@/lib/catalog-utils";
 
 export async function Collections() {
@@ -27,11 +28,12 @@ export async function Collections() {
             href={{ pathname: "/catalogo", query: { linea: collection.nombre } }}
             className="group flex flex-col overflow-hidden rounded-lg"
           >
-            <div className="flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
-              <img
-                src={collection.imagenUrl}
+            <div className="relative flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
+              <ImagenStore
+                src={collection.imagenUrl ?? "/isologo.svg"}
                 alt={collection.nombre}
-                className="h-16 w-auto opacity-80"
+                sizes="(max-width: 767px) 50vw, 33vw"
+                className="object-contain opacity-80"
               />
             </div>
             <span className="mt-3 text-sm font-medium md:text-base">

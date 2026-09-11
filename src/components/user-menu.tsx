@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { LayoutDashboard, LogOut, User, UserCircle } from "lucide-react";
+import { toast } from "sonner";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import { cerrarSesion } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
@@ -58,28 +60,29 @@ export function UserMenu({ userEmail, isAdmin }: UserMenuProps) {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
 
-        <DropdownMenuItem
-          render={<Link href="/mi-cuenta" />}
-        >
-          <UserCircle className="size-4" />
-          Mi cuenta
-        </DropdownMenuItem>
-
         {isAdmin && (
           <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              render={<Link href="/admin" />}
-            >
+            <DropdownMenuItem render={<Link href="/admin" />}>
               <LayoutDashboard className="size-4" />
               Panel admin
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
           </>
         )}
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem onClick={() => cerrarSesion()}>
+        <DropdownMenuItem
+          onClick={async () => {
+            try {
+              await cerrarSesion();
+            } catch (error) {
+              // El `redirect` de la Server Action no debe tratarse como error.
+              if (isRedirectError(error)) throw error;
+              toast.error("No se pudo cerrar la sesión", {
+                description: "Intentá de nuevo en unos minutos.",
+              });
+            }
+          }}
+        >
           <LogOut className="size-4" />
           Cerrar sesión
         </DropdownMenuItem>

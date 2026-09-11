@@ -5,6 +5,7 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { useCartStore, selectSubtotal } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
+import { ImagenStore } from "@/components/ui/imagen-store";
 import {
   Sheet,
   SheetContent,
@@ -67,12 +68,15 @@ export function CartDrawer() {
                 key={item.id}
                 className="flex gap-3 rounded-lg border p-3"
               >
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-md bg-[#F9FAFB]">
+                <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#F9FAFB]">
                   {item.imagen ? (
-                    <img
+                    <ImagenStore
                       src={item.imagen}
                       alt={item.nombre}
-                      className="h-10 w-auto object-contain"
+                      sizes="64px"
+                      className="object-contain"
+                      width={40}
+                      height={40}
                     />
                   ) : (
                     <ShoppingBag className="h-6 w-6 text-muted-foreground/30" />

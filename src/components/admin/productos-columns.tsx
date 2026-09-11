@@ -216,7 +216,18 @@ function ToggleEstadoButton({ producto }: { producto: ProductoRow }) {
       disabled={pendiente}
       onClick={() => {
         startTransition(async () => {
-          await toggleEstadoProducto(producto.id);
+          const resultado = await toggleEstadoProducto(producto.id);
+          if (resultado.ok) {
+            toast.success(
+              resultado.activo
+                ? "Producto activado"
+                : "Producto pausado",
+            );
+          } else {
+            toast.error("No se pudo actualizar el producto", {
+              description: resultado.error,
+            });
+          }
         });
       }}
     >

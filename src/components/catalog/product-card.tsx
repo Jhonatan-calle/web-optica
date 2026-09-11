@@ -8,6 +8,7 @@ import type { ProductoPublico } from "@/lib/catalog-types";
 import type { ConfigCuotas } from "@/lib/product-utils";
 import { calcularBadge, calcularCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
+import { ImagenStore } from "@/components/ui/imagen-store";
 import { showAddToCartToast } from "@/components/cart/add-to-cart-toast";
 
 export function ProductCard({
@@ -35,11 +36,12 @@ export function ProductCard({
         href={`/producto/${producto.slug}`}
         className="group relative block overflow-hidden rounded-lg"
       >
-        <div className="flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
-          <img
+        <div className="relative flex aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] transition-colors group-hover:bg-brand-muted">
+          <ImagenStore
             src={imagenUrl}
             alt={producto.nombre}
-            className="h-16 w-auto opacity-80"
+            sizes="(max-width: 767px) 50vw, (max-width: 1279px) 33vw, 25vw"
+            className="object-contain opacity-80"
           />
         </div>
         {badge && (

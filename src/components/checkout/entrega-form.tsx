@@ -80,7 +80,7 @@ export function EntregaForm() {
     if (values.tipo === "retiro") {
       setEntrega({ tipo: "retiro" });
       toast.success("Retiro en el local seleccionado", {
-        description: "El siguiente paso (pago) llega pronto.",
+        description: "Ahora elegí el método de pago.",
       });
       return;
     }
@@ -116,7 +116,7 @@ export function EntregaForm() {
     };
     setEntrega(entrega);
     toast.success("Datos de entrega guardados", {
-      description: "El siguiente paso (pago) llega pronto.",
+      description: "Ahora elegí el método de pago y confirmá la compra.",
     });
   };
 

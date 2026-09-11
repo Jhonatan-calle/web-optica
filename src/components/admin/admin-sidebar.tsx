@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { FormEvent } from "react";
 import {
   LayoutDashboard,
   Layers,
@@ -12,6 +13,8 @@ import {
   Settings,
   Store,
 } from "lucide-react";
+import { toast } from "sonner";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 import { cerrarSesion } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
@@ -126,7 +129,20 @@ export function AdminSidebar() {
           <Store className="size-4 shrink-0" aria-hidden="true" />
           Ver tienda
         </Link>
-        <form action={cerrarSesion}>
+        <form
+          onSubmit={async (evento: FormEvent<HTMLFormElement>) => {
+            evento.preventDefault();
+            try {
+              await cerrarSesion();
+            } catch (error) {
+              // El `redirect` de la Server Action no debe tratarse como error.
+              if (isRedirectError(error)) throw error;
+              toast.error("No se pudo cerrar la sesión", {
+                description: "Intentá de nuevo en unos minutos.",
+              });
+            }
+          }}
+        >
           <button
             type="submit"
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"

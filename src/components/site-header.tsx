@@ -7,14 +7,18 @@ import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
+import { ImagenStore } from "@/components/ui/imagen-store";
 import { useCartCount } from "@/hooks/use-cart-count";
 import { UserMenu } from "@/components/user-menu";
 
+// Los filtros por tipo usan el nombre exacto del Tipo en BD (`linea.tipo.nombre`).
+// Verificar/crear esos Tipos en el panel `/admin/lineas` para que los links
+// muestren resultados; hoy caen en el estado vacío amigable del catálogo.
 const NAV_LINKS = [
   { label: "Líneas", href: "/catalogo" },
-  { label: "Anteojos de Sol", href: "/catalogo/sol" },
-  { label: "Clip-ons", href: "/catalogo/clip-ons" },
-  { label: "Accesorios", href: "/catalogo/accesorios" },
+  { label: "Anteojos de Sol", href: "/catalogo?tipo=Anteojo de Sol" },
+  { label: "Clip-ons", href: "/catalogo?tipo=Clip-on" },
+  { label: "Accesorios", href: "/catalogo?tipo=Accesorios" },
 ];
 
 interface SiteHeaderProps {
@@ -41,10 +45,12 @@ export function SiteHeader({ userEmail, isAdmin }: SiteHeaderProps) {
             {menuOpen ? <X /> : <Menu />}
           </Button>
           <Link href="/" className="flex items-center gap-2">
-            <img
+            <ImagenStore
               src="/isologo.svg"
               alt="La Óptica"
-              className="h-8 w-auto"
+              className="h-8 w-auto object-contain"
+              width={218}
+              height={40}
             />
           </Link>
         </div>

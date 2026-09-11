@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 import {
@@ -7,6 +7,7 @@ import {
   type ItemResumen,
   type ResumenEntrega,
 } from "@/components/checkout/resumen-orden";
+import { OrdenPageSkeleton } from "@/components/checkout/orden-skeleton";
 import { buttonVariants } from "@/components/ui/button";
 import { BotonMercadoPago } from "@/components/checkout/boton-mercado-pago";
 import { prisma } from "@/lib/prisma";
@@ -21,26 +22,36 @@ import {
 import { CLASES_COLOR_ESTADO, ETIQUETAS_ESTADO } from "@/lib/orden-utils";
 import { EstadoOrden } from "@/generated/prisma/enums";
 
-interface OrdenPageProps {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
+async function ContenidoOrden({
+  id,
+  estadoPagoMp,
+}: {
+  id: string;
+  estadoPagoMp?: string;
+}) {
+  let orden;
+  try {
+    orden = await prisma.orden.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+  } catch (error) {
+    console.error("No se pudo cargar la orden:", error);
+  }
 
-export default async function OrdenPage({
-  params,
-  searchParams,
-}: OrdenPageProps) {
-  const { id } = await params;
-  const { status } = await searchParams;
+  if (!orden) {
+    return (
+      <div className="mt-16 flex flex-col items-center gap-3 text-center">
+        <p className="text-sm font-medium text-foreground">
+          No pudimos cargar tu pedido.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Revisá el link o intentá de nuevo en unos minutos.
+        </p>
+      </div>
+    );
+  }
 
-  const orden = await prisma.orden.findUnique({
-    where: { id },
-    include: { items: true },
-  });
-
-  if (!orden) notFound();
-
-  const estadoPagoMp = typeof status === "string" ? status : undefined;
   const esOnline = orden.metodoPago === "MERCADO_PAGO";
   const estaPagada = orden.estado === EstadoOrden.PAGADO;
   const pagoAprobado = estaPagada || estadoPagoMp === "approved";
@@ -90,7 +101,7 @@ export default async function OrdenPage({
   const descuento = Math.max(subtotal - total + costoEnvio, 0);
 
   return (
-    <main className="mx-auto w-full max-w-md flex-1 px-4 py-10 sm:px-6">
+    <div className="flex flex-col gap-4">
       <div className="mb-6 flex flex-col items-center gap-3 text-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#00848C]/10 text-[#00848C]">
           <CheckCircle2 className="h-7 w-7" />
@@ -246,6 +257,26 @@ export default async function OrdenPage({
           Volver al catálogo
         </Link>
       </div>
+    </div>
+  );
+}
+
+export default async function OrdenPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { id } = await params;
+  const { status } = await searchParams;
+  const estadoPagoMp = typeof status === "string" ? status : undefined;
+
+  return (
+    <main className="mx-auto w-full max-w-md flex-1 px-4 py-10 sm:px-6">
+      <Suspense fallback={<OrdenPageSkeleton />}>
+        <ContenidoOrden id={id} estadoPagoMp={estadoPagoMp} />
+      </Suspense>
     </main>
   );
 }

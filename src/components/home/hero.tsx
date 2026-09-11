@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ImagenStore } from "@/components/ui/imagen-store";
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
@@ -24,11 +25,14 @@ export function Hero() {
         </Button>
       </div>
 
-      <div className="hidden aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] lg:flex">
-        <img
+      <div className="relative hidden aspect-[4/5] items-center justify-center rounded-lg bg-[#F9FAFB] lg:flex">
+        <ImagenStore
           src="/isologo.svg"
           alt="La Óptica"
-          className="h-40 w-auto opacity-90 md:h-52"
+          priority
+          className="h-40 w-auto object-contain opacity-90 md:h-52"
+          width={218}
+          height={40}
         />
       </div>
     </section>

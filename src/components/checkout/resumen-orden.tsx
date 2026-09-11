@@ -50,7 +50,7 @@ export interface ResumenOrdenProps {
 const ETIQUETAS_PAGO: Record<TipoPago, { etiqueta: string; detalle?: string }> = {
   online: {
     etiqueta: "Pago online",
-    detalle: "Mercado Pago, se conecta en la Fase 3",
+    detalle: "Se procesa con Mercado Pago al confirmar la compra",
   },
   transferencia: { etiqueta: "Transferencia bancaria" },
   efectivo_local: { etiqueta: "Efectivo al retirar en el local" },

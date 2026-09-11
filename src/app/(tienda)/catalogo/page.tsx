@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 
 import {
   CatalogoGridSkeleton,
@@ -18,6 +19,25 @@ import type { ConfigCuotas } from "@/lib/product-utils";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<CatalogoParams>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const linea = params.linea?.trim();
+  const tipo = params.tipo?.trim();
+  const titulo = linea ? `Línea ${linea}` : tipo ?? "Catálogo";
+  const descripcion = linea
+    ? `Explorá los productos de la línea ${linea} de La Óptica.`
+    : `Explorá ${titulo.toLowerCase()} de anteojos, clip-ons y accesorios en La Óptica.`;
+
+  return {
+    title: titulo,
+    description: descripcion,
+  };
+}
 
 interface CatalogoParams {
   q?: string;
